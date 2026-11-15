@@ -2804,6 +2804,33 @@
         }
       });
     }
+   let selectedPaymentMethod = 'مدى (Mada)';
+
+    function selectPaymentMethod(methodName, btnEl) {
+      selectedPaymentMethod = methodName;
+      document.querySelectorAll('.pay-method-btn').forEach(btn => {
+        btn.className = 'pay-method-btn focus-ring p-3 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 bg-slate-50 font-bold text-xs sm:text-sm flex items-center justify-between';
+        const chk = btn.querySelector('.pay-check');
+        if (chk) {
+          chk.textContent = '○';
+          chk.className = 'pay-check text-slate-400';
+        }
+      });
+
+      btnEl.className = 'pay-method-btn focus-ring p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 font-black text-xs sm:text-sm flex items-center justify-between';
+      const activeChk = btnEl.querySelector('.pay-check');
+      if (activeChk) {
+        activeChk.textContent = '✓';
+        activeChk.className = 'pay-check text-emerald-700';
+      }
+      speakText(methodName);
+    }
+
+    function closeInvoiceModal() {
+      document.getElementById('invoiceCheckoutModal').classList.add('hidden');
+    }
+
+    // عند الضغط على "تأكيد الطلب" تفتح الفاتورة الكاملة بالتاريخ والوقت وطرق الدفع
     function submitAccessibleOrder() {
       const t = translations[currentLang] || translations.ar;
       if (cart.length === 0) {
@@ -2812,10 +2839,47 @@
         return;
       }
 
+      const now = new Date();
+      const dateStr = now.toLocaleDateString('ar-SA', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const timeStr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+      const carInput = document.getElementById('carDetails').value.trim() || 'سيارة العميل (بدون لوحة مدخلة)';
+      const totalAmount = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+
+      document.getElementById('invModalDate').textContent = dateStr;
+      document.getElementById('invModalTime').textContent = timeStr;
+      document.getElementById('invModalCar').textContent = carInput;
+      document.getElementById('invModalLane').textContent = selectedLane;
+      document.getElementById('invModalSpot').textContent = selectedSpot;
+
+      const itemsContainer = document.getElementById('invModalItems');
+      itemsContainer.innerHTML = cart.map(item => {
+        const title = item.itemObj ? getItemTitle(item.itemObj) : item.name;
+        return `
+          <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+            <div>
+              <span class="font-black text-slate-900">${item.qty}x ${title}</span>
+              <span class="block text-[10px] text-emerald-700 font-bold">${item.note}</span>
+            </div>
+            <span class="font-black text-slate-900 inline-flex items-center gap-1">${item.price * item.qty} ${saudiRiyalLogoSVG}</span>
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('invModalTotal').innerHTML = `<span>${totalAmount}</span> ${saudiRiyalLogoSVG}`;
+      document.getElementById('invoiceCheckoutModal').classList.remove('hidden');
+      speakText(`فاتورة الطلب جاهزة، الإجمالي ${totalAmount} ريال سعودي، اختر طريقة الدفع ثم اعتمد الطلب`);
+    }
+
+    // اعتماد الفاتورة وإرسال الطلب للمسار المباشر وشاشة الموظف
+    function finalizeOrderWithInvoice() {
+      closeInvoiceModal();
+
+      const now = new Date();
+      const orderDate = now.toLocaleDateString('ar-SA', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const orderTime = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
       const carInput = document.getElementById('carDetails').value.trim() || 'سيارة العميل (بدون لوحة مدخلة)';
       const randomNum = Math.floor(100 + Math.random() * 900);
       const orderCode = '#YSR-' + randomNum;
-      const orderTime = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
       const totalAmount = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
 
       const orderData = {
@@ -2824,14 +2888,45 @@
         car: carInput,
         lane: selectedLane,
         spot: selectedSpot,
+        paymentMethod: selectedPaymentMethod,
         items: cart.map(i => ({ qty: i.qty, name: i.name, price: i.price, note: i.note })),
         total: totalAmount,
+        orderDate: orderDate,
         orderTime: orderTime,
         status: 'in_progress',
         messages: [],
         step: 1,
         timestamp: Date.now()
       };
+
+      myCustomerOrders.unshift(orderData);
+      activeOrders.push(orderData);
+      if (!staffSelectedOrderCode) {
+        staffSelectedOrderCode = orderCode;
+      }
+      saveAllOrderStates();
+
+      renderCustomerMyOrders();
+      renderStaffActiveQueueAndDetails();
+
+      myCustomerOrderCode = orderCode;
+      document.getElementById('orderNumberDisplay').textContent = orderCode;
+      document.getElementById('trackerLaneName').textContent = selectedLane;
+      updateStepUIOnly(1);
+      renderCustomerTrackedChat([]);
+
+      publishSyncEvent({ type: 'NEW_ORDER', order: orderData });
+
+      cart = [];
+      renderCart();
+
+      document.getElementById('tabCustomer').classList.add('hidden');
+      document.getElementById('tabTracker').classList.remove('hidden');
+
+      speakText(`تم اعتماد الفاتورة رقم ${orderCode} بنجاح عبر ${selectedPaymentMethod}`);
+      triggerVisualBanner(`✓ ${orderCode} — الدفع: ${selectedPaymentMethod}`);
+      switchMainView('tracker');
+    }
 
       // إضافة الفاتورة والطلب لقائمة طلبات العميل وطابور الموظف وحفظهما فوراً في localStorage
       myCustomerOrders.unshift(orderData);
