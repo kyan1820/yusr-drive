@@ -9,66 +9,88 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
+    }
+    .splash-fade-out {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease-in-out;
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
 
-  <!-- شاشة الترحيب واختيار اللغات (العربية، الإنجليزية، التركية، الأردو، الصينية، ولغة الإشارة) -->
-  <div id="welcomeModal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+  <!-- 1. شاشة الكلمة الترحيبية الافتتاحية (تظهر أول ما يفتح الموقع ثم تختفي تلقائياً) -->
+  <div id="introSplash" class="fixed inset-0 z-[60] bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white flex items-center justify-center p-6 text-center">
+    <div class="max-w-lg w-full space-y-5 animate-pulse">
+      <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-5 py-2 rounded-full text-sm font-black">
+        <span>Yusr Drive | منصة يُسْر درايف</span>
+      </div>
+      <h1 class="text-4xl sm:text-5xl font-black leading-tight text-white">
+        أهلاً بك في يُسْر درايف
+      </h1>
+      <p class="text-lg sm:text-xl font-bold text-emerald-300">
+        خدمتك من سيارتك بكل يُسر واستقلالية
+      </p>
+      <p class="text-xs text-slate-400 font-bold pt-2">
+        Welcome • Hoş Geldiniz • خوش آمدید • 欢迎光临
+      </p>
+    </div>
+  </div>
+
+  <!-- 2. شاشة اختيار اللغات (تظهر تلقائياً بعد اختفاء الكلمة الترحيبية) -->
+  <div id="welcomeModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white text-slate-900 max-w-2xl w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-emerald-500 text-center space-y-6 my-auto">
       <div class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full text-sm font-black">
         <span>Yusr Drive | يُسْر درايف</span>
       </div>
 
       <div class="space-y-1.5">
-        <h2 class="text-2xl sm:text-3xl font-black text-slate-900">أهلاً بك في مسار يُسْر الذكي</h2>
-        <p class="text-sm sm:text-base font-bold text-slate-600">Welcome • Hoş Geldiniz • خوش آمدید • 欢迎光临</p>
-        <p class="text-xs text-slate-500 pt-1">اختر لغتك المفضلة للبدء وتكييف الواجهة والقارئ الصوتي تلقائياً:</p>
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900">اختر لغتك المفضلة للبدء</h2>
+        <p class="text-sm sm:text-base font-bold text-slate-600">Select Your Language • Dil Seçin • زبان منتخب کریں • 选择语言</p>
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
         <!-- العربية -->
-        <button type="button" onclick="startAppWithLanguage('ar')" class="focus-ring p-4 rounded-2xl border-2 border-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition flex flex-col items-center justify-center gap-1.5">
+        <button type="button" onclick="startAppWithLanguage('ar')" class="focus-ring p-4 rounded-2xl border-2 border-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-emerald-600 text-white px-2.5 py-0.5 rounded-full">الافتراضي</span>
           <span class="text-xl font-black text-slate-900">العربية</span>
           <span class="text-[11px] text-slate-600 font-bold">واجهة وصوت عربي</span>
         </button>
 
         <!-- الإنجليزية -->
-        <button type="button" onclick="startAppWithLanguage('en')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5">
+        <button type="button" onclick="startAppWithLanguage('en')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">English</span>
           <span class="text-xl font-black text-slate-900">English</span>
           <span class="text-[11px] text-slate-600 font-bold">Voice & UI in English</span>
         </button>
 
         <!-- التركية -->
-        <button type="button" onclick="startAppWithLanguage('tr')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5">
+        <button type="button" onclick="startAppWithLanguage('tr')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-rose-100 text-rose-800 px-2.5 py-0.5 rounded-full">Türkçe</span>
           <span class="text-xl font-black text-slate-900">Türkçe</span>
           <span class="text-[11px] text-slate-600 font-bold">Sesli ve Türkçe Arayüz</span>
         </button>
 
         <!-- الأردو -->
-        <button type="button" onclick="startAppWithLanguage('ur')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5">
+        <button type="button" onclick="startAppWithLanguage('ur')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-teal-100 text-teal-800 px-2.5 py-0.5 rounded-full">اردو</span>
           <span class="text-xl font-black text-slate-900">اردو</span>
           <span class="text-[11px] text-slate-600 font-bold">اردو انٹرفیس اور آواز</span>
         </button>
 
         <!-- الصينية -->
-        <button type="button" onclick="startAppWithLanguage('zh')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5">
+        <button type="button" onclick="startAppWithLanguage('zh')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full">中文</span>
           <span class="text-xl font-black text-slate-900">中文 (简体)</span>
           <span class="text-[11px] text-slate-600 font-bold">中文界面与语音导览</span>
         </button>
 
         <!-- لغة الإشارة / بصري للصم -->
-        <button type="button" onclick="startAppWithLanguage('sign')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 bg-slate-50 hover:bg-amber-50 transition flex flex-col items-center justify-center gap-1.5">
+        <button type="button" onclick="startAppWithLanguage('sign')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 bg-slate-50 hover:bg-amber-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">للصم / Deaf</span>
           <span class="text-lg font-black text-slate-900">بصري / إشارة</span>
           <span class="text-[11px] text-slate-600 font-bold">تنبيهات ضوئية بدون صوت</span>
@@ -102,7 +124,6 @@
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       <div class="flex flex-wrap items-center gap-2">
         <span id="accBadgeTitle" class="secondary-ui bg-emerald-500 text-slate-950 font-extrabold px-3 py-1 rounded-full text-sm">شريط الوصول الشامل</span>
-        <!-- زر التبسيط الأساسي للعملاء -->
         <button type="button" onclick="toggleSimpleMode()" id="simpleModeBtn" class="focus-ring bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-1.5 rounded-xl text-sm font-black transition shadow flex items-center gap-2">
           <span id="simpleModeDot" class="w-2.5 h-2.5 rounded-full bg-slate-950"></span>
           <span id="simpleModeBtnText">زر التبسيط: إخفاء الأزرار الثانوية</span>
@@ -159,7 +180,6 @@
 
   <main class="max-w-7xl mx-auto w-full flex-1 p-4 sm:p-6 space-y-8">
     <div id="viewCustomer" class="space-y-8">
-      <!-- قسم اختيار نمط الخدمة (يختفي عند تفعيل زر التبسيط) -->
       <section class="secondary-ui bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
           <div>
@@ -232,7 +252,7 @@
                 </button>
               </div>
 
-              <!-- أقسام المطعم الـ 7 فقط (بدون خانة الكل) -->
+              <!-- أقسام المطعم الـ 7 -->
               <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 pt-2">
                 <button type="button" onclick="filterCategory('offers')" id="cat-offers" class="cat-btn focus-ring py-3 px-2 rounded-xl font-black text-xs sm:text-sm bg-emerald-600 text-white shadow">قسم العروض</button>
                 <button type="button" onclick="filterCategory('breakfast')" id="cat-breakfast" class="cat-btn focus-ring py-3 px-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-800 hover:bg-slate-200">وجبات الفطور</button>
@@ -539,7 +559,7 @@
   </footer>
 
   <script>
-    console.log("Yusr Drive System v7 Multi-Language Initialized - Developer: Kayan Adel Abbas");
+    console.log("Yusr Drive System v8 Complete Initialized - Developer: Kayan Adel Abbas");
 
     let currentLang = 'ar';
     let ttsEnabled = true;
@@ -554,7 +574,7 @@
     let currentCategory = 'offers';
     let currentView = 'customer';
 
-    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v7';
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v8';
     let activeOrderId = null;
     let lastEventStamp = 0;
     const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
@@ -572,10 +592,10 @@
 
     const stepMessages = {
       ar: {
-        1: 'المرحلة الأولى: تم استلام طلبك وتكييف المسار الذكي',
-        2: 'المرحلة الثانية: جاري تجهيز طلبك بتغليف ميسّر سهل الفتح',
-        3: 'المرحلة الثالثة: تم التعرف على وصول سيارتك في المسار الذكي',
-        4: 'المرحلة الرابعة: الموظف في طريقه لباب سيارتك الآن لتسليم الطلب'
+        1: 'المرحلة الأولى، تم استلام طلبك وتكييف المسار الذكي',
+        2: 'المرحلة الثانية، جاري تجهيز طلبك بتغليف ميسر سهل الفتح',
+        3: 'المرحلة الثالثة، تم التعرف على وصول سيارتك في المسار الذكي',
+        4: 'المرحلة الرابعة، الموظف في طريقه لباب سيارتك الآن لتسليم الطلب'
       },
       en: {
         1: 'Stage 1: Order received and smart lane adapted',
@@ -662,7 +682,7 @@
         submitOrderBtnText: 'تأكيد الطلب وإشعار المسار الذكي',
         addBtn: '+ أضف للسلة',
         voiceBtn: 'صوت',
-        welcomeSpeech: 'أهلاً بك في مطعم ومسار يسر درايف. تم تفعيل اللغة العربية والقارئ الصوتي لخدمتك.'
+        welcomeSpeech: 'أهلاً بك في مطعم يسر درايف، اختر وجبتك المفضلة من الأقسام أمامك'
       },
       en: {
         dir: 'ltr',
@@ -722,7 +742,7 @@
         submitOrderBtnText: 'Confirm Order & Notify Smart Lane',
         addBtn: '+ Add to Cart',
         voiceBtn: 'Audio',
-        welcomeSpeech: 'Welcome to Yusr Drive Restaurant. English language and voice reader are now active.'
+        welcomeSpeech: 'Welcome to Yusr Drive Restaurant. Please choose your meal from the menu.'
       },
       tr: {
         dir: 'ltr',
@@ -782,7 +802,7 @@
         submitOrderBtnText: 'Siparişi Onayla ve Akıllı Hattı Bilgilendir',
         addBtn: '+ Sepete Ekle',
         voiceBtn: 'Ses',
-        welcomeSpeech: 'Yusr Drive Restorana hoş geldiniz. Türkçe arayüz ve sesli rehber etkinleştirildi.'
+        welcomeSpeech: 'Yusr Drive Restorana hoş geldiniz. Lütfen menüden seçiminizi yapın.'
       },
       ur: {
         dir: 'rtl',
@@ -842,7 +862,7 @@
         submitOrderBtnText: 'آرڈر کی تصدیق کریں اور سمارٹ لین کو مطلع کریں',
         addBtn: '+ شامل کریں',
         voiceBtn: 'آواز',
-        welcomeSpeech: 'یسر ڈرائیو ریسٹورنٹ میں خوش آمدید۔ اردو زبان اور صوتی رہنمائی فعال کر دی گئی ہے۔'
+        welcomeSpeech: 'یسر ڈرائیو ریسٹورنٹ میں خوش آمدید۔ مینو سے اپنا کھانا منتخب کریں۔'
       },
       zh: {
         dir: 'ltr',
@@ -902,12 +922,11 @@
         submitOrderBtnText: '确认下单并通知智能车道',
         addBtn: '+ 加入购物车',
         voiceBtn: '语音',
-        welcomeSpeech: '欢迎使用易速无障碍得来速餐厅。中文界面与语音导览已启用。'
+        welcomeSpeech: '欢迎光临易速无障碍得来速餐厅，请从菜单中选择餐点。'
       }
     };
 
     const yusrMenu = [
-      // 1. قسم العروض
       {
         id: 101,
         category: 'offers',
@@ -976,8 +995,6 @@
         badge: 'سعر خاص',
         badgeEn: 'Student Offer'
       },
-
-      // 2. وجبات الفطور
       {
         id: 201,
         category: 'breakfast',
@@ -1046,8 +1063,6 @@
         badge: 'فطور شهي',
         badgeEn: 'Sweet Morning'
       },
-
-      // 3. وجبات الغداء
       {
         id: 301,
         category: 'lunch',
@@ -1116,8 +1131,6 @@
         badge: 'غداء ساخن',
         badgeEn: 'Hot Lunch'
       },
-
-      // 4. وجبات العشاء
       {
         id: 401,
         category: 'dinner',
@@ -1186,8 +1199,6 @@
         badge: 'عشاء خفيف',
         badgeEn: 'Light Dinner'
       },
-
-      // 5. الوجبات السريعة
       {
         id: 501,
         category: 'fastfood',
@@ -1256,8 +1267,6 @@
         badge: 'سريع وميسّر',
         badgeEn: 'Quick Wrap'
       },
-
-      // 6. قسم الحلى
       {
         id: 601,
         category: 'desserts',
@@ -1303,7 +1312,7 @@
         nameZh: '椰枣焦糖热布丁杯',
         desc: 'كيك التمر الطري بصوص الكراميل يقدم في كوب حراري مريح',
         descEn: 'Soft date cake with caramel sauce in an easy-hold cup',
-        descTr: 'Kolay tutulan терmal kapta karamel soslu yumuşak hurmalı kek',
+        descTr: 'Kolay tutulan kapta karamel soslu yumuşak hurmalı kek',
         descUr: 'آرام دہ تھرمل کپ میں کیریمل سوس کے ساتھ نرم کھجور کیک',
         descZh: '焦糖椰枣软蛋糕，隔热舒适杯装',
         badge: 'طعم أصيل',
@@ -1317,7 +1326,7 @@
         nameEn: 'Vanilla & Chocolate Ice Cream Cup',
         nameTr: 'Vanilyalı ve Çikolatalı Dondurma Kabı',
         nameUr: 'ونیلا اور چاکلیٹ آئس کریم کپ',
-        nameZh: '香草巧克力双색冰淇淋杯',
+        nameZh: '香草巧克力双色冰淇淋杯',
         desc: 'كوب يثبت في حامل أكواب السيارة مع ملعقة عريضة مريحة',
         descEn: 'Cup-holder friendly ice cream tub with wide spoon',
         descTr: 'Araç bardak tutucusuna tam uyan kap ve geniş rahat kaşık',
@@ -1326,8 +1335,6 @@
         badge: 'بارد ومنعش',
         badgeEn: 'Cold Treat'
       },
-
-      // 7. قسم المشروبات
       {
         id: 701,
         category: 'drinks',
@@ -1373,7 +1380,7 @@
         nameZh: '热红茶 / 阿拉伯香料奶茶 (Karak)',
         desc: 'كوب حراري مزدوج العزل لحماية اليد من الحرارة مع غطاء أمان',
         descEn: 'Double-insulated cup to protect hands from heat with safety lid',
-        descTr: 'Eli ısıdan koruyan çift yalıtımlı güvenlik kapaklı терmal bardak',
+        descTr: 'Eli ısıdan koruyan çift yalıtımlı güvenlik kapaklı bardak',
         descUr: 'ہاتھ کو گرمی سے بچانے والا ڈبل انسولیٹڈ کپ مع محفوظ ڈھکن',
         descZh: '双层隔热防烫杯身，配防漏安全盖',
         badge: 'كوب عازل للحرارة',
@@ -1399,6 +1406,7 @@
     ];
 
     let cart = [];
+    let currentCloudAudio = null;
 
     function getItemTitle(item) {
       if (currentLang === 'en') return item.nameEn || item.name;
@@ -1414,6 +1422,74 @@
       if (currentLang === 'ur') return item.descUr || item.desc;
       if (currentLang === 'zh') return item.descZh || item.descEn;
       return item.desc;
+    }
+
+    // محرك النطق السليم بدون أي تعليق للأزرار
+    function prepareTextForSpeech(text, lang) {
+      if (!text) return '';
+      return text
+        .replace(/[#*•—\-_]/g, ' ')
+        .replace(/YSR/gi, lang === 'ar' ? 'يسر ' : 'Y S R ')
+        .replace(/ر\.س/g, 'ريال سعودي')
+        .replace(/SAR/gi, lang === 'ar' ? 'ريال سعودي' : 'S A R')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .substring(0, 170);
+    }
+
+    function speakWithBrowserVoice(cleanText, fullLang) {
+      if (!('speechSynthesis' in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        const voices = window.speechSynthesis.getVoices();
+        const shortLang = fullLang.split('-')[0].toLowerCase();
+        const matching = voices.filter(v => v.lang.toLowerCase().replace('_', '-').startsWith(shortLang));
+
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = fullLang;
+        if (matching.length > 0) {
+          const preferred = matching.find(v =>
+            /natural|online|google|hamed|zariyah|salma|maged|tarik|siri|emel|xiaoxiao|asad/i.test(v.name)
+          );
+          utterance.voice = preferred || matching[0];
+        }
+        utterance.rate = shortLang === 'ar' || shortLang === 'ur' ? 0.9 : 0.96;
+        utterance.pitch = 1.0;
+        window.speechSynthesis.speak(utterance);
+      } catch (e) {}
+    }
+
+    function speakText(rawText) {
+      if (currentView === 'staff' || !ttsEnabled || !rawText) return;
+
+      const fullLang = voiceLangCodes[currentLang] || 'ar-SA';
+      const shortLang = fullLang.split('-')[0].toLowerCase();
+      const cleanText = prepareTextForSpeech(rawText, shortLang);
+
+      if (currentCloudAudio) {
+        try { currentCloudAudio.pause(); } catch (e) {}
+        currentCloudAudio = null;
+      }
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+
+      const streamVoiceMap = { ar: 'Zeina', en: 'Joanna', tr: 'Filiz', zh: 'Zhiyu' };
+      const cloudUrl = streamVoiceMap[shortLang]
+        ? `https://api.streamelements.com/kappa/v2/speech?voice=${streamVoiceMap[shortLang]}&text=${encodeURIComponent(cleanText)}`
+        : `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${shortLang}&client=gtx`;
+
+      try {
+        const audio = new Audio(cloudUrl);
+        currentCloudAudio = audio;
+        audio.onerror = () => speakWithBrowserVoice(cleanText, fullLang);
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => speakWithBrowserVoice(cleanText, fullLang));
+        }
+      } catch (err) {
+        speakWithBrowserVoice(cleanText, fullLang);
+      }
     }
 
     function toggleSimpleMode() {
@@ -1536,7 +1612,7 @@
     async function publishSyncEvent(payload) {
       payload.senderId = clientSessionId;
       payload.stamp = Date.now();
-      localStorage.setItem('yusr_latest_event_v7', JSON.stringify(payload));
+      localStorage.setItem('yusr_latest_event_v8', JSON.stringify(payload));
       try {
         await fetch(`https://ntfy.sh/${SYNC_TOPIC}`, {
           method: 'POST',
@@ -1560,7 +1636,7 @@
       } catch (e) {}
 
       window.addEventListener('storage', (e) => {
-        if (e.key === 'yusr_latest_event_v7' && e.newValue) {
+        if (e.key === 'yusr_latest_event_v8' && e.newValue) {
           try {
             handleIncomingSyncData(JSON.parse(e.newValue));
           } catch (err) {}
@@ -1626,7 +1702,7 @@
 
     function startAppWithLanguage(langSelection) {
       const modal = document.getElementById('welcomeModal');
-      modal.classList.add('hidden');
+      if (modal) modal.classList.add('hidden');
 
       if (langSelection === 'sign') {
         currentLang = 'ar';
@@ -1710,116 +1786,11 @@
       renderCart();
     }
 
- // محرك نطق سحابي مباشر للغات الخمس (بدون صوت الويندوز القديم نهائياً)
-    let currentCloudAudio = null;
-
-    function prepareTextForSpeech(text, lang) {
-      if (!text) return '';
-      return text
-        .replace(/[#*•—\-_]/g, ' ')
-        .replace(/YSR/gi, lang === 'ar' ? 'يُسر ' : 'Y S R ')
-        .replace(/ر\.س/g, 'ريال سعودي')
-        .replace(/SAR/gi, lang === 'ar' ? 'ريال سعودي' : 'S A R')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .substring(0, 180);
+    function speakStep1() {
+      const t = translations[currentLang] || translations.ar;
+      speakText(t.step1Title);
     }
 
-    function speakText(rawText) {
-      if (currentView === 'staff' || !ttsEnabled || !rawText) return;
-
-      const shortLang = (voiceLangCodes[currentLang] || 'ar-SA').split('-')[0].toLowerCase();
-      const cleanText = prepareTextForSpeech(rawText, shortLang);
-
-      if (currentCloudAudio) {
-        currentCloudAudio.pause();
-        currentCloudAudio = null;
-      }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-
-      // تشغيل صوت Google السحابي الواضح لجميع اللغات الخمس مع تخطي حظر المتصفح (CORS/Referer)
-      const gttsUrl = `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${shortLang}&client=tw-ob`;
-      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(gttsUrl)}`;
-
-      const audio = new Audio();
-      audio.crossOrigin = 'anonymous';
-      audio.src = gttsUrl;
-      currentCloudAudio = audio;
-
-      audio.play().catch(() => {
-        // إذا حظر المتصفح الرابط المباشر، يشتغل عبر الوسيط السحابي فوراً بدون الرجوع لصوت الويندوز
-        const fallbackAudio = new Audio(proxyUrl);
-        currentCloudAudio = fallbackAudio;
-        fallbackAudio.play().catch(() => {});
-      });
-    }
-      const cleanText = text.substring(0, 180);
-
-      const streamVoiceMap = {
-        ar: 'Zeina',
-        en: 'Joanna',
-        tr: 'Filiz',
-        zh: 'Zhiyu'
-      };
-
-      const urlsToTry = [];
-      if (streamVoiceMap[shortLang]) {
-        urlsToTry.push(`https://api.streamelements.com/kappa/v2/speech?voice=${streamVoiceMap[shortLang]}&text=${encodeURIComponent(cleanText)}`);
-      }
-      urlsToTry.push(`https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${shortLang}&client=gtx`);
-
-      function tryNextUrl(index) {
-        if (index >= urlsToTry.length) {
-          if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const fallbackUtterance = new SpeechSynthesisUtterance(cleanText);
-            fallbackUtterance.lang = langCode;
-            fallbackUtterance.rate = 0.9;
-            window.speechSynthesis.speak(fallbackUtterance);
-          }
-          return;
-        }
-
-        currentCloudAudio = new Audio(urlsToTry[index]);
-        currentCloudAudio.playbackRate = 1.0;
-        currentCloudAudio.onerror = () => tryNextUrl(index + 1);
-        currentCloudAudio.play().catch(() => tryNextUrl(index + 1));
-      }
-
-      tryNextUrl(0);
-    }
-
-    function speakText(rawText) {
-      if (currentView === 'staff' || !ttsEnabled || !rawText) return;
-
-      const targetLang = voiceLangCodes[currentLang] || 'ar-SA';
-      const preparedText = prepareTextForSpeech(rawText, currentLang);
-
-      if (currentCloudAudio) {
-        currentCloudAudio.pause();
-        currentCloudAudio = null;
-      }
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-
-      const neuralVoice = getBestNeuralVoice(targetLang);
-
-      if (neuralVoice) {
-        const utterance = new SpeechSynthesisUtterance(preparedText);
-        utterance.voice = neuralVoice;
-        utterance.lang = neuralVoice.lang;
-        utterance.rate = currentLang === 'ar' || currentLang === 'ur' ? 0.92 : 1.0;
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;
-        utterance.onerror = () => playCloudHDVoice(preparedText, targetLang);
-        window.speechSynthesis.speak(utterance);
-      } else {
-        playCloudHDVoice(preparedText, targetLang);
-      }
-    }
     function triggerVisualBanner(message) {
       const banner = document.getElementById('visualAlertBanner');
       const textEl = document.getElementById('visualAlertText');
@@ -1840,7 +1811,8 @@
         btn.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span id="ttsBtnText">${t.ttsActive}</span>`;
         speakText(t.ttsActive);
       } else {
-        window.speechSynthesis.cancel();
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        if (currentCloudAudio) currentCloudAudio.pause();
         btn.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span><span id="ttsBtnText">${t.ttsMuted}</span>`;
       }
     }
@@ -2200,6 +2172,17 @@
       renderCart();
       resetStaffScreenToEmpty();
       startLiveCloudSync();
+
+      // إخفاء شاشة الكلمة الترحيبية بعد ثانيتين وإظهار شاشة اللغات
+      const splash = document.getElementById('introSplash');
+      const langModal = document.getElementById('welcomeModal');
+      setTimeout(() => {
+        if (splash) splash.classList.add('splash-fade-out');
+        if (langModal) langModal.classList.remove('hidden');
+        setTimeout(() => {
+          if (splash) splash.classList.add('hidden');
+        }, 650);
+      }, 2200);
     });
   </script>
 </body>
