@@ -1710,88 +1710,51 @@
       renderCart();
     }
 
-  // محرك النطق البشري فائق الوضوح (Ultra-Clear Neural TTS Engine)
-    let availableVoices = [];
+ // محرك نطق سحابي مباشر للغات الخمس (بدون صوت الويندوز القديم نهائياً)
     let currentCloudAudio = null;
-
-    function loadHDVoices() {
-      if ('speechSynthesis' in window) {
-        availableVoices = window.speechSynthesis.getVoices();
-      }
-    }
-
-    if ('speechSynthesis' in window) {
-      loadHDVoices();
-      window.speechSynthesis.onvoiceschanged = loadHDVoices;
-    }
 
     function prepareTextForSpeech(text, lang) {
       if (!text) return '';
-      let clean = text
+      return text
         .replace(/[#*•—\-_]/g, ' ')
         .replace(/YSR/gi, lang === 'ar' ? 'يُسر ' : 'Y S R ')
         .replace(/ر\.س/g, 'ريال سعودي')
         .replace(/SAR/gi, lang === 'ar' ? 'ريال سعودي' : 'S A R')
         .replace(/\s+/g, ' ')
-        .trim();
-
-      if (lang === 'ar') {
-        clean = clean
-          .replace(/يسر درايف|يُسْر درايف/g, 'يُسْرْ دْرَايْفْ')
-          .replace(/مسار يسر|مسار يُسر/g, 'مَسَارِ يُسْرْ')
-          .replace(/درايف ثرو/g, 'دْرَايْفْ ثْرُو')
-          .replace(/مفعل|مُفعّل/g, 'مُفَعَّلْ')
-          .replace(/ميسر|ميسّر/g, 'مُيَسَّرْ')
-          .replace(/الطلب/g, 'الطَّلَبْ');
-      }
-      return clean;
+        .trim()
+        .substring(0, 180);
     }
 
-    function getBestNeuralVoice(langCode) {
-      if (!availableVoices || availableVoices.length === 0) loadHDVoices();
-      const shortLang = langCode.split('-')[0].toLowerCase();
+    function speakText(rawText) {
+      if (currentView === 'staff' || !ttsEnabled || !rawText) return;
 
-      const matching = availableVoices.filter(v =>
-        v.lang.toLowerCase().replace('_', '-').startsWith(shortLang)
-      );
-
-      if (matching.length === 0) return null;
-
-      if (shortLang === 'ar') {
-        const neuralAr = matching.find(v => {
-          const name = v.name.toLowerCase();
-          return (
-            name.includes('natural') ||
-            name.includes('online') ||
-            name.includes('hamed') ||
-            name.includes('zariyah') ||
-            name.includes('salma') ||
-            name.includes('shakir') ||
-            name.includes('maged') ||
-            name.includes('tarik') ||
-            name.includes('siri')
-          );
-        });
-        return neuralAr || null;
-      }
-
-      const hdKeywords = ['natural', 'online', 'neural', 'google', 'siri', 'premium', 'enhanced', 'emel', 'xiaoxiao', 'asad', 'uzma'];
-      for (const keyword of hdKeywords) {
-        const found = matching.find(v => v.name.toLowerCase().includes(keyword));
-        if (found) return found;
-      }
-
-      return matching[0];
-    }
-
-    function playCloudHDVoice(text, langCode) {
-      const shortLang = langCode.split('-')[0].toLowerCase();
+      const shortLang = (voiceLangCodes[currentLang] || 'ar-SA').split('-')[0].toLowerCase();
+      const cleanText = prepareTextForSpeech(rawText, shortLang);
 
       if (currentCloudAudio) {
         currentCloudAudio.pause();
         currentCloudAudio = null;
       }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
 
+      // تشغيل صوت Google السحابي الواضح لجميع اللغات الخمس مع تخطي حظر المتصفح (CORS/Referer)
+      const gttsUrl = `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${shortLang}&client=tw-ob`;
+      const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(gttsUrl)}`;
+
+      const audio = new Audio();
+      audio.crossOrigin = 'anonymous';
+      audio.src = gttsUrl;
+      currentCloudAudio = audio;
+
+      audio.play().catch(() => {
+        // إذا حظر المتصفح الرابط المباشر، يشتغل عبر الوسيط السحابي فوراً بدون الرجوع لصوت الويندوز
+        const fallbackAudio = new Audio(proxyUrl);
+        currentCloudAudio = fallbackAudio;
+        fallbackAudio.play().catch(() => {});
+      });
+    }
       const cleanText = text.substring(0, 180);
 
       const streamVoiceMap = {
