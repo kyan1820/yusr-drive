@@ -13,6 +13,7 @@
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
 
+  <!-- شاشة الترحيب واختيار اللغة -->
   <div id="welcomeModal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
     <div class="bg-white text-slate-900 max-w-xl w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-emerald-500 text-center space-y-6">
       <div class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full text-sm font-black">
@@ -46,6 +47,20 @@
       </div>
 
       <p class="text-xs text-slate-400 font-bold">يمكنك تغيير اللغة في أي وقت من الشريط العلوي للموقع</p>
+    </div>
+  </div>
+
+  <!-- نافذة دخول المشرف السرية -->
+  <div id="adminPinModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 text-white max-w-sm w-full rounded-3xl p-6 shadow-2xl border-2 border-emerald-500 text-center space-y-4">
+      <span class="bg-emerald-500/20 text-emerald-300 text-xs font-black px-3 py-1 rounded-full">بوابة المشرف</span>
+      <h3 class="text-xl font-black">أدخل رمز المشرف لفتح شاشة الموظف</h3>
+      <input id="adminPinInput" type="password" inputmode="numeric" placeholder="••••" class="w-full text-center text-2xl tracking-widest font-black px-4 py-3 rounded-xl bg-slate-800 border-2 border-slate-600 text-emerald-400 focus:outline-none focus:border-emerald-400">
+      <p id="adminPinError" class="hidden text-xs text-rose-400 font-bold">الرمز غير صحيح! حاول مرة أخرى</p>
+      <div class="flex gap-2 pt-2">
+        <button onclick="verifyAdminPin()" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl transition">دخول المشرف</button>
+        <button onclick="document.getElementById('adminPinModal').classList.add('hidden')" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition">إلغاء</button>
+      </div>
     </div>
   </div>
 
@@ -100,7 +115,7 @@
         <button onclick="switchMainView('tracker')" id="tabTracker" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
           مسار الدرايف ثرو المباشر
         </button>
-      <button onclick="switchMainView('staff')" id="tabStaff" class="hidden focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
+        <button onclick="switchMainView('staff')" id="tabStaff" class="hidden focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
           شاشة الموظف (محاكاة)
         </button>
       </div>
@@ -219,7 +234,7 @@
             <div class="space-y-4">
               <div>
                 <label id="carDetailsLabel" for="carDetails" class="block text-sm font-bold text-slate-700 mb-1">نوع ولون السيارة / رقم اللوحة</label>
-                <input id="carDetails" type="text" value="ميتسوبيشي باجيرو فضي - أ ب ج 2003" class="focus-ring w-full px-4 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-slate-50">
+                <input id="carDetails" type="text" value="" placeholder="اكتب نوع ولون السيارة ورقم اللوحة هنا..." class="focus-ring w-full px-4 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-slate-50">
               </div>
 
               <div>
@@ -273,13 +288,14 @@
       </div>
     </div>
 
+    <!-- شاشة متابعة المسار للعميل (عرض فقط بدون أزرار تحكم بالمراحل) -->
     <div id="viewTracker" class="hidden space-y-8">
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-slate-200">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
           <div>
             <span class="bg-emerald-100 text-emerald-800 font-extrabold px-3 py-1 rounded-full text-xs">لوحة التواصل اللالمسي والمباشر</span>
             <h2 class="text-3xl font-black mt-2">شاشة المسار الذكي داخل السيارة</h2>
-            <p class="text-slate-600 text-sm mt-1">لا حاجة للتحدث عبر المايكروفون؛ كافة تحديثات طلبك وأزرار النداء السريع أمامك الآن.</p>
+            <p class="text-slate-600 text-sm mt-1">لا حاجة للتحدث عبر المايكروفون؛ تتحدث مراحل طلبك تلقائياً من قِبل موظف المسار.</p>
           </div>
           <div class="bg-slate-900 text-white px-6 py-4 rounded-2xl text-center">
             <span class="text-xs text-slate-400 block">رقم طلب الأولوية</span>
@@ -308,16 +324,6 @@
               <div class="text-xs font-bold text-slate-500">المرحلة 4</div>
               <div class="font-black text-lg mt-1">التسليم المباشر لسيارتك</div>
               <p class="text-xs text-slate-600 mt-1">الموظف في طريقه لباب المركبة الآن</p>
-            </div>
-          </div>
-
-          <div class="mt-6 flex flex-wrap items-center justify-between gap-3 bg-slate-100 p-4 rounded-2xl">
-            <span class="text-sm font-bold text-slate-700">محاكاة تقدم الطلب في المسار:</span>
-            <div class="flex flex-wrap gap-2">
-              <button onclick="setOrderStep(1)" class="focus-ring px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs font-bold hover:bg-slate-200">1. استلام</button>
-              <button onclick="setOrderStep(2)" class="focus-ring px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs font-bold hover:bg-slate-200">2. تحضير ميسر</button>
-              <button onclick="setOrderStep(3)" class="focus-ring px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs font-bold hover:bg-slate-200">3. وصول السيارة</button>
-              <button onclick="setOrderStep(4)" class="focus-ring px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500">4. تسليم للسيارة</button>
             </div>
           </div>
         </div>
@@ -356,6 +362,7 @@
       </div>
     </div>
 
+    <!-- شاشة الموظف (فيها التحكم بمراحل تقدم الطلب للعميل) -->
     <div id="viewStaff" class="hidden space-y-6">
       <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-slate-700">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700 pb-5">
@@ -374,35 +381,46 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           <div class="lg:col-span-2 bg-slate-800 rounded-2xl p-6 border border-slate-700 space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="text-2xl font-black text-emerald-400" id="staffOrderCode">#YSR-104</span>
-              <span id="staffModeBadge" class="bg-emerald-500 text-slate-950 font-black px-4 py-1 rounded-full text-sm">إعاقة حركية</span>
+              <span class="text-2xl font-black text-emerald-400" id="staffOrderCode">لا يوجد طلب نشط</span>
+              <span id="staffModeBadge" class="bg-emerald-500 text-slate-950 font-black px-4 py-1 rounded-full text-sm">بانتظار عميل...</span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/90 p-4 rounded-xl border border-slate-700">
               <div>
                 <span class="text-xs text-slate-400 block">بيانات المركبة:</span>
-                <span id="staffCarInfo" class="font-extrabold text-white">ميتسوبيشي باجيرو فضي - أ ب ج 2003</span>
+                <span id="staffCarInfo" class="font-extrabold text-white">—</span>
               </div>
               <div>
                 <span class="text-xs text-slate-400 block">المسار / الموقف:</span>
-                <span id="staffLaneInfo" class="font-extrabold text-amber-400">مسار يُسر 1</span>
+                <span id="staffLaneInfo" class="font-extrabold text-amber-400">—</span>
               </div>
               <div>
                 <span class="text-xs text-slate-400 block">طريقة التسليم المطلوبة:</span>
-                <span id="staffSpotInfo" class="font-extrabold text-emerald-300">تسليم عبر نافذة السائق بحامل ممتد</span>
+                <span id="staffSpotInfo" class="font-extrabold text-emerald-300">—</span>
               </div>
             </div>
 
             <div>
               <h3 class="font-extrabold text-slate-300 mb-2">إرشادات التعامل الخاصة بهذا العميل:</h3>
               <div id="staffInstructionsBox" class="bg-amber-500/10 border border-amber-400/40 text-amber-200 p-4 rounded-xl text-sm font-bold leading-relaxed">
-                • العميل يستخدم مسار الإعاقة الحركية: استخدم صينية التسليم الممتدة حتى نافذة السائق، وتأكد من إحكام غلق المشروبات.
+                • شاشة الاستقبال جاهزة؛ ستظهر هنا تفاصيل مركبة العميل والأصناف المطلوبة فور إرسال الطلب.
               </div>
             </div>
 
             <div>
               <h3 class="font-extrabold text-slate-300 mb-2">الأصناف المطلوبة:</h3>
               <ul id="staffItemsList" class="space-y-2 text-sm font-bold bg-slate-900 p-4 rounded-xl"></ul>
+            </div>
+
+            <!-- تحكم الموظف في تحديث مرحلة الطلب عند العميل -->
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-3">
+              <span class="text-xs font-extrabold text-emerald-400 block">تحكم الموظف في تحديث مرحلة الطلب (يظهر للعميل مباشرة):</span>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <button onclick="setOrderStep(1)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">1. استلام الطلب</button>
+                <button onclick="setOrderStep(2)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">2. تحضير ميسر</button>
+                <button onclick="setOrderStep(3)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">3. وصول السيارة</button>
+                <button onclick="setOrderStep(4)" class="focus-ring py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition">4. تسليم للسيارة</button>
+              </div>
             </div>
           </div>
 
@@ -433,11 +451,31 @@
 
   <footer class="bg-slate-900 text-slate-400 py-6 px-4 mt-12 border-t border-slate-800">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
-      <p onclick="if(prompt('أدخل رمز المشرف:') === '1820'){ document.getElementById('tabStaff').classList.remove('hidden'); switchMainView('staff'); }" class="font-bold text-slate-200 cursor-pointer select-none">منصة يُسْر درايف (Yusr Drive) — تطوير: كيان عادل عباس</p>
+      <button type="button" onclick="openAdminModal()" class="font-bold text-slate-200 hover:text-emerald-400 transition cursor-pointer select-none">
+        منصة يُسْر درايف (Yusr Drive) — تطوير: كيان عادل عباس
+      </button>
       <p class="text-xs">يدعم قارئات الشاشة، التباين العالي، والتواصل غير الصوتي الكامل</p>
     </div>
   </footer>
 
   <script src="app.js"></script>
+  <script>
+    function openAdminModal() {
+      document.getElementById('adminPinInput').value = '';
+      document.getElementById('adminPinError').classList.add('hidden');
+      document.getElementById('adminPinModal').classList.remove('hidden');
+    }
+
+    function verifyAdminPin() {
+      const pin = document.getElementById('adminPinInput').value.trim();
+      if (pin === '1820') {
+        document.getElementById('adminPinModal').classList.add('hidden');
+        document.getElementById('tabStaff').classList.remove('hidden');
+        switchMainView('staff');
+      } else {
+        document.getElementById('adminPinError').classList.remove('hidden');
+      }
+    }
+  </script>
 </body>
 </html>
