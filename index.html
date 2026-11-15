@@ -2623,20 +2623,27 @@
       btnEl.querySelector('span:last-child').textContent = '✓';
     }
 
-    function selectLane(laneName) {
-      selectedLane = laneName;
-      document.getElementById('trackerLaneName').textContent = laneName;
+ let selectedLaneIndex = 1;
+    function selectLane(laneIdx) {
+      selectedLaneIndex = laneIdx;
+      const arLanes = { 1: 'مسار يُسر 1', 2: 'مسار يُسر 2', 3: 'موقف خاص A' };
+      selectedLane = arLanes[laneIdx] || 'مسار يُسر 1';
 
-      ['lane-1', 'lane-2', 'lane-3'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el.textContent === laneName) {
+      const btnClicked = document.getElementById('lane-' + laneIdx);
+      if (btnClicked) {
+        document.getElementById('trackerLaneName').textContent = btnClicked.textContent;
+      }
+
+      [1, 2, 3].forEach(idx => {
+        const el = document.getElementById('lane-' + idx);
+        if (!el) return;
+        if (idx === laneIdx) {
           el.className = 'lane-btn focus-ring py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-black text-sm';
         } else {
           el.className = 'lane-btn focus-ring py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm';
         }
       });
     }
-
     function submitAccessibleOrder() {
       const t = translations[currentLang] || translations.ar;
       if (cart.length === 0) {
