@@ -1,5 +1,6 @@
 console.log("Yusr Drive System Initialized - Developer: Kayan Adel Abbas");
 
+let currentLang = 'ar';
 let ttsEnabled = true;
 let visualFlashMode = false;
 let fontScaleIndex = 0;
@@ -10,27 +11,280 @@ let selectedSpot = 'تسليم عبر نافذة السائق بحامل ممت�
 let selectedLane = 'مسار يُسر 1';
 let currentCategory = 'all';
 
+const translations = {
+  ar: {
+    dir: 'rtl',
+    accBadgeTitle: 'شريط الوصول الشامل',
+    changeLangBtn: 'تغيير اللغة (Language)',
+    ttsActive: 'القارئ الصوتي: مفعّل',
+    ttsMuted: 'القارئ الصوتي: متوقف',
+    contrastBtn: 'تباين عالٍ',
+    fontBtnLabel: 'حجم الخط:',
+    flashBtnText: 'إشعارات ضوئية (للصم)',
+    heroBadge: 'مبادرة المسار الذكي الميسّر لذوي الإعاقة',
+    heroMainTitle: 'يُسْر درايف',
+    heroSubTitle: 'اطلب من سيارتك باستقلالية تامة؛ بدون الحاجة للتحدث عبر المايكروفون التقليدي أو النزول من المركبة، مع تسليم مخصص لباب سيارتك.',
+    tabCustomer: 'واجهة العميل (الطلب)',
+    tabTracker: 'مسار الدرايف ثرو المباشر',
+    tabStaff: 'شاشة الموظف (محاكاة)',
+    step1Badge: 'الخطوة 1 من 3',
+    step1Title: 'اختر نمط الخدمة وتكييف المسار',
+    listenStep1Btn: 'استمع للشرح',
+    modeMobilityTitle: 'إعاقة حركية',
+    modeMobilityDesc: 'توصيل الطلب حتى نافذة السائق أو المقعد الخلفي دون الحاجة لمد اليد أو النزول.',
+    modeHearingTitle: 'صم وضعاف سمع / نطق',
+    modeHearingDesc: 'إلغاء التخاطب الصوتي تماماً، واستبداله بشاشة تفاعلية وتنبيهات ضوئية.',
+    modeVisualTitle: 'مكفوفون وضعاف بصر',
+    modeVisualDesc: 'قراءة صوتية تلقائية للأصناف والأسعار، وأزرار ضخمة عالية التباين.',
+    modeCognitiveTitle: 'واجهة مبسطة وهادئة',
+    modeCognitiveDesc: 'مناسبة لطيف التوحد وكبار السن؛ خطوات واضحة بدون ضوضاء أو استعجال.',
+    step2Badge: 'الخطوة 2 من 3',
+    step2Title: 'قائمة الطلبات الميسّرة',
+    catAll: 'الكل',
+    catMeals: 'الوجبات الساخنة',
+    catDrinks: 'المشروبات والقهوة',
+    catPharmacy: 'ركن الصيدلية السريع',
+    easyPackTitle: 'تخصيص التغليف الميسّر (Easy-Open Packaging)',
+    easyPackDesc: 'فتح العبوات مسبقاً أو وضعها في حامل مانع للانسكاب يسهل تناوله بيد واحدة',
+    easyPackLabel: 'تفعيل التغليف الميسّر مجاناً',
+    step3Badge: 'الخطوة 3 من 3',
+    step3Title: 'بيانات المركبة وطريقة التسليم',
+    carDetailsLabel: 'نوع ولون السيارة / رقم اللوحة',
+    spotLabel: 'مكان تسليم الطلب في السيارة:',
+    spotWindowText: 'تسليم عبر نافذة السائق بحامل ممتد',
+    spotPassengerText: 'وضع الطلب على المقعد المجاور للسائق',
+    spotTrunkText: 'وضع الطلب في الشنطة الخلفية للسيارة',
+    laneLabel: 'رقم موقف أو مسار الانتظار الذكي:',
+    cartHeaderTitle: 'سلة طلبك الحالية',
+    clearCartBtn: 'إفراغ السلة',
+    totalLabel: 'الإجمالي شامل الضريبة:',
+    currency: 'ر.س',
+    submitOrderBtnText: 'تأكيد الطلب وإشعار المسار الذكي',
+    addBtn: '+ أضف للسلة',
+    voiceBtn: 'صوت',
+    welcomeSpeech: 'أهلاً بك في منصة يسر درايف. تم تفعيل اللغة العربية والقارئ الصوتي لخدمتك.'
+  },
+  en: {
+    dir: 'ltr',
+    accBadgeTitle: 'Universal Access Bar',
+    changeLangBtn: 'Change Language (اللغة)',
+    ttsActive: 'Voice Reader: ON',
+    ttsMuted: 'Voice Reader: OFF',
+    contrastBtn: 'High Contrast',
+    fontBtnLabel: 'Font Size:',
+    flashBtnText: 'Visual Flash (Deaf)',
+    heroBadge: 'Smart Accessible Drive-Thru Initiative',
+    heroMainTitle: 'Yusr Drive',
+    heroSubTitle: 'Order independently from your vehicle without traditional speaker boxes or stepping out, with tailored delivery right to your car door.',
+    tabCustomer: 'Customer Order View',
+    tabTracker: 'Live Drive-Thru Tracker',
+    tabStaff: 'Staff Screen (Simulation)',
+    step1Badge: 'Step 1 of 3',
+    step1Title: 'Select Accessibility & Service Mode',
+    listenStep1Btn: 'Listen to Guide',
+    modeMobilityTitle: 'Mobility Impairment',
+    modeMobilityDesc: 'Extended tray delivery right to the driver window or back seat without reaching out.',
+    modeHearingTitle: 'Deaf / Hard of Hearing',
+    modeHearingDesc: '100% visual communication and screen alerts with zero microphone usage.',
+    modeVisualTitle: 'Blind / Low Vision',
+    modeVisualDesc: 'Automated voice reading for items and prices with large high-contrast buttons.',
+    modeCognitiveTitle: 'Calm & Simple Mode',
+    modeCognitiveDesc: 'Designed for autism spectrum & seniors; clear steps with no rush or noise.',
+    step2Badge: 'Step 2 of 3',
+    step2Title: 'Accessible Menu Items',
+    catAll: 'All',
+    catMeals: 'Hot Meals',
+    catDrinks: 'Drinks & Coffee',
+    catPharmacy: 'Quick Pharmacy',
+    easyPackTitle: 'Easy-Open Packaging Customization',
+    easyPackDesc: 'Pre-opened seals and spill-proof holders designed for single-handed use',
+    easyPackLabel: 'Enable Free Easy-Open Packaging',
+    step3Badge: 'Step 3 of 3',
+    step3Title: 'Vehicle Info & Delivery Spot',
+    carDetailsLabel: 'Car Model, Color & Plate Number',
+    spotLabel: 'Where to place your order in the car:',
+    spotWindowText: 'Driver window via extended tray',
+    spotPassengerText: 'Place on front passenger seat',
+    spotTrunkText: 'Place inside the rear trunk',
+    laneLabel: 'Smart Waiting Lane / Spot:',
+    cartHeaderTitle: 'Your Current Cart',
+    clearCartBtn: 'Clear Cart',
+    totalLabel: 'Total (VAT Included):',
+    currency: 'SAR',
+    submitOrderBtnText: 'Confirm Order & Notify Smart Lane',
+    addBtn: '+ Add to Cart',
+    voiceBtn: 'Audio',
+    welcomeSpeech: 'Welcome to Yusr Drive. English language and voice guidance are now active.'
+  }
+};
+
 const yusrMenu = [
-  { id: 1, name: 'وجبة برجر دجاج مشوي ميسّرة', category: 'meals', price: 24, desc: 'مقطعة إلى نصفين ومغلفة بغلاف يفتح بيد واحدة مع حامل بطاطس للسيارة', badge: 'سهلة التناول بالسيارة' },
-  { id: 2, name: 'راب تورتيلا لحم مشوي', category: 'meals', price: 21, desc: 'ملفوف بإحكام لمنع التساقط أثناء القيادة أو الجلوس على الكرسي المتحرك', badge: 'مانع للانسكاب' },
-  { id: 3, name: 'قهوة مختصة باردة (كوب بغطاء أمان)', category: 'drinks', price: 16, desc: 'كوب مزود بغطاء مانع للانسكاب مع مصاصة ثابتة مرنة', badge: 'كوب أمان' },
-  { id: 4, name: 'عصير برتقال طازج', category: 'drinks', price: 14, desc: 'عبوة سهلة الإمساك بيد واحدة مع غطاء ذكي', badge: 'طبيعي 100%' },
-  { id: 5, name: 'حقيبة إسعافات أولية ومسكنات سريعة', category: 'pharmacy', price: 35, desc: 'تحتوي على مسكن ألم، ضمادات طبية، ومعقم بعبوات سهلة الفتح', badge: 'ركن الصيدلية' },
-  { id: 6, name: 'بوكس فطور صباحي متكامل', category: 'meals', price: 28, desc: 'فطائر لينة + قهوة ساخنة في صينية تثبت على مقود أو باب السيارة', badge: 'الأكثر طلباً' }
+  {
+    id: 1,
+    name: 'وجبة برجر دجاج مشوي ميسّرة',
+    nameEn: 'Accessible Grilled Chicken Burger Meal',
+    category: 'meals',
+    price: 24,
+    desc: 'مقطعة إلى نصفين ومغلفة بغلاف يفتح بيد واحدة مع حامل بطاطس للسيارة',
+    descEn: 'Cut in half with single-hand easy-open wrap and car fry holder',
+    badge: 'سهلة التناول بالسيارة',
+    badgeEn: 'Car Friendly'
+  },
+  {
+    id: 2,
+    name: 'راب تورتيلا لحم مشوي',
+    nameEn: 'Grilled Beef Tortilla Wrap',
+    category: 'meals',
+    price: 21,
+    desc: 'ملفوف بإحكام لمنع التساقط أثناء القيادة أو الجلوس على الكرسي المتحرك',
+    descEn: 'Tightly wrapped to prevent spills while driving or seated',
+    badge: 'مانع للانسكاب',
+    badgeEn: 'Spill-Proof'
+  },
+  {
+    id: 3,
+    name: 'قهوة مختصة باردة (كوب بغطاء أمان)',
+    nameEn: 'Specialty Iced Coffee (Safety Lid)',
+    category: 'drinks',
+    price: 16,
+    desc: 'كوب مزود بغطاء مانع للانسكاب مع مصاصة ثابتة مرنة',
+    descEn: 'Equipped with anti-spill lid and fixed flexible straw',
+    badge: 'كوب أمان',
+    badgeEn: 'Safety Cup'
+  },
+  {
+    id: 4,
+    name: 'عصير برتقال طازج',
+    nameEn: 'Fresh Orange Juice',
+    category: 'drinks',
+    price: 14,
+    desc: 'عبوة سهلة الإمساك بيد واحدة مع غطاء ذكي',
+    descEn: 'Easy one-hand grip bottle with smart cap',
+    badge: 'طبيعي 100%',
+    badgeEn: '100% Fresh'
+  },
+  {
+    id: 5,
+    name: 'حقيبة إسعافات أولية ومسكنات سريعة',
+    nameEn: 'First Aid & Quick Pain Relief Kit',
+    category: 'pharmacy',
+    price: 35,
+    desc: 'تحتوي على مسكن ألم، ضمادات طبية، ومعقم بعبوات سهلة الفتح',
+    descEn: 'Includes pain relievers, bandages, and sanitizer in easy-open packs',
+    badge: 'ركن الصيدلية',
+    badgeEn: 'Pharmacy'
+  },
+  {
+    id: 6,
+    name: 'بوكس فطور صباحي متكامل',
+    nameEn: 'Complete Morning Breakfast Box',
+    category: 'meals',
+    price: 28,
+    desc: 'فطائر لينة + قهوة ساخنة في صينية تثبت على مقود أو باب السيارة',
+    descEn: 'Soft pastries + hot coffee in a steering-wheel/door mountable tray',
+    badge: 'الأكثر طلباً',
+    badgeEn: 'Best Seller'
+  }
 ];
 
 let cart = [
-  { id: 1, name: 'وجبة برجر دجاج مشوي ميسّرة', price: 24, qty: 1, note: 'تغليف سهل الفتح بيد واحدة' },
-  { id: 3, name: 'قهوة مختصة باردة (كوب بغطاء أمان)', price: 16, qty: 1, note: 'غطاء مانع للانسكاب' }
+  { id: 1, name: 'وجبة برجر دجاج مشوي ميسّرة', nameEn: 'Accessible Grilled Chicken Burger Meal', price: 24, qty: 1, note: 'تغليف سهل الفتح بيد واحدة' },
+  { id: 3, name: 'قهوة مختصة باردة (كوب بغطاء أمان)', nameEn: 'Specialty Iced Coffee (Safety Lid)', price: 16, qty: 1, note: 'غطاء مانع للانسكاب' }
 ];
+
+function startAppWithLanguage(langSelection) {
+  const modal = document.getElementById('welcomeModal');
+  modal.classList.add('hidden');
+
+  if (langSelection === 'sign') {
+    currentLang = 'ar';
+    applyLanguage('ar');
+    selectDisabilityMode('hearing');
+    triggerVisualBanner('أهلاً بك! تم تفعيل نمط التواصل البصري ولغة الإشارة بدون صوت');
+    return;
+  }
+
+  currentLang = langSelection;
+  applyLanguage(langSelection);
+  const t = translations[currentLang];
+  speakText(t.welcomeSpeech);
+}
+
+function openLanguageModal() {
+  document.getElementById('welcomeModal').classList.remove('hidden');
+}
+
+function applyLanguage(lang) {
+  const t = translations[lang];
+  const root = document.getElementById('htmlRoot');
+  root.lang = lang;
+  root.dir = t.dir;
+
+  document.getElementById('accBadgeTitle').textContent = t.accBadgeTitle;
+  document.getElementById('changeLangBtn').textContent = t.changeLangBtn;
+  document.getElementById('ttsBtnText').textContent = ttsEnabled ? t.ttsActive : t.ttsMuted;
+  document.getElementById('contrastBtn').textContent = t.contrastBtn;
+  document.getElementById('fontBtnLabel').textContent = t.fontBtnLabel;
+  document.getElementById('flashBtnText').textContent = t.flashBtnText;
+  document.getElementById('heroBadge').textContent = t.heroBadge;
+  document.getElementById('heroMainTitle').textContent = t.heroMainTitle;
+  document.getElementById('heroSubTitle').textContent = t.heroSubTitle;
+  document.getElementById('tabCustomer').textContent = t.tabCustomer;
+  document.getElementById('tabTracker').textContent = t.tabTracker;
+  document.getElementById('tabStaff').textContent = t.tabStaff;
+  document.getElementById('step1Badge').textContent = t.step1Badge;
+  document.getElementById('step1Title').textContent = t.step1Title;
+  document.getElementById('listenStep1Btn').textContent = t.listenStep1Btn;
+  document.getElementById('modeMobilityTitle').textContent = t.modeMobilityTitle;
+  document.getElementById('modeMobilityDesc').textContent = t.modeMobilityDesc;
+  document.getElementById('modeHearingTitle').textContent = t.modeHearingTitle;
+  document.getElementById('modeHearingDesc').textContent = t.modeHearingDesc;
+  document.getElementById('modeVisualTitle').textContent = t.modeVisualTitle;
+  document.getElementById('modeVisualDesc').textContent = t.modeVisualDesc;
+  document.getElementById('modeCognitiveTitle').textContent = t.modeCognitiveTitle;
+  document.getElementById('modeCognitiveDesc').textContent = t.modeCognitiveDesc;
+  document.getElementById('step2Badge').textContent = t.step2Badge;
+  document.getElementById('step2Title').textContent = t.step2Title;
+  document.getElementById('cat-all').textContent = t.catAll;
+  document.getElementById('cat-meals').textContent = t.catMeals;
+  document.getElementById('cat-drinks').textContent = t.catDrinks;
+  document.getElementById('cat-pharmacy').textContent = t.catPharmacy;
+  document.getElementById('easyPackTitle').textContent = t.easyPackTitle;
+  document.getElementById('easyPackDesc').textContent = t.easyPackDesc;
+  document.getElementById('easyPackLabel').textContent = t.easyPackLabel;
+  document.getElementById('step3Badge').textContent = t.step3Badge;
+  document.getElementById('step3Title').textContent = t.step3Title;
+  document.getElementById('carDetailsLabel').textContent = t.carDetailsLabel;
+  document.getElementById('spotLabel').textContent = t.spotLabel;
+  document.getElementById('spotWindowText').textContent = t.spotWindowText;
+  document.getElementById('spotPassengerText').textContent = t.spotPassengerText;
+  document.getElementById('spotTrunkText').textContent = t.spotTrunkText;
+  document.getElementById('laneLabel').textContent = t.laneLabel;
+  document.getElementById('cartHeaderTitle').textContent = t.cartHeaderTitle;
+  document.getElementById('clearCartBtn').textContent = t.clearCartBtn;
+  document.getElementById('totalLabel').textContent = t.totalLabel;
+  document.getElementById('currencyLabel').textContent = t.currency;
+  document.getElementById('submitOrderBtnText').textContent = t.submitOrderBtnText;
+
+  renderMenu();
+  renderCart();
+}
 
 function speakText(text) {
   if (!ttsEnabled || !('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'ar-SA';
+  utterance.lang = currentLang === 'en' ? 'en-US' : 'ar-SA';
   utterance.rate = 1;
   window.speechSynthesis.speak(utterance);
+}
+
+function speakStep1() {
+  if (currentLang === 'en') {
+    speakText('Step 1: Select your accessibility mode so we can adapt the drive-thru lane for you.');
+  } else {
+    speakText('الخطوة الأولى: اختر نمط الخدمة وتكييف المسار حسب احتياجك');
+  }
 }
 
 function triggerVisualBanner(message) {
@@ -47,19 +301,20 @@ function triggerVisualBanner(message) {
 
 function toggleTTS() {
   ttsEnabled = !ttsEnabled;
+  const t = translations[currentLang];
   const btn = document.getElementById('ttsToggleBtn');
   if (ttsEnabled) {
-    btn.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span>القارئ الصوتي: مفعّل</span>`;
-    speakText('تم تفعيل القارئ الصوتي');
+    btn.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span id="ttsBtnText">${t.ttsActive}</span>`;
+    speakText(currentLang === 'en' ? 'Voice reader enabled' : 'تم تفعيل القارئ الصوتي');
   } else {
     window.speechSynthesis.cancel();
-    btn.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span><span>القارئ الصوتي: متوقف</span>`;
+    btn.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span><span id="ttsBtnText">${t.ttsMuted}</span>`;
   }
 }
 
 function toggleHighContrast() {
   document.body.classList.toggle('high-contrast');
-  speakText('تم تبديل وضع التباين العالي');
+  speakText(currentLang === 'en' ? 'High contrast mode toggled' : 'تم تبديل وضع التباين العالي');
 }
 
 function cycleFontSize() {
@@ -67,7 +322,6 @@ function cycleFontSize() {
   const scale = fontScales[fontScaleIndex];
   document.documentElement.style.setProperty('--font-scale', scale);
   document.getElementById('fontScaleLabel').textContent = Math.round(scale * 100) + '%';
-  speakText('تم تغيير حجم الخط إلى ' + Math.round(scale * 100) + ' بالمئة');
 }
 
 function toggleVisualFlashMode() {
@@ -76,7 +330,7 @@ function toggleVisualFlashMode() {
   if (visualFlashMode) {
     btn.classList.add('bg-amber-400', 'text-slate-950');
     btn.classList.remove('bg-slate-800');
-    triggerVisualBanner('تم تفعيل الإشعارات الضوئية البصرية للصم وضعاف السمع');
+    triggerVisualBanner(currentLang === 'en' ? 'Visual Flash Alerts Enabled' : 'تم تفعيل الإشعارات الضوئية البصرية للصم وضعاف السمع');
   } else {
     btn.classList.remove('bg-amber-400', 'text-slate-950');
     btn.classList.add('bg-slate-800');
@@ -101,7 +355,7 @@ function selectDisabilityMode(mode) {
   if (mode === 'mobility') {
     staffBadge.textContent = 'إعاقة حركية';
     staffInstructions.textContent = '• العميل يستخدم مسار الإعاقة الحركية: استخدم صينية التسليم الممتدة حتى نافذة السائق أو ضع الطلب في المكان المحدد دون إجهاد العميل.';
-    speakText('تم اختيار نمط الإعاقة الحركية، سيتم تسليم الطلب حتى نافذتك بحامل ممتد.');
+    speakText(currentLang === 'en' ? 'Mobility mode selected' : 'تم اختيار نمط الإعاقة الحركية');
   } else if (mode === 'hearing') {
     staffBadge.textContent = 'صم وضعاف سمع / نطق';
     staffInstructions.textContent = '• تنبيه هام: العميل أصم أو يفضل عدم التخاطب الصوتي. لا تستخدم المايكروفون إطلاقاً، تواصل عبر الشاشة والابتسامة ولغة الإشارة.';
@@ -110,11 +364,11 @@ function selectDisabilityMode(mode) {
     staffBadge.textContent = 'مكفوفون وضعاف بصر';
     staffInstructions.textContent = '• العميل/المرافق يستخدم التوجيه الصوتي: عند الوصول للنافذة عرّف بنفسك صوتياً بوضوح واشرح مكان وضع المشروبات والوجبات.';
     if (!ttsEnabled) toggleTTS();
-    speakText('تم اختيار نمط المكفوفين وضعاف البصر، القارئ الصوتي نشط لمرافقتك.');
+    speakText(currentLang === 'en' ? 'Blind and low vision audio mode active' : 'تم اختيار نمط المكفوفين وضعاف البصر');
   } else if (mode === 'cognitive') {
     staffBadge.textContent = 'واجهة مبسطة وهادئة';
     staffInstructions.textContent = '• العميل يفضل بيئة هادئة بدون استعجال: امنحه الوقت الكافي وتجنب الأصوات العالية أو الإرباك عند نافذة التسليم.';
-    speakText('تم تفعيل الواجهة المبسطة والهادئة.');
+    speakText(currentLang === 'en' ? 'Calm and simple mode enabled' : 'تم تفعيل الواجهة المبسطة والهادئة');
   }
 }
 
@@ -133,30 +387,36 @@ function filterCategory(cat) {
 
 function renderMenu() {
   const grid = document.getElementById('menuGrid');
+  const t = translations[currentLang];
   const filtered = currentCategory === 'all' ? yusrMenu : yusrMenu.filter(i => i.category === currentCategory);
 
-  grid.innerHTML = filtered.map(item => `
-    <div class="p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3 bg-slate-50/50">
-      <div>
-        <div class="flex items-start justify-between gap-2">
-          <span class="text-xs font-extrabold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">${item.badge}</span>
+  grid.innerHTML = filtered.map(item => {
+    const title = currentLang === 'en' ? item.nameEn : item.name;
+    const desc = currentLang === 'en' ? item.descEn : item.desc;
+    const badge = currentLang === 'en' ? item.badgeEn : item.badge;
+    return `
+      <div class="p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3 bg-slate-50/50">
+        <div>
+          <div class="flex items-start justify-between gap-2">
+            <span class="text-xs font-extrabold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">${badge}</span>
+          </div>
+          <h3 class="font-black text-lg mt-2">${title}</h3>
+          <p class="text-xs text-slate-600 mt-1 leading-relaxed">${desc}</p>
         </div>
-        <h3 class="font-black text-lg mt-2">${item.name}</h3>
-        <p class="text-xs text-slate-600 mt-1 leading-relaxed">${item.desc}</p>
-      </div>
-      <div class="flex items-center justify-between pt-3 border-t border-slate-200">
-        <span class="text-lg font-black text-emerald-700">${item.price} ر.س</span>
-        <div class="flex items-center gap-1.5">
-          <button onclick="speakText('${item.name}، السعر ${item.price} ريال، ${item.desc}')" class="focus-ring px-2.5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-xs font-bold" title="استماع للوصف">
-            صوت
-          </button>
-          <button onclick="addToCart(${item.id})" class="focus-ring px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition">
-            + أضف للسلة
-          </button>
+        <div class="flex items-center justify-between pt-3 border-t border-slate-200">
+          <span class="text-lg font-black text-emerald-700">${item.price} ${t.currency}</span>
+          <div class="flex items-center gap-1.5">
+            <button onclick="speakText('${title}, ${item.price} ${t.currency}. ${desc}')" class="focus-ring px-2.5 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-xs font-bold">
+              ${t.voiceBtn}
+            </button>
+            <button onclick="addToCart(${item.id})" class="focus-ring px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm transition">
+              ${t.addBtn}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 function addToCart(id) {
@@ -170,13 +430,15 @@ function addToCart(id) {
     cart.push({
       id: item.id,
       name: item.name,
+      nameEn: item.nameEn,
       price: item.price,
       qty: 1,
       note: easyPack ? 'تغليف ميسّر سهل الفتح' : 'تغليف عادي'
     });
   }
   renderCart();
-  speakText('تمت إضافة ' + item.name + ' إلى السلة');
+  const title = currentLang === 'en' ? item.nameEn : item.name;
+  speakText(currentLang === 'en' ? 'Added ' + title : 'تمت إضافة ' + title + ' إلى السلة');
 }
 
 function changeQty(id, delta) {
@@ -192,7 +454,7 @@ function changeQty(id, delta) {
 function clearCart() {
   cart = [];
   renderCart();
-  speakText('تم إفراغ السلة');
+  speakText(currentLang === 'en' ? 'Cart cleared' : 'تم إفراغ السلة');
 }
 
 function updatePreferences() {
@@ -209,7 +471,7 @@ function renderCart() {
   const staffList = document.getElementById('staffItemsList');
 
   if (cart.length === 0) {
-    list.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">السلة فارغة حالياً، اختر من القائمة</p>`;
+    list.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">${currentLang === 'en' ? 'Your cart is empty' : 'السلة فارغة حالياً، اختر من القائمة'}</p>`;
     totalEl.textContent = '0';
     staffList.innerHTML = `<li class="text-slate-400">لا توجد أصناف</li>`;
     return;
@@ -218,10 +480,11 @@ function renderCart() {
   let total = 0;
   list.innerHTML = cart.map(item => {
     total += item.price * item.qty;
+    const title = currentLang === 'en' ? (item.nameEn || item.name) : item.name;
     return `
       <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-2">
         <div>
-          <p class="font-bold text-sm">${item.name}</p>
+          <p class="font-bold text-sm">${title}</p>
           <span class="text-[11px] text-emerald-700 font-bold">${item.note}</span>
         </div>
         <div class="flex items-center gap-2">
@@ -259,7 +522,6 @@ function selectDeliverySpot(spotKey, btnEl) {
 
   btnEl.className = 'spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-bold text-sm flex items-center justify-between';
   btnEl.querySelector('span:last-child').textContent = '✓';
-  speakText('تم اختيار ' + selectedSpot);
 }
 
 function selectLane(laneName) {
@@ -275,18 +537,17 @@ function selectLane(laneName) {
       el.className = 'lane-btn focus-ring py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm';
     }
   });
-  speakText('تم تحديد ' + laneName);
 }
 
 function submitAccessibleOrder() {
   if (cart.length === 0) {
-    speakText('يرجى إضافة صنف واحد على الأقل في السلة');
+    speakText(currentLang === 'en' ? 'Please add at least one item to your cart' : 'يرجى إضافة صنف واحد على الأقل في السلة');
     return;
   }
   const carInput = document.getElementById('carDetails').value || 'سيارة العميل';
   document.getElementById('staffCarInfo').textContent = carInput;
 
-  speakText('تم تأكيد طلبك بنجاح! رقم طلبك هو يسر مئة وأربعة. توجه الآن إلى ' + selectedLane);
+  speakText(currentLang === 'en' ? 'Order confirmed! Your priority number is YSR 104.' : 'تم تأكيد طلبك بنجاح! رقم طلبك هو يسر مئة وأربعة.');
   if (visualFlashMode) {
     triggerVisualBanner('تم تأكيد الطلب #YSR-104 — توجه إلى ' + selectedLane);
   }
@@ -352,7 +613,7 @@ function sendQuickSignal(signalText) {
     </div>
   ` + log.innerHTML;
 
-  speakText('تم إرسال الإشارة إلى شاشة الموظف');
+  speakText(currentLang === 'en' ? 'Signal sent to staff screen' : 'تم إرسال الإشارة إلى شاشة الموظف');
 }
 
 function triggerCustomerAlert(msg) {
