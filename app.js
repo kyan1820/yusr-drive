@@ -11,6 +11,11 @@ let selectedSpot = 'تسليم عبر نافذة السائق بحامل ممت�
 let selectedLane = 'مسار يُسر 1';
 let currentCategory = 'all';
 
+// قناة المزامنة السحابية الفورية بين جوال العميل وشاشة الموظف
+const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v1';
+let activeOrderId = null;
+let lastAlertStamp = 0;
+
 const translations = {
   ar: {
     dir: 'rtl',
@@ -62,7 +67,7 @@ const translations = {
     submitOrderBtnText: 'تأكيد الطلب وإشعار المسار الذكي',
     addBtn: '+ أضف للسلة',
     voiceBtn: 'صوت',
-    welcomeSpeech: 'أهلاً بك في منصة يسر درايف. تم تفعيل اللغة العربية والقارئ الصوتي لخدمتك.'
+    welcomeSpeech: 'أهلاً بك في منصة يسر درايف. اختر أصنافك من القائمة لإرسال طلبك للمسار الذكي.'
   },
   en: {
     dir: 'ltr',
@@ -114,7 +119,7 @@ const translations = {
     submitOrderBtnText: 'Confirm Order & Notify Smart Lane',
     addBtn: '+ Add to Cart',
     voiceBtn: 'Audio',
-    welcomeSpeech: 'Welcome to Yusr Drive. English language and voice guidance are now active.'
+    welcomeSpeech: 'Welcome to Yusr Drive. Please select your items to notify the smart lane.'
   }
 };
 
@@ -187,10 +192,137 @@ const yusrMenu = [
   }
 ];
 
-let cart = [
-  { id: 1, name: 'وجبة برجر دجاج مشوي ميسّرة', nameEn: 'Accessible Grilled Chicken Burger Meal', price: 24, qty: 1, note: 'تغليف سهل الفتح بيد واحدة' },
-  { id: 3, name: 'قهوة مختصة باردة (كوب بغطاء أمان)', nameEn: 'Specialty Iced Coffee (Safety Lid)', price: 16, qty: 1, note: 'غطاء مانع للانسكاب' }
-];
+// السلة تبدأ فارغة تماماً بدون طلبات مسبقة
+let cart = [];
+
+function getModeDetails(mode) {
+  if (mode === 'mobility') {
+    return {
+      badge: 'إعاقة حركية',
+      instructions: '• العميل يستخدم مسار الإعاقة الحركية: استخدم صينية التسليم الممتدة حتى نافذة السائق أو ضع الطلب في المكان المحدد دون إجهاد العميل.'
+    };
+  } else if (mode === 'hearing') {
+    return {
+      badge: 'صم وضعاف سمع / نطق',
+      instructions: '• تنبيه هام: العميل أصم أو يفضل عدم التخاطب الصوتي. لا تستخدم المايكروفون إطلاقاً، تواصل عبر الشاشة والابتسامة ولغة الإشارة.'
+    };
+  } else if (mode === 'visual') {
+    return {
+      badge: 'مكفوفون وضعاف بصر',
+      instructions: '• العميل/المرافق يستخدم التوجيه الصوتي: عند الوصول للنافذة عرّف بنفسك صوتياً بوضوح واشرح مكان وضع المشروبات والوجبات.'
+    };
+  } else {
+    return {
+      badge: 'واجهة مبسطة وهادئة',
+      instructions: '• العميل يفضل بيئة هادئة بدون استعجال: امنحه الوقت الكافي وتجنب الأصوات العالية أو الإرباك عند نافذة التسليم.'
+    };
+  }
+}
+
+// تصفير شاشة الموظف عند عدم وجود طلبات
+function resetStaffScreenToEmpty() {
+  document.getElementById('staffOrderCode').textContent = 'لا يوجد طلب نشط';
+  document.getElementById('staffModeBadge').textContent = 'بانتظار عميل...';
+  document.getElementById('staffCarInfo').textContent = '—';
+  document.getElementById('staffLaneInfo').textContent = '—';
+  document.getElementById('staffSpotInfo').textContent = '—';
+  document.getElementById('staffInstructionsBox').textContent = '• شاشة الاستقبال جاهزة؛ ستظهر هنا تفاصيل مركبة العميل والأصناف المطلوبة فور إرسال الطلب.';
+  document.getElementById('staffItemsList').innerHTML = `<li class="text-slate-400">لا توجد طلبات مرسلة حتى الآن</li>`;
+  document.getElementById('staffSignalsLog').innerHTML = `
+    <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
+      بانتظار إشارات من شاشة سيارة العميل...
+    </div>
+  `;
+}
+
+// تحديث شاشة الموظف عند وصول طلب حقيقي
+function renderOrderOnStaffScreen(orderData) {
+  if (!orderData) {
+    resetStaffScreenToEmpty();
+    return;
+  }
+  const modeInfo = getModeDetails(orderData.mode);
+  document.getElementById('staffOrderCode').textContent = orderData.code;
+  document.getElementById('staffModeBadge').textContent = modeInfo.badge;
+  document.getElementById('staffCarInfo').textContent = orderData.car;
+  document.getElementById('staffLaneInfo').textContent = orderData.lane;
+  document.getElementById('staffSpotInfo').textContent = orderData.spot;
+  document.getElementById('staffInstructionsBox').textContent = modeInfo.instructions;
+
+  const staffList = document.getElementById('staffItemsList');
+  staffList.innerHTML = orderData.items.map(item => `
+    <li class="flex items-center justify-between border-b border-slate-800 pb-2">
+      <span>${item.qty}x ${item.name}</span>
+      <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">${item.note}</span>
+    </li>
+  `).join('');
+
+  document.getElementById('orderNumberDisplay').textContent = orderData.code;
+  document.getElementById('trackerLaneName').textContent = orderData.lane;
+}
+
+// إرسال الحدث عبر السحابة ليصل لكل الأجهزة المفتوحة فوراً
+async function publishSyncEvent(payload) {
+  localStorage.setItem('yusr_latest_event', JSON.stringify(payload));
+  try {
+    await fetch(`https://ntfy.sh/${SYNC_TOPIC}`, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+  } catch (e) {
+    console.warn('Local mode active');
+  }
+}
+
+// الاستماع اللحظي للطلبات والإشارات من الأجهزة الأخرى
+function startLiveCloudSync() {
+  try {
+    const eventSource = new EventSource(`https://ntfy.sh/${SYNC_TOPIC}/sse`);
+    eventSource.onmessage = (event) => {
+      try {
+        const wrapper = JSON.parse(event.data);
+        if (!wrapper.message) return;
+        const data = JSON.parse(wrapper.message);
+        handleIncomingSyncData(data);
+      } catch (err) {}
+    };
+  } catch (e) {}
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'yusr_latest_event' && e.newValue) {
+      try {
+        handleIncomingSyncData(JSON.parse(e.newValue));
+      } catch (err) {}
+    }
+  });
+}
+
+function handleIncomingSyncData(data) {
+  if (!data || !data.type) return;
+
+  if (data.type === 'NEW_ORDER') {
+    const isNew = activeOrderId !== data.order.code;
+    activeOrderId = data.order.code;
+    renderOrderOnStaffScreen(data.order);
+    if (isNew) {
+      triggerVisualBanner('وصل طلب جديد للمسار الذكي: ' + data.order.code);
+    }
+  } else if (data.type === 'SIGNAL') {
+    appendSignalToStaffLog(data.signalText, data.time);
+    triggerVisualBanner('إشارة جديدة من السائق: ' + data.signalText);
+  } else if (data.type === 'STAFF_ALERT') {
+    if (data.stamp && data.stamp !== lastAlertStamp) {
+      lastAlertStamp = data.stamp;
+      triggerVisualBanner(data.msg);
+      speakText(data.msg);
+    }
+  } else if (data.type === 'STEP_UPDATE') {
+    updateStepUIOnly(data.stepNum);
+  } else if (data.type === 'CLEAR_ORDER') {
+    activeOrderId = null;
+    resetStaffScreenToEmpty();
+  }
+}
 
 function startAppWithLanguage(langSelection) {
   const modal = document.getElementById('welcomeModal');
@@ -349,25 +481,14 @@ function selectDisabilityMode(mode) {
     }
   });
 
-  const staffBadge = document.getElementById('staffModeBadge');
-  const staffInstructions = document.getElementById('staffInstructionsBox');
-
   if (mode === 'mobility') {
-    staffBadge.textContent = 'إعاقة حركية';
-    staffInstructions.textContent = '• العميل يستخدم مسار الإعاقة الحركية: استخدم صينية التسليم الممتدة حتى نافذة السائق أو ضع الطلب في المكان المحدد دون إجهاد العميل.';
     speakText(currentLang === 'en' ? 'Mobility mode selected' : 'تم اختيار نمط الإعاقة الحركية');
   } else if (mode === 'hearing') {
-    staffBadge.textContent = 'صم وضعاف سمع / نطق';
-    staffInstructions.textContent = '• تنبيه هام: العميل أصم أو يفضل عدم التخاطب الصوتي. لا تستخدم المايكروفون إطلاقاً، تواصل عبر الشاشة والابتسامة ولغة الإشارة.';
     if (!visualFlashMode) toggleVisualFlashMode();
   } else if (mode === 'visual') {
-    staffBadge.textContent = 'مكفوفون وضعاف بصر';
-    staffInstructions.textContent = '• العميل/المرافق يستخدم التوجيه الصوتي: عند الوصول للنافذة عرّف بنفسك صوتياً بوضوح واشرح مكان وضع المشروبات والوجبات.';
     if (!ttsEnabled) toggleTTS();
     speakText(currentLang === 'en' ? 'Blind and low vision audio mode active' : 'تم اختيار نمط المكفوفين وضعاف البصر');
   } else if (mode === 'cognitive') {
-    staffBadge.textContent = 'واجهة مبسطة وهادئة';
-    staffInstructions.textContent = '• العميل يفضل بيئة هادئة بدون استعجال: امنحه الوقت الكافي وتجنب الأصوات العالية أو الإرباك عند نافذة التسليم.';
     speakText(currentLang === 'en' ? 'Calm and simple mode enabled' : 'تم تفعيل الواجهة المبسطة والهادئة');
   }
 }
@@ -468,12 +589,10 @@ function updatePreferences() {
 function renderCart() {
   const list = document.getElementById('cartList');
   const totalEl = document.getElementById('cartTotal');
-  const staffList = document.getElementById('staffItemsList');
 
   if (cart.length === 0) {
-    list.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">${currentLang === 'en' ? 'Your cart is empty' : 'السلة فارغة حالياً، اختر من القائمة'}</p>`;
+    list.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">${currentLang === 'en' ? 'Your cart is empty — select items from the menu' : 'السلة فارغة حالياً، اختر أصنافك من القائمة'}</p>`;
     totalEl.textContent = '0';
-    staffList.innerHTML = `<li class="text-slate-400">لا توجد أصناف</li>`;
     return;
   }
 
@@ -497,13 +616,6 @@ function renderCart() {
   }).join('');
 
   totalEl.textContent = total;
-
-  staffList.innerHTML = cart.map(item => `
-    <li class="flex items-center justify-between border-b border-slate-800 pb-2">
-      <span>${item.qty}x ${item.name}</span>
-      <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">${item.note}</span>
-    </li>
-  `).join('');
 }
 
 function selectDeliverySpot(spotKey, btnEl) {
@@ -513,7 +625,6 @@ function selectDeliverySpot(spotKey, btnEl) {
     trunk: 'وضع الطلب في الشنطة الخلفية للسيارة'
   };
   selectedSpot = map[spotKey];
-  document.getElementById('staffSpotInfo').textContent = selectedSpot;
 
   document.querySelectorAll('.spot-btn').forEach(btn => {
     btn.className = 'spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-slate-200 hover:border-slate-300 font-bold text-sm flex items-center justify-between';
@@ -527,7 +638,6 @@ function selectDeliverySpot(spotKey, btnEl) {
 function selectLane(laneName) {
   selectedLane = laneName;
   document.getElementById('trackerLaneName').textContent = laneName;
-  document.getElementById('staffLaneInfo').textContent = laneName;
 
   ['lane-1', 'lane-2', 'lane-3'].forEach(id => {
     const el = document.getElementById(id);
@@ -541,15 +651,33 @@ function selectLane(laneName) {
 
 function submitAccessibleOrder() {
   if (cart.length === 0) {
-    speakText(currentLang === 'en' ? 'Please add at least one item to your cart' : 'يرجى إضافة صنف واحد على الأقل في السلة');
+    const alertMsg = currentLang === 'en' ? 'Please add at least one item to your cart first' : 'يرجى إضافة صنف واحد على الأقل إلى السلة قبل تأكيد الطلب';
+    speakText(alertMsg);
+    triggerVisualBanner(alertMsg);
     return;
   }
-  const carInput = document.getElementById('carDetails').value || 'سيارة العميل';
-  document.getElementById('staffCarInfo').textContent = carInput;
 
-  speakText(currentLang === 'en' ? 'Order confirmed! Your priority number is YSR 104.' : 'تم تأكيد طلبك بنجاح! رقم طلبك هو يسر مئة وأربعة.');
+  const carInput = document.getElementById('carDetails').value.trim() || 'سيارة العميل';
+  const randomNum = Math.floor(100 + Math.random() * 900);
+  const orderCode = '#YSR-' + randomNum;
+
+  const orderData = {
+    code: orderCode,
+    mode: selectedMode,
+    car: carInput,
+    lane: selectedLane,
+    spot: selectedSpot,
+    items: cart.map(i => ({ qty: i.qty, name: i.name, note: i.note })),
+    timestamp: Date.now()
+  };
+
+  activeOrderId = orderCode;
+  renderOrderOnStaffScreen(orderData);
+  publishSyncEvent({ type: 'NEW_ORDER', order: orderData });
+
+  speakText(currentLang === 'en' ? `Order confirmed! Your number is ${orderCode}` : `تم تأكيد طلبك وإرساله للموظف بنجاح! رقم طلبك هو ${orderCode}`);
   if (visualFlashMode) {
-    triggerVisualBanner('تم تأكيد الطلب #YSR-104 — توجه إلى ' + selectedLane);
+    triggerVisualBanner(`تم تأكيد الطلب ${orderCode} — توجه إلى ${selectedLane}`);
   }
   switchMainView('tracker');
 }
@@ -572,12 +700,16 @@ function switchMainView(view) {
       tabs[k].className = 'focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition bg-emerald-500 text-slate-950 shadow';
     } else {
       views[k].classList.add('hidden');
-      tabs[k].className = 'focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800';
+      if (k === 'staff' && tabs.staff.classList.contains('hidden')) {
+        // إبقاء زر الموظف مخفياً للزوار
+      } else {
+        tabs[k].className = 'focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800';
+      }
     }
   });
 }
 
-function setOrderStep(stepNum) {
+function updateStepUIOnly(stepNum) {
   for (let i = 1; i <= 4; i++) {
     const box = document.getElementById('step-' + i);
     if (i <= stepNum) {
@@ -586,6 +718,12 @@ function setOrderStep(stepNum) {
       box.className = 'step-box p-4 rounded-2xl border-2 border-slate-200 bg-slate-50';
     }
   }
+}
+
+function setOrderStep(stepNum) {
+  updateStepUIOnly(stepNum);
+  publishSyncEvent({ type: 'STEP_UPDATE', stepNum: stepNum });
+
   const messages = {
     1: 'تم استلام الطلب وتكييف المسار',
     2: 'جاري تجهيز الطلب بتغليف ميسّر سهل الفتح',
@@ -598,20 +736,25 @@ function setOrderStep(stepNum) {
   }
 }
 
+function appendSignalToStaffLog(signalText, timeStr) {
+  const log = document.getElementById('staffSignalsLog');
+  log.innerHTML = `
+    <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold">
+      <span class="text-emerald-400 block mb-1">[${timeStr}] إشارة من السيارة:</span>
+      ${signalText}
+    </div>
+  ` + log.innerHTML;
+}
+
 function sendQuickSignal(signalText) {
   const conf = document.getElementById('signalConfirmation');
   const confText = document.getElementById('signalConfirmationText');
   confText.textContent = 'تم إرسال الإشارة للموظف: "' + signalText + '"';
   conf.classList.remove('hidden');
 
-  const log = document.getElementById('staffSignalsLog');
   const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-  log.innerHTML = `
-    <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold">
-      <span class="text-emerald-400 block mb-1">[${time}] إشارة من السيارة:</span>
-      ${signalText}
-    </div>
-  ` + log.innerHTML;
+  appendSignalToStaffLog(signalText, time);
+  publishSyncEvent({ type: 'SIGNAL', signalText: signalText, time: time });
 
   speakText(currentLang === 'en' ? 'Signal sent to staff screen' : 'تم إرسال الإشارة إلى شاشة الموظف');
 }
@@ -619,9 +762,12 @@ function sendQuickSignal(signalText) {
 function triggerCustomerAlert(msg) {
   triggerVisualBanner(msg);
   speakText(msg);
+  publishSyncEvent({ type: 'STAFF_ALERT', msg: msg, stamp: Date.now() });
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   renderMenu();
   renderCart();
+  resetStaffScreenToEmpty();
+  startLiveCloudSync();
 });
