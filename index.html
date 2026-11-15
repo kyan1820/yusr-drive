@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
 
@@ -288,14 +288,14 @@
       </div>
     </div>
 
-    <!-- شاشة المسار للعميل -->
+    <!-- شاشة المسار للعميل مع شات مباشر مطابق لشاشة الموظف -->
     <div id="viewTracker" class="hidden space-y-8">
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-slate-200">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
           <div>
             <span class="bg-emerald-100 text-emerald-800 font-extrabold px-3 py-1 rounded-full text-xs">لوحة التواصل اللالمسي والمباشر</span>
             <h2 class="text-3xl font-black mt-2">شاشة المسار الذكي داخل السيارة</h2>
-            <p class="text-slate-600 text-sm mt-1">لا حاجة للتحدث عبر المايكروفون؛ تتحدث مراحل طلبك وتصل ردود الموظف تلقائياً أمامك الآن.</p>
+            <p class="text-slate-600 text-sm mt-1">لا حاجة للتحدث عبر المايكروفون؛ تتحدث مراحل طلبك وتصل محادثتك مع الموظف مباشرة أمامك الآن.</p>
           </div>
           <div class="bg-slate-900 text-white px-6 py-4 rounded-2xl text-center">
             <span class="text-xs text-slate-400 block">رقم طلب الأولوية</span>
@@ -328,41 +328,54 @@
           </div>
         </div>
 
-        <div class="border-t border-slate-200 pt-6">
-          <h3 class="text-xl font-black mb-2">أزرار التواصل السريع مع الموظف (بدون تحدث)</h3>
-          <p class="text-sm text-slate-600 mb-4">اضغط على أي زر لإرسال إشارة فورية لشاشة الموظف واستقبال رده مباشرة:</p>
+        <div class="border-t border-slate-200 pt-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-4">
+            <h3 class="text-xl font-black">أزرار التواصل السريع مع الموظف (بدون تحدث)</h3>
+            <p class="text-sm text-slate-600">اضغط على أي زر لإرسال إشارة فورية أو اكتب رسالتك في الشات المباشر:</p>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <button onclick="sendQuickSignal('أنا وصلت في المسار المحدد وأنتظر بالسيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
-              <span class="font-extrabold block mt-1">أنا في المسار الآن</span>
-              <span class="text-xs text-slate-500">إشعار بوصول السيارة لنقطة الاستلام</span>
-            </button>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button onclick="sendQuickSignal('أنا وصلت في المسار المحدد وأنتظر بالسيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+                <span class="font-extrabold block mt-1">أنا في المسار الآن</span>
+                <span class="text-xs text-slate-500">إشعار بوصول السيارة لنقطة الاستلام</span>
+              </button>
 
-            <button onclick="sendQuickSignal('أحتاج وقتاً إضافياً، فضلاً لا تستعجل')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
-              <span class="font-extrabold block mt-1">أحتاج وقتاً إضافياً</span>
-              <span class="text-xs text-slate-500">إيقاف مؤقت للاستعجال في المسار</span>
-            </button>
+              <button onclick="sendQuickSignal('أحتاج وقتاً إضافياً، فضلاً لا تستعجل')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+                <span class="font-extrabold block mt-1">أحتاج وقتاً إضافياً</span>
+                <span class="text-xs text-slate-500">إيقاف مؤقت للاستعجال في المسار</span>
+              </button>
 
-            <button onclick="sendQuickSignal('أفضّل التواصل الكتابي أو بلغة الإشارة فقط')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
-              <span class="font-extrabold block mt-1">تواصل كتابي / إشارة</span>
-              <span class="text-xs text-slate-500">تنبيه الموظف لعدم استخدام الصوت</span>
-            </button>
+              <button onclick="sendQuickSignal('أفضّل التواصل الكتابي أو بلغة الإشارة فقط')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+                <span class="font-extrabold block mt-1">تواصل كتابي / إشارة</span>
+                <span class="text-xs text-slate-500">تنبيه الموظف لعدم استخدام الصوت</span>
+              </button>
 
-            <button onclick="sendQuickSignal('يرجى إحضار جهاز الدفع (الشبكة) لنافذة السيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
-              <span class="font-extrabold block mt-1">إحضار جهاز الشبكة</span>
-              <span class="text-xs text-slate-500">مدّ جهاز الدفع اللاسلكي للسيارة</span>
-            </button>
+              <button onclick="sendQuickSignal('يرجى إحضار جهاز الدفع (الشبكة) لنافذة السيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+                <span class="font-extrabold block mt-1">إحضار جهاز الشبكة</span>
+                <span class="text-xs text-slate-500">مدّ جهاز الدفع اللاسلكي للسيارة</span>
+              </button>
+            </div>
           </div>
 
-          <div id="signalConfirmation" class="mt-4 hidden bg-emerald-900 text-white p-4 rounded-2xl font-bold flex items-center justify-between">
-            <span id="signalConfirmationText">تم إرسال الإشارة للموظف بنجاح</span>
-            <span class="text-xs bg-emerald-700 px-3 py-1 rounded-full">مباشر</span>
-          </div>
+          <!-- صندوق الشات المباشر عند العميل (نفس تصميم شات الموظف بالضبط) -->
+          <div class="bg-slate-900 rounded-2xl p-5 border-2 border-slate-700 flex flex-col justify-between space-y-4 text-white">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <h3 class="font-black text-base text-white">المحادثة المباشرة مع الموظف</h3>
+                <span class="text-[11px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2.5 py-0.5 rounded-full font-bold">مباشر</span>
+              </div>
+              <div id="customerSignalsLog" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+                <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
+                  بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...
+                </div>
+              </div>
+            </div>
 
-          <!-- صندوق ردود الموظف المباشرة التي تصل للعميل -->
-          <div id="customerChatBox" class="mt-4 hidden bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 space-y-2">
-            <div class="text-xs font-black text-amber-900">ردود موظف المسار المباشرة:</div>
-            <div id="customerRepliesList" class="space-y-2 text-sm font-extrabold text-slate-900"></div>
+            <div class="pt-3 border-t border-slate-700 flex gap-2">
+              <input id="customerChatInput" type="text" onkeydown="if(event.key==='Enter') sendCustomCustomerMessage()" placeholder="اكتب رسالة للموظف هنا..." class="flex-1 px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-600 text-xs font-bold text-white focus:outline-none focus:border-emerald-400">
+              <button onclick="sendCustomCustomerMessage()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs transition">
+                إرسال
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -438,11 +451,19 @@
           <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col justify-between space-y-4">
             <div>
               <h3 class="font-black text-lg text-white mb-3">إشارات السائق والمحادثة المباشرة</h3>
-              <div id="staffSignalsLog" class="space-y-2 max-h-56 overflow-y-auto">
+              <div id="staffSignalsLog" class="space-y-2 max-h-56 overflow-y-auto pr-1">
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
                   بانتظار إشارات من شاشة سيارة العميل...
                 </div>
               </div>
+            </div>
+
+            <!-- كتابة رسالة مخصصة من الموظف للعميل -->
+            <div class="flex gap-2 pt-2">
+              <input id="staffChatInput" type="text" onkeydown="if(event.key==='Enter') sendCustomStaffMessage()" placeholder="اكتب رداً مخصصاً للعميل..." class="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-600 text-xs font-bold text-white focus:outline-none focus:border-amber-400">
+              <button onclick="sendCustomStaffMessage()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3 py-2 rounded-xl text-xs transition">
+                إرسال
+              </button>
             </div>
 
             <!-- ردود الموظف الجاهزة على المحادثة -->
@@ -488,7 +509,7 @@
     </div>
   </footer>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=4"></script>
   <script>
     function openAdminModal() {
       document.getElementById('adminPinInput').value = '';
