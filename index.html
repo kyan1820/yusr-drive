@@ -1700,7 +1700,21 @@
         4: 'المرحلة 4 من 4 (100%): الموظف في طريقه لتسليم الطلب لباب سيارتك'
       };
 
-      container.innerHTML = myCustomerOrders.map((ord, idx) => {
+      const searchEl = document.getElementById('customerOrderSearchInput');
+      const query = searchEl ? searchEl.value.trim().toLowerCase() : '';
+      const filteredMyOrders = myCustomerOrders.filter(ord => {
+        if (!query) return true;
+        const codeMatch = (ord.code || '').toLowerCase().includes(query);
+        const timeMatch = (ord.orderTime || '').toLowerCase().includes(query) || (ord.completedTime || '').toLowerCase().includes(query);
+        return codeMatch || timeMatch;
+      });
+
+      if (filteredMyOrders.length === 0) {
+        container.innerHTML = `<div class="col-span-full bg-slate-50 border border-slate-200 rounded-2xl p-6 text-center text-xs font-bold text-slate-500">لا توجد فاتورة مطابقة لبحثك (${query})</div>`;
+        return;
+      }
+
+      container.innerHTML = filteredMyOrders.map((ord, idx) => {
         let statusBadgeHTML = '';
         let stepStatusLine = '';
         const ordPercent = ord.status === 'completed' ? 100 : ord.status === 'deleted' ? 0 : Math.min(100, Math.max(25, (ord.step || 1) * 25));
