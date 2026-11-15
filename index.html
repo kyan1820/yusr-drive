@@ -2032,7 +2032,7 @@
       renderStaffChatMessages(currentOrd.messages || []);
     }
 
-    function renderOrdersHistory() {
+  function renderOrdersHistory() {
       const listEl = document.getElementById('ordersHistoryList');
       const badgeEl = document.getElementById('historyCountBadge');
       if (!listEl || !badgeEl) return;
@@ -2071,7 +2071,6 @@
         `;
       }).join('');
     }
-
     function clearOrdersHistory() {
       ordersHistory = [];
       saveAllOrderStates();
