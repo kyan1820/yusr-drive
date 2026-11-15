@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
@@ -109,7 +109,7 @@
     </div>
   </div>
 
-  <!-- نافذة تأكيد إكمال أو حذف الطلب (تظهر للموظف بخياري تأكيد أو إلغاء) -->
+  <!-- نافذة تأكيد إكمال أو حذف الطلب للموظف -->
   <div id="staffConfirmModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div id="staffConfirmBox" class="bg-slate-900 text-white max-w-md w-full rounded-3xl p-6 shadow-2xl border-2 border-emerald-500 text-center space-y-4">
       <span id="staffConfirmBadge" class="inline-block text-xs font-black px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300">تأكيد العملية</span>
@@ -175,12 +175,17 @@
         </p>
       </div>
 
-      <div class="bg-slate-900/80 p-2 rounded-2xl border border-slate-700 flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+      <!-- أزرار التنقل العلوية: في البداية تظهر واجهة العميل + قائمة طلباتي فقط، ويكون المسار المباشر مخفياً -->
+      <div class="bg-slate-900/80 p-2 rounded-2xl border border-slate-700 flex flex-wrap gap-2 w-full md:w-auto justify-center">
         <button type="button" onclick="switchMainView('customer')" id="tabCustomer" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition bg-emerald-500 text-slate-950 shadow">
           واجهة العميل (الطلب)
         </button>
-        <button type="button" onclick="switchMainView('tracker')" id="tabTracker" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
+        <button type="button" onclick="switchMainView('tracker')" id="tabTracker" class="hidden focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
           مسار الدرايف ثرو المباشر
+        </button>
+        <button type="button" onclick="switchMainView('myorders')" id="tabMyOrders" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800 flex items-center gap-2">
+          <span id="tabMyOrdersText">قائمة طلباتي</span>
+          <span id="myOrdersCountBadge" class="bg-emerald-500 text-slate-950 text-xs font-black px-2 py-0.5 rounded-full">0</span>
         </button>
         <button type="button" onclick="switchMainView('staff')" id="tabStaff" class="hidden focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
           شاشة الموظف (محاكاة)
@@ -190,6 +195,7 @@
   </header>
 
   <main class="max-w-7xl mx-auto w-full flex-1 p-4 sm:p-6 space-y-8">
+    <!-- 1. واجهة العميل (الطلب) - تظهر في البداية وتختفي تلقائياً بعد إرسال الطلب -->
     <div id="viewCustomer" class="space-y-8">
       <section class="secondary-ui bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
@@ -355,18 +361,26 @@
       </div>
     </div>
 
-    <!-- شاشة المسار للعميل (معزولة برقم طلب العميل الخاص فقط) -->
+    <!-- 2. شاشة المسار المباشر للعميل (تظهر تلقائياً بعد إرسال الطلب ويختفي زر واجهة العميل) -->
     <div id="viewTracker" class="hidden space-y-8">
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-slate-200">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
           <div>
             <span class="bg-emerald-100 text-emerald-800 font-extrabold px-3 py-1 rounded-full text-xs">لوحة التواصل اللالمسي والمباشر</span>
             <h2 class="text-3xl font-black mt-2">شاشة المسار الذكي داخل السيارة</h2>
-            <p class="text-slate-600 text-sm mt-1">لا حاجة للتحدث عبر المايكروفون؛ هذه الشاشة مرتبطة بطلبك أنت فقط وتتحدث تلقائياً.</p>
+            <p class="text-slate-600 text-sm mt-1">تم إرسال طلبك بنجاح! يمكنك متابعة مراحل التسليم أو الاطلاع على الفواتير وحالة طلباتك من زر (قائمة طلباتي).</p>
           </div>
-          <div class="bg-slate-900 text-white px-6 py-4 rounded-2xl text-center">
-            <span class="text-xs text-slate-400 block">رقم طلبك الخاص</span>
-            <span id="orderNumberDisplay" class="text-3xl font-black text-emerald-400">—</span>
+          <div class="flex flex-wrap items-center gap-3">
+            <button type="button" onclick="switchMainView('myorders')" class="focus-ring bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-3 rounded-2xl text-xs transition shadow">
+              عرض الفاتورة وقائمة طلباتي
+            </button>
+            <button type="button" onclick="startAnotherNewOrder()" class="focus-ring bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-black px-4 py-3 rounded-2xl text-xs transition">
+              + إضافة طلب جديد آخر
+            </button>
+            <div class="bg-slate-900 text-white px-6 py-3 rounded-2xl text-center">
+              <span class="text-[11px] text-slate-400 block">رقم الطلب المتابع حالياً</span>
+              <span id="orderNumberDisplay" class="text-2xl font-black text-emerald-400">—</span>
+            </div>
           </div>
         </div>
 
@@ -447,7 +461,29 @@
       </div>
     </div>
 
-    <!-- شاشة الموظف (تدعم طابور الطلبات المتعددة + زرين منفصلين مع تأكيد + سجل الطلبات) -->
+    <!-- 3. شاشة «قائمة طلباتي والفواتير» للعميل (تعرض كل طلباته وفواتيره وحالة كل طلب: جاري التسليم أو تم التسليم) -->
+    <div id="viewMyOrders" class="hidden space-y-6">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-slate-200 space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5">
+          <div>
+            <span class="bg-emerald-100 text-emerald-800 font-extrabold px-3 py-1 rounded-full text-xs">الفواتير الإلكترونية والاستعلام المباشر</span>
+            <h2 class="text-2xl sm:text-3xl font-black mt-2">قائمة طلباتي والفواتير</h2>
+            <p class="text-sm text-slate-600 mt-1">اطلع على فواتير جميع طلباتك واستعلم عن حالة كل طلب بشكل مباشر (جاري التسليم أو تم التسليم).</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button type="button" onclick="startAnotherNewOrder()" class="focus-ring bg-emerald-600 hover:bg-emerald-500 text-white font-black px-5 py-3 rounded-2xl text-xs sm:text-sm transition shadow">
+              + إنشاء طلب جديد آخر
+            </button>
+          </div>
+        </div>
+
+        <div id="customerMyOrdersList" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- يتم تعبئة فواتير وطلبات العميل هنا تلقائياً -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. شاشة الموظف -->
     <div id="viewStaff" class="hidden space-y-6">
       <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-slate-700 space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700 pb-5">
@@ -463,7 +499,7 @@
           </div>
         </div>
 
-        <!-- شريط طابور الطلبات النشطة (يمنع حذف الطلب الأول عند وصول طلب ثاني) -->
+        <!-- شريط طابور الطلبات النشطة -->
         <div class="bg-slate-800/90 p-4 rounded-2xl border border-slate-700 space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-extrabold text-slate-300">طابور الطلبات النشطة حالياً (اضغط على رقم الطلب للتبديل والتحكم به):</span>
@@ -481,7 +517,7 @@
                 <span id="staffModeBadge" class="bg-emerald-500 text-slate-950 font-black px-4 py-1 rounded-full text-sm">بانتظار عميل...</span>
               </div>
 
-              <!-- خياران منفصلان: طلب مكتمل (أخضر) + حذف الطلب (أحمر) مع نافذة تأكيد -->
+              <!-- خياران منفصلان: طلب مكتمل (أخضر) + حذف الطلب (أحمر) -->
               <div class="flex flex-wrap items-center gap-2">
                 <button type="button" onclick="promptStaffOrderAction('complete')" class="focus-ring bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
                   <span>✓ طلب مكتمل</span>
@@ -577,7 +613,7 @@
           </div>
         </div>
 
-        <!-- قسم سجل الطلبات (يحفظ الطلبات المكتملة والمحذوفة) -->
+        <!-- قسم سجل الطلبات للموظف -->
         <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 pb-3">
             <div class="flex items-center gap-2">
@@ -606,7 +642,7 @@
   </footer>
 
   <script>
-    console.log("Yusr Drive System v9 Multi-Order Queue & History Initialized - Developer: Kayan Adel Abbas");
+    console.log("Yusr Drive System v10 Customer Order Flow & Invoices Initialized - Developer: Kayan Adel Abbas");
 
     let currentLang = 'ar';
     let ttsEnabled = true;
@@ -621,20 +657,32 @@
     let currentCategory = 'offers';
     let currentView = 'customer';
 
-    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v9';
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v10';
     let lastEventStamp = 0;
     const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
 
-    // عزل طلب العميل الحالي عن بقية العملاء، وطابور طلبات الموظف + سجل الطلبات
+    // قائمة طلبات وفواتير العميل (تدعم طلب واحد أو طلبين مختلفين أو أكثر)
     let myCustomerOrderCode = null;
-    let activeOrders = []; // مصفوفة الطلبات النشطة عند الموظف
-    let staffSelectedOrderCode = null; // الطلب المعروض حالياً أمام الموظف
-    let ordersHistory = []; // سجل الطلبات المكتملة والمحذوفة
-    let pendingConfirmAction = null; // 'complete' or 'delete'
+    let myCustomerOrders = []; // كافة الطلبات التي أرسلها هذا العميل مع فواتيرها وحالتها
+
+    // طابور الموظف وسجل الموظف
+    let activeOrders = [];
+    let staffSelectedOrderCode = null;
+    let ordersHistory = [];
+    let pendingConfirmAction = null;
 
     try {
-      const savedHistory = localStorage.getItem('yusr_orders_history_v9');
+      const savedHistory = localStorage.getItem('yusr_orders_history_v10');
       if (savedHistory) ordersHistory = JSON.parse(savedHistory);
+    } catch (e) {}
+
+    try {
+      const savedMyOrders = sessionStorage.getItem('yusr_my_customer_orders_v10');
+      if (savedMyOrders) {
+        myCustomerOrders = JSON.parse(savedMyOrders);
+        const latestActive = myCustomerOrders.find(o => o.status === 'in_progress');
+        if (latestActive) myCustomerOrderCode = latestActive.code;
+      }
     } catch (e) {}
 
     // شعار الريال السعودي الرسمي (SVG)
@@ -709,6 +757,7 @@
         heroSubTitle: 'اطلب من سيارتك باستقلالية تامة؛ بدون الحاجة للتحدث عبر المايكروفون التقليدي أو النزول من المركبة، مع تسليم مخصص لباب سيارتك.',
         tabCustomer: 'واجهة العميل (الطلب)',
         tabTracker: 'مسار الدرايف ثرو المباشر',
+        tabMyOrders: 'قائمة طلباتي',
         tabStaff: 'شاشة الموظف (محاكاة)',
         step1Badge: 'الخطوة 1 من 3',
         step1Title: 'اختر نمط الخدمة وتكييف المسار',
@@ -769,6 +818,7 @@
         heroSubTitle: 'Order independently from your vehicle without traditional speaker boxes or stepping out, with tailored delivery right to your car door.',
         tabCustomer: 'Customer Order View',
         tabTracker: 'Live Drive-Thru Tracker',
+        tabMyOrders: 'My Orders & Invoices',
         tabStaff: 'Staff Screen (Simulation)',
         step1Badge: 'Step 1 of 3',
         step1Title: 'Select Accessibility & Service Mode',
@@ -829,6 +879,7 @@
         heroSubTitle: 'Geleneksel mikrofonlara konuşmadan veya araçtan inmeden bağımsızca sipariş verin; kapınıza özel teslimat.',
         tabCustomer: 'Müşteri Sipariş Ekranı',
         tabTracker: 'Canlı Teslimat Takibi',
+        tabMyOrders: 'Siparişlerim',
         tabStaff: 'Personel Ekranı',
         step1Badge: 'Adım 1 / 3',
         step1Title: 'Hizmet ve Erişilebilirlik Modunu Seçin',
@@ -889,6 +940,7 @@
         heroSubTitle: 'گاڑی سے اترے یا مائیکروفون پر بولے بغیر مکمل خود مختاری کے ساتھ آرڈر کریں، آپ کی گاڑی کے دروازے تک خصوصی ترسیل۔',
         tabCustomer: 'کسٹمر آرڈر اسکرین',
         tabTracker: 'لائیو ڈرائیو تھرو ٹریکر',
+        tabMyOrders: 'میرے آرڈرز اور بل',
         tabStaff: 'اسٹاف اسکرین',
         step1Badge: 'مرحلہ 1 از 3',
         step1Title: 'خدمت کا انداز منتخب کریں',
@@ -949,6 +1001,7 @@
         heroSubTitle: '无需使用传统麦克风交谈或下车，在车内即可独立完成点餐，专人精准递送至您的车门。',
         tabCustomer: '顾客点餐界面',
         tabTracker: '实时车道追踪',
+        tabMyOrders: '我的订单与账单',
         tabStaff: '员工终端（模拟）',
         step1Badge: '第 1 步（共 3 步）',
         step1Title: '选择无障碍服务模式',
@@ -1559,6 +1612,179 @@
       }
     }
 
+    function saveMyCustomerOrders() {
+      try {
+        sessionStorage.setItem('yusr_my_customer_orders_v10', JSON.stringify(myCustomerOrders));
+      } catch (e) {}
+    }
+
+    // تحديث شاشة «قائمة طلباتي والفواتير» للعميل (تدعم عرض طلبين مختلفين أو أكثر مع حالة جاري التسليم أو تم التسليم)
+    function renderCustomerMyOrders() {
+      const badge = document.getElementById('myOrdersCountBadge');
+      const container = document.getElementById('customerMyOrdersList');
+      if (badge) badge.textContent = myCustomerOrders.length;
+      if (!container) return;
+
+      if (myCustomerOrders.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full bg-slate-50 border-2 border-dashed border-slate-300 rounded-3xl p-8 text-center space-y-3">
+            <p class="text-lg font-black text-slate-700">لا توجد لديك طلبات أو فواتير حالياً</p>
+            <p class="text-xs text-slate-500 font-bold">اختر وجبتك من المنيو وأكد الطلب لتظهر فاتورتك وحالة التسليم المباشرة هنا.</p>
+            <button type="button" onclick="startAnotherNewOrder()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-5 py-2.5 rounded-xl text-xs transition">
+              الذهاب إلى واجهة الطلب
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const stepNamesAr = {
+        1: 'المرحلة 1 من 4: تم استلام الطلب وتكييف المسار',
+        2: 'المرحلة 2 من 4: جاري التحضير والتغليف الميسّر',
+        3: 'المرحلة 3 من 4: تم رصد وصول سيارتك للمسار',
+        4: 'المرحلة 4 من 4: الموظف في طريقه لتسليم الطلب لباب سيارتك'
+      };
+
+      container.innerHTML = myCustomerOrders.map((ord, idx) => {
+        let statusBadgeHTML = '';
+        let stepStatusLine = '';
+
+        if (ord.status === 'completed') {
+          statusBadgeHTML = `
+            <span class="bg-emerald-100 border-2 border-emerald-500 text-emerald-900 font-black px-3.5 py-1 rounded-full text-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+              تم التسليم (مكتمل) ✓
+            </span>
+          `;
+          stepStatusLine = `تم تسليم هذا الطلب لمركبتك بنجاح في تمام الساعة ${ord.completedTime || ord.orderTime}`;
+        } else if (ord.status === 'deleted') {
+          statusBadgeHTML = `
+            <span class="bg-rose-100 border-2 border-rose-400 text-rose-900 font-black px-3.5 py-1 rounded-full text-xs">
+              ملغي من الفرع ✕
+            </span>
+          `;
+          stepStatusLine = `تم إلغاء هذا الطلب.`;
+        } else {
+          statusBadgeHTML = `
+            <span class="bg-amber-100 border-2 border-amber-500 text-amber-950 font-black px-3.5 py-1 rounded-full text-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
+              جاري التسليم الآن...
+            </span>
+          `;
+          stepStatusLine = stepNamesAr[ord.step || 1] || stepNamesAr[1];
+        }
+
+        const itemsRows = (ord.items || []).map(item => `
+          <div class="flex items-center justify-between text-xs py-1.5 border-b border-slate-200/70">
+            <span class="font-bold text-slate-800">${item.qty}x ${item.name} <span class="text-[10px] text-emerald-700">(${item.note})</span></span>
+            <span class="font-black text-slate-900 inline-flex items-center gap-1">${item.price * item.qty} ${saudiRiyalLogoSVG}</span>
+          </div>
+        `).join('');
+
+        const isCurrentlyTracked = myCustomerOrderCode === ord.code;
+
+        return `
+          <div class="rounded-3xl p-6 border-2 ${ord.status === 'completed' ? 'border-emerald-500 bg-emerald-50/30' : ord.status === 'deleted' ? 'border-rose-300 bg-rose-50/20' : 'border-amber-400 bg-white'} shadow-sm flex flex-col justify-between space-y-4">
+            <div class="space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                <div>
+                  <span class="text-[11px] font-extrabold text-slate-400 block">فاتورة ضريبية مبسطة — طلب #${myCustomerOrders.length - idx}</span>
+                  <span class="text-2xl font-black text-slate-900">${ord.code}</span>
+                </div>
+                ${statusBadgeHTML}
+              </div>
+
+              <!-- حالة الاستعلام المباشر -->
+              <div class="p-3 rounded-2xl ${ord.status === 'completed' ? 'bg-emerald-100/80 text-emerald-950' : 'bg-amber-50 border border-amber-200 text-amber-950'} text-xs font-extrabold">
+                حالة الاستعلام: ${stepStatusLine}
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200 font-bold text-slate-700">
+                <div>السيارة: <span class="text-slate-900">${ord.car}</span></div>
+                <div>المسار: <span class="text-emerald-700">${ord.lane}</span></div>
+                <div class="col-span-2">مكان التسليم: <span class="text-slate-900">${ord.spot}</span></div>
+                <div class="col-span-2 text-[11px] text-slate-400">وقت إصدار الفاتورة: ${ord.orderTime}</div>
+              </div>
+
+              <!-- تفاصيل أصناف الفاتورة -->
+              <div class="space-y-1 pt-1">
+                <div class="text-xs font-black text-slate-500 mb-1">تفاصيل الفاتورة:</div>
+                ${itemsRows}
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 space-y-3">
+              <div class="flex items-center justify-between bg-slate-900 text-white px-4 py-3 rounded-2xl">
+                <span class="text-xs font-bold text-slate-300">إجمالي الفاتورة (شامل الضريبة):</span>
+                <span class="text-xl font-black text-emerald-400 inline-flex items-center gap-1">
+                  <span>${ord.total}</span>
+                  ${saudiRiyalLogoSVG}
+                </span>
+              </div>
+
+              ${ord.status === 'in_progress' ? `
+                <button type="button" onclick="openOrderInLiveTracker('${ord.code}')" class="w-full py-3 rounded-xl font-black text-xs transition shadow ${
+                  isCurrentlyTracked
+                    ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
+                    : 'bg-amber-400 hover:bg-amber-300 text-slate-950'
+                }">
+                  ${isCurrentlyTracked ? 'الرجوع لشاشة المسار المباشر لهذا الطلب' : 'متابعة هذا الطلب في المسار المباشر'}
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // السماح للعميل بفتح أي طلب نشط من طلباته في شاشة المسار المباشر
+    function openOrderInLiveTracker(orderCode) {
+      const target = myCustomerOrders.find(o => o.code === orderCode);
+      if (!target) return;
+      myCustomerOrderCode = target.code;
+      document.getElementById('orderNumberDisplay').textContent = target.code;
+      document.getElementById('trackerLaneName').textContent = target.lane;
+      updateStepUIOnly(target.step || 1);
+      renderCustomerTrackedChat(target.messages || []);
+
+      document.getElementById('tabTracker').classList.remove('hidden');
+      document.getElementById('tabCustomer').classList.add('hidden');
+      switchMainView('tracker');
+    }
+
+    // السماح للعميل بإنشاء طلب ثانٍ مختلف إذا رغب بذلك
+    function startAnotherNewOrder() {
+      document.getElementById('tabCustomer').classList.remove('hidden');
+      switchMainView('customer');
+    }
+
+    function renderCustomerTrackedChat(messages) {
+      const custLog = document.getElementById('customerSignalsLog');
+      if (!custLog) return;
+      if (!messages || messages.length === 0) {
+        custLog.innerHTML = `
+          <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
+            بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...
+          </div>
+        `;
+        return;
+      }
+      custLog.innerHTML = messages.map(m => m.senderType === 'staff'
+        ? `
+          <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
+            <span class="text-amber-400 block mb-1">[${m.time}] رد موظف المسار:</span>
+            ${m.text}
+          </div>
+        `
+        : `
+          <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold">
+            <span class="text-emerald-400 block mb-1">[${m.time}] إشارتك المرسلة:</span>
+            ${m.text}
+          </div>
+        `
+      ).join('');
+    }
+
     function toggleSimpleMode() {
       simpleMode = !simpleMode;
       const t = translations[currentLang] || translations.ar;
@@ -1627,7 +1853,6 @@
       }
     }
 
-    // إدارة طابور الطلبات المتعددة في شاشة الموظف
     function getSelectedStaffOrder() {
       if (!staffSelectedOrderCode && activeOrders.length > 0) {
         staffSelectedOrderCode = activeOrders[0].code;
@@ -1731,7 +1956,6 @@
       renderStaffChatMessages(currentOrd.messages || []);
     }
 
-    // عرض سجل الطلبات في شاشة الموظف
     function renderOrdersHistory() {
       const listEl = document.getElementById('ordersHistoryList');
       const badgeEl = document.getElementById('historyCountBadge');
@@ -1774,12 +1998,11 @@
 
     function clearOrdersHistory() {
       ordersHistory = [];
-      try { localStorage.removeItem('yusr_orders_history_v9'); } catch (e) {}
+      try { localStorage.removeItem('yusr_orders_history_v10'); } catch (e) {}
       renderOrdersHistory();
       triggerVisualBanner('تم مسح سجل الطلبات بالكامل');
     }
 
-    // نافذة التأكيد (تأكيد / إلغاء) عند الضغط على طلب مكتمل أو حذف الطلب
     function promptStaffOrderAction(actionType) {
       const currentOrd = getSelectedStaffOrder();
       if (!currentOrd) {
@@ -1800,9 +2023,9 @@
         badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300';
         badge.textContent = 'تأكيد إكمال الطلب';
         title.textContent = `إكمال الطلب ${currentOrd.code}؟`;
-        desc.textContent = `سيتم تسجيل الطلب (${currentOrd.code}) كطلب مكتمل في سجل الطلبات وإبلاغ العميل باستلام طلبه بنجاح.`;
+        desc.textContent = `سيتم تسجيل الطلب (${currentOrd.code}) كطلب مكتمل في سجل الطلبات وتحديث فاتورة العميل إلى (تم التسليم).`;
         yesBtn.className = 'flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl transition shadow';
-        yesBtn.textContent = 'تأكيد الإكمال';
+        yesBtn.textContent = 'تأكيد';
       } else {
         box.className = 'bg-slate-900 text-white max-w-md w-full rounded-3xl p-6 shadow-2xl border-2 border-rose-500 text-center space-y-4';
         badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-rose-500/20 text-rose-300';
@@ -1810,7 +2033,7 @@
         title.textContent = `حذف الطلب ${currentOrd.code}؟`;
         desc.textContent = `هل أنت متأكد من حذف وإلغاء الطلب (${currentOrd.code})؟ سيتم نقله إلى سجل الطلبات كطلب محذوف.`;
         yesBtn.className = 'flex-1 bg-rose-600 hover:bg-rose-500 text-white font-black py-3 rounded-xl transition shadow';
-        yesBtn.textContent = 'تأكيد الحذف';
+        yesBtn.textContent = 'تأكيد';
       }
 
       modal.classList.remove('hidden');
@@ -1831,7 +2054,6 @@
       const targetCode = currentOrd.code;
       const timeStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
 
-      // إضافة الطلب إلى سجل الطلبات
       ordersHistory.unshift({
         code: currentOrd.code,
         car: currentOrd.car,
@@ -1842,10 +2064,18 @@
       });
 
       try {
-        localStorage.setItem('yusr_orders_history_v9', JSON.stringify(ordersHistory));
+        localStorage.setItem('yusr_orders_history_v10', JSON.stringify(ordersHistory));
       } catch (e) {}
 
-      // إزالة هذا الطلب فقط من الطابور وبقاء الطلبات الأخرى كما هي
+      // تحديث حالة الطلب في قائمة طلبات العميل إذا كان على نفس المتصفح
+      const myOrd = myCustomerOrders.find(o => o.code === targetCode);
+      if (myOrd) {
+        myOrd.status = actionType === 'complete' ? 'completed' : 'deleted';
+        myOrd.completedTime = timeStr;
+        saveMyCustomerOrders();
+        renderCustomerMyOrders();
+      }
+
       activeOrders = activeOrders.filter(o => o.code !== targetCode);
       staffSelectedOrderCode = activeOrders.length > 0 ? activeOrders[0].code : null;
 
@@ -1869,7 +2099,7 @@
     async function publishSyncEvent(payload) {
       payload.senderId = clientSessionId;
       payload.stamp = Date.now();
-      localStorage.setItem('yusr_latest_event_v9', JSON.stringify(payload));
+      localStorage.setItem('yusr_latest_event_v10', JSON.stringify(payload));
       try {
         await fetch(`https://ntfy.sh/${SYNC_TOPIC}`, {
           method: 'POST',
@@ -1893,7 +2123,7 @@
       } catch (e) {}
 
       window.addEventListener('storage', (e) => {
-        if (e.key === 'yusr_latest_event_v9' && e.newValue) {
+        if (e.key === 'yusr_latest_event_v10' && e.newValue) {
           try {
             handleIncomingSyncData(JSON.parse(e.newValue));
           } catch (err) {}
@@ -1913,11 +2143,9 @@
         incomingOrder.messages = incomingOrder.messages || [];
         incomingOrder.step = incomingOrder.step || 1;
 
-        // إضافة الطلب لطابور الموظف دون مسح الطلبات السابقة!
         const exists = activeOrders.some(o => o.code === incomingOrder.code);
         if (!exists) {
           activeOrders.push(incomingOrder);
-          // إذا لم يكن لدى الموظف طلب محدد حالياً، نحدد هذا الطلب الأول تلقائياً، وإذا كان لديه طلب أول مفتوح لا نغيره حتى لا ينحذف من أمامه
           if (!staffSelectedOrderCode) {
             staffSelectedOrderCode = incomingOrder.code;
           }
@@ -1950,16 +2178,26 @@
             renderStaffChatMessages(targetOrd.messages);
           }
         }
-        // لا يظهر ولا ينطق إلا عند العميل صاحب هذا الطلب تحديداً
-        if (currentView !== 'staff' && myCustomerOrderCode && data.orderCode === myCustomerOrderCode) {
+
+        // تحديث محادثة هذا الطلب في قائمة طلبات العميل
+        const myOrd = myCustomerOrders.find(o => o.code === data.orderCode);
+        if (myOrd) {
+          myOrd.messages = myOrd.messages || [];
           if (!isFromMe) {
-            appendMessageToCustomerLogOnly(data.replyText, data.time, 'staff');
+            myOrd.messages.unshift({ text: data.replyText, time: data.time, senderType: 'staff' });
+            saveMyCustomerOrders();
           }
-          triggerVisualBanner('رد الموظف: ' + data.replyText);
-          speakText(data.replyText);
+          if (currentView !== 'staff') {
+            if (myCustomerOrderCode === data.orderCode) {
+              renderCustomerTrackedChat(myOrd.messages);
+            }
+            triggerVisualBanner(`رد الموظف (${data.orderCode}): ${data.replyText}`);
+            speakText(data.replyText);
+          }
         }
       } else if (data.type === 'STAFF_ALERT') {
-        if (currentView !== 'staff' && myCustomerOrderCode && data.orderCode === myCustomerOrderCode) {
+        const myOrd = myCustomerOrders.find(o => o.code === data.orderCode);
+        if (currentView !== 'staff' && myOrd) {
           triggerVisualBanner(data.msg);
           speakText(data.msg);
         }
@@ -1967,13 +2205,21 @@
         const targetOrd = activeOrders.find(o => o.code === data.orderCode);
         if (targetOrd) targetOrd.step = data.stepNum;
 
-        // لا تتحدث المرحلة ولا ينطق الصوت إلا عند العميل صاحب هذا الطلب تحديداً
-        if (currentView !== 'staff' && myCustomerOrderCode && data.orderCode === myCustomerOrderCode) {
-          updateStepUIOnly(data.stepNum);
-          const langPack = stepMessages[currentLang] || stepMessages.ar;
-          const msg = langPack[data.stepNum] || stepMessages.ar[data.stepNum];
-          triggerVisualBanner(msg);
-          speakText(msg);
+        const myOrd = myCustomerOrders.find(o => o.code === data.orderCode);
+        if (myOrd) {
+          myOrd.step = data.stepNum;
+          saveMyCustomerOrders();
+          renderCustomerMyOrders();
+
+          if (currentView !== 'staff') {
+            if (myCustomerOrderCode === data.orderCode) {
+              updateStepUIOnly(data.stepNum);
+            }
+            const langPack = stepMessages[currentLang] || stepMessages.ar;
+            const msg = langPack[data.stepNum] || stepMessages.ar[data.stepNum];
+            triggerVisualBanner(`${data.orderCode}: ${msg}`);
+            speakText(msg);
+          }
         }
       } else if (data.type === 'COMPLETE_ORDER' || data.type === 'DELETE_ORDER') {
         const isComplete = data.type === 'COMPLETE_ORDER';
@@ -1996,58 +2242,34 @@
           renderOrdersHistory();
         }
 
-        // تنبيه العميل صاحب هذا الطلب فقط وإعادته للصفحة الرئيسية
-        if (currentView !== 'staff' && myCustomerOrderCode && data.orderCode === myCustomerOrderCode) {
-          myCustomerOrderCode = null;
-          updateStepUIOnly(1);
-          document.getElementById('orderNumberDisplay').textContent = '—';
-          resetCustomerChatBox();
-          const msg = isComplete
-            ? 'تم تسليم وإكمال طلبك بنجاح! شكراً لاستخدامك مسار يسر الذكي.'
-            : 'تم إلغاء وحذف طلبك من قِبل الفرع.';
-          triggerVisualBanner(msg);
-          speakText(msg);
-          switchMainView('customer');
+        // تحديث حالة الطلب في قائمة طلبات العميل (تم التسليم / ملغي)
+        const myOrd = myCustomerOrders.find(o => o.code === data.orderCode);
+        if (myOrd) {
+          myOrd.status = isComplete ? 'completed' : 'deleted';
+          myOrd.completedTime = data.time || new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+          saveMyCustomerOrders();
+          renderCustomerMyOrders();
+
+          if (currentView !== 'staff') {
+            const msg = isComplete
+              ? `تم تسليم وإكمال طلبك (${data.orderCode}) بنجاح! يمكنك الاطلاع على فاتورتك في قائمة طلباتي.`
+              : `تم إلغاء الطلب (${data.orderCode}) من قِبل الفرع.`;
+            triggerVisualBanner(msg);
+            speakText(msg);
+
+            // إذا كان هناك طلب آخر للعميل لا يزال جاري التسليم نتحول لمتابعته، وإلا ننقله لقائمة طلباتي والفواتير
+            const anotherActive = myCustomerOrders.find(o => o.status === 'in_progress');
+            if (anotherActive) {
+              openOrderInLiveTracker(anotherActive.code);
+            } else {
+              myCustomerOrderCode = null;
+              document.getElementById('tabTracker').classList.add('hidden');
+              document.getElementById('tabCustomer').classList.remove('hidden');
+              switchMainView('myorders');
+            }
+          }
         }
       }
-    }
-
-    function resetCustomerChatBox() {
-      const custLog = document.getElementById('customerSignalsLog');
-      if (custLog) {
-        custLog.innerHTML = `
-          <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
-            بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...
-          </div>
-        `;
-      }
-      customerChatHasMessages = false;
-    }
-
-    let customerChatHasMessages = false;
-    function appendMessageToCustomerLogOnly(text, timeStr, senderType) {
-      const custLog = document.getElementById('customerSignalsLog');
-      if (!custLog) return;
-
-      if (!customerChatHasMessages) {
-        customerChatHasMessages = true;
-        custLog.innerHTML = '';
-      }
-
-      const cardHTML = senderType === 'staff'
-        ? `
-          <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
-            <span class="text-amber-400 block mb-1">[${timeStr}] رد موظف المسار:</span>
-            ${text}
-          </div>
-        `
-        : `
-          <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold">
-            <span class="text-emerald-400 block mb-1">[${timeStr}] إشارتك المرسلة:</span>
-            ${text}
-          </div>
-        `;
-      custLog.innerHTML = cardHTML + custLog.innerHTML;
     }
 
     function startAppWithLanguage(langSelection) {
@@ -2091,6 +2313,7 @@
       document.getElementById('heroSubTitle').textContent = t.heroSubTitle;
       document.getElementById('tabCustomer').textContent = t.tabCustomer;
       document.getElementById('tabTracker').textContent = t.tabTracker;
+      document.getElementById('tabMyOrdersText').textContent = t.tabMyOrders;
       document.getElementById('tabStaff').textContent = t.tabStaff;
       document.getElementById('step1Badge').textContent = t.step1Badge;
       document.getElementById('step1Title').textContent = t.step1Title;
@@ -2134,6 +2357,7 @@
 
       renderMenu();
       renderCart();
+      renderCustomerMyOrders();
     }
 
     function speakStep1() {
@@ -2383,6 +2607,8 @@
       const carInput = document.getElementById('carDetails').value.trim() || 'سيارة العميل (بدون لوحة مدخلة)';
       const randomNum = Math.floor(100 + Math.random() * 900);
       const orderCode = '#YSR-' + randomNum;
+      const orderTime = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+      const totalAmount = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
 
       const orderData = {
         code: orderCode,
@@ -2390,20 +2616,27 @@
         car: carInput,
         lane: selectedLane,
         spot: selectedSpot,
-        items: cart.map(i => ({ qty: i.qty, name: i.name, note: i.note })),
+        items: cart.map(i => ({ qty: i.qty, name: i.name, price: i.price, note: i.note })),
+        total: totalAmount,
+        orderTime: orderTime,
+        status: 'in_progress', // جاري التسليم
         messages: [],
         step: 1,
         timestamp: Date.now()
       };
 
-      // تثبيت رقم الطلب لهذا العميل تحديداً ولا يتأثر بأي طلب آخر يأتي بعده
+      // إضافة الفاتورة والطلب لقائمة طلبات العميل
+      myCustomerOrders.unshift(orderData);
+      saveMyCustomerOrders();
+      renderCustomerMyOrders();
+
       myCustomerOrderCode = orderCode;
       document.getElementById('orderNumberDisplay').textContent = orderCode;
       document.getElementById('trackerLaneName').textContent = selectedLane;
       updateStepUIOnly(1);
-      resetCustomerChatBox();
+      renderCustomerTrackedChat([]);
 
-      // إضافته أيضاً في طابور الموظف دون حذف أي طلب سابق
+      // إضافة الطلب لطابور الموظف دون حذف الطلبات السابقة
       activeOrders.push(orderData);
       if (!staffSelectedOrderCode) {
         staffSelectedOrderCode = orderCode;
@@ -2415,8 +2648,12 @@
       cart = [];
       renderCart();
 
+      // إخفاء زر واجهة العميل وإظهار زر وشاشة مسار الدرايف ثرو المباشر تلقائياً
+      document.getElementById('tabCustomer').classList.add('hidden');
+      document.getElementById('tabTracker').classList.remove('hidden');
+
       speakText(orderCode);
-      triggerVisualBanner(`✓ ${orderCode} — ${selectedLane}`);
+      triggerVisualBanner(`✓ تم تأكيد الطلب ${orderCode} وتحويلك للمسار المباشر`);
       switchMainView('tracker');
     }
 
@@ -2425,28 +2662,36 @@
       if (view === 'staff' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
+      if (view === 'myorders') {
+        renderCustomerMyOrders();
+      }
 
       const views = {
         customer: document.getElementById('viewCustomer'),
         tracker: document.getElementById('viewTracker'),
+        myorders: document.getElementById('viewMyOrders'),
         staff: document.getElementById('viewStaff')
       };
       const tabs = {
         customer: document.getElementById('tabCustomer'),
         tracker: document.getElementById('tabTracker'),
+        myorders: document.getElementById('tabMyOrders'),
         staff: document.getElementById('tabStaff')
       };
 
       Object.keys(views).forEach(k => {
+        if (!views[k] || !tabs[k]) return;
+        const isTabHidden = tabs[k].classList.contains('hidden');
         if (k === view) {
           views[k].classList.remove('hidden');
-          tabs[k].className = 'focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition bg-emerald-500 text-slate-950 shadow';
+          tabs[k].classList.remove('hidden');
+          tabs[k].className = 'focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition bg-emerald-500 text-slate-950 shadow flex items-center gap-2';
         } else {
           views[k].classList.add('hidden');
-          if (k === 'staff' && tabs.staff.classList.contains('hidden')) {
-            // إبقاء زر الموظف مخفياً للزوار
+          if (isTabHidden) {
+            // إبقاء التبويب المخفي مخفياً (مثل واجهة العميل بعد الطلب أو المسار قبل الطلب أو الموظف للزوار)
           } else {
-            tabs[k].className = 'focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800';
+            tabs[k].className = 'focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800 flex items-center gap-2';
           }
         }
       });
@@ -2470,6 +2715,14 @@
         return;
       }
       currentOrd.step = stepNum;
+
+      const myOrd = myCustomerOrders.find(o => o.code === currentOrd.code);
+      if (myOrd) {
+        myOrd.step = stepNum;
+        saveMyCustomerOrders();
+        renderCustomerMyOrders();
+      }
+
       publishSyncEvent({ type: 'STEP_UPDATE', orderCode: currentOrd.code, stepNum: stepNum });
       triggerVisualBanner(`تم إرسال (المرحلة ${stepNum}) لصاحب الطلب ${currentOrd.code}`);
     }
@@ -2480,7 +2733,14 @@
         return;
       }
       const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-      appendMessageToCustomerLogOnly(signalText, time, 'customer');
+
+      const myOrd = myCustomerOrders.find(o => o.code === myCustomerOrderCode);
+      if (myOrd) {
+        myOrd.messages = myOrd.messages || [];
+        myOrd.messages.unshift({ text: signalText, time: time, senderType: 'customer' });
+        saveMyCustomerOrders();
+        renderCustomerTrackedChat(myOrd.messages);
+      }
 
       const localOrd = activeOrders.find(o => o.code === myCustomerOrderCode);
       if (localOrd) {
@@ -2513,6 +2773,13 @@
       currentOrd.messages.unshift({ text: replyText, time: time, senderType: 'staff' });
       renderStaffChatMessages(currentOrd.messages);
 
+      const myOrd = myCustomerOrders.find(o => o.code === currentOrd.code);
+      if (myOrd) {
+        myOrd.messages = myOrd.messages || [];
+        myOrd.messages.unshift({ text: replyText, time: time, senderType: 'staff' });
+        saveMyCustomerOrders();
+      }
+
       publishSyncEvent({ type: 'STAFF_REPLY', orderCode: currentOrd.code, replyText: replyText, time: time });
       triggerVisualBanner(`تم إرسال الرد لصاحب الطلب ${currentOrd.code}`);
     }
@@ -2543,7 +2810,17 @@
       renderCart();
       renderStaffActiveQueueAndDetails();
       renderOrdersHistory();
+      renderCustomerMyOrders();
       startLiveCloudSync();
+
+      // إذا كان لدى العميل طلب نشط سابق في جلسته الحالية يفتح له المسار، وإلا يبدأ بواجهة العميل فقط والمسار مخفي
+      const activeCustOrd = myCustomerOrders.find(o => o.status === 'in_progress');
+      if (activeCustOrd) {
+        openOrderInLiveTracker(activeCustOrd.code);
+      } else {
+        document.getElementById('tabTracker').classList.add('hidden');
+        document.getElementById('tabCustomer').classList.remove('hidden');
+      }
 
       const splash = document.getElementById('introSplash');
       const langModal = document.getElementById('welcomeModal');
