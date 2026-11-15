@@ -2379,6 +2379,17 @@
       document.getElementById('spotPassengerText').textContent = t.spotPassengerText;
       document.getElementById('spotTrunkText').textContent = t.spotTrunkText;
       document.getElementById('laneLabel').textContent = t.laneLabel;
+      const laneTranslations = {
+        ar: ['مسار يُسر 1', 'مسار يُسر 2', 'موقف خاص A'],
+        en: ['Yusr Lane 1', 'Yusr Lane 2', 'VIP Spot A'],
+        tr: ['Yusr Hat 1', 'Yusr Hat 2', 'Özel Park A'],
+        ur: ['یُسر لین 1', 'یُسر لین 2', 'خصوصی پارکنگ A'],
+        zh: ['易速车道 1', '易速车道 2', '专属车位 A']
+      };
+      const lanes = laneTranslations[lang] || laneTranslations.ar;
+      document.getElementById('lane-1').textContent = lanes[0];
+      document.getElementById('lane-2').textContent = lanes[1];
+      document.getElementById('lane-3').textContent = lanes[2];
       document.getElementById('cartHeaderTitle').textContent = t.cartHeaderTitle;
       document.getElementById('clearCartBtn').textContent = t.clearCartBtn;
       document.getElementById('totalLabel').textContent = t.totalLabel;
