@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Kayan Adel Abbas">
+  <meta name="copyright" content="Yusr Drive - 2026">
+  <meta name="description" content="منصة يُسْر درايف - مسار الطلبات الخارجية الذكي المخصص لذوي الإعاقة">
+  <title>يُسْر درايف | Yusr Drive</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
+
+  <div id="visualAlertBanner" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-400 text-black font-black text-center py-4 text-xl shadow-lg border-b-4 border-black">
+    تنبيه بصري: <span id="visualAlertText">تم تحديث حالة الطلب!</span>
+  </div>
+
+  <div class="bg-slate-900 text-white py-3 px-4 shadow-md sticky top-0 z-40 border-b border-slate-700">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <span class="bg-emerald-500 text-slate-950 font-extrabold px-3 py-1 rounded-full text-sm">شريط الوصول الشامل</span>
+        <span class="text-xs text-slate-300 hidden sm:inline">كيّف الواجهة حسب احتياجك بضغطة واحدة:</span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="ttsToggleBtn" onclick="toggleTTS()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+          <span id="ttsStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+          <span>القارئ الصوتي: مفعّل</span>
+        </button>
+        <button onclick="toggleHighContrast()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+          <span>تباين عالٍ</span>
+        </button>
+        <button onclick="cycleFontSize()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+          <span>حجم الخط: <span id="fontScaleLabel">100%</span></span>
+        </button>
+        <button id="visualFlashToggleBtn" onclick="toggleVisualFlashMode()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+          <span>إشعارات ضوئية (للصم)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <header class="bg-gradient-to-l from-emerald-800 via-teal-800 to-slate-900 text-white py-8 px-4 shadow-lg">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="space-y-3 text-center md:text-right max-w-2xl">
+        <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 px-4 py-1.5 rounded-full text-emerald-200 text-sm font-bold">
+          <span>مبادرة المسار الذكي الميسّر لذوي الإعاقة</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+          يُسْر درايف | <span class="text-emerald-400">Yusr Drive</span>
+        </h1>
+        <p class="text-slate-200 text-lg font-medium leading-relaxed">
+          اطلب من سيارتك باستقلالية تامة؛ بدون الحاجة للتحدث عبر المايكروفون التقليدي أو النزول من المركبة، مع تسليم مخصص لباب سيارتك.
+        </p>
+      </div>
+
+      <div class="bg-slate-900/80 p-2 rounded-2xl border border-slate-700 flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+        <button onclick="switchMainView('customer')" id="tabCustomer" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition bg-emerald-500 text-slate-950 shadow">
+          واجهة العميل (الطلب)
+        </button>
+        <button onclick="switchMainView('tracker')" id="tabTracker" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
+          مسار الدرايف ثرو المباشر
+        </button>
+        <button onclick="switchMainView('staff')" id="tabStaff" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
+          شاشة الموظف (محاكاة)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto w-full flex-1 p-4 sm:p-6 space-y-8">
+    <div id="viewCustomer" class="space-y-8">
+      <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 1 من 3</span>
+            <h2 class="text-2xl font-black mt-1">اختر نمط الخدمة وتكييف المسار</h2>
+          </div>
+          <button onclick="speakText('الخطوة الأولى: اختر نمط الخدمة وتكييف المسار حسب احتياجك')" class="focus-ring self-start sm:self-auto text-sm bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-4 py-2 rounded-xl transition">
+            استمع للشرح
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button onclick="selectDisabilityMode('mobility')" id="mode-mobility" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-emerald-600 bg-emerald-50/70 transition flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-extrabold bg-emerald-600 text-white px-2.5 py-1 rounded-full">مُفعّل</span>
+                <span class="text-sm font-black text-emerald-800">حركي</span>
+              </div>
+              <h3 class="text-xl font-extrabold mt-2">إعاقة حركية</h3>
+              <p class="text-sm text-slate-600 mt-1">توصيل الطلب حتى نافذة السائق أو المقعد الخلفي دون الحاجة لمد اليد أو النزول.</p>
+            </div>
+            <div class="text-xs font-bold text-emerald-800 bg-emerald-100/80 p-2 rounded-lg">
+              مسار واسع + حامل تسليم ممتد
+            </div>
+          </button>
+
+          <button onclick="selectDisabilityMode('hearing')" id="mode-hearing" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-400">اضغط للتفعيل</span>
+                <span class="text-sm font-black text-teal-800">سمعي / نطق</span>
+              </div>
+              <h3 class="text-xl font-extrabold mt-2">صم وضعاف سمع / نطق</h3>
+              <p class="text-sm text-slate-600 mt-1">إلغاء التخاطب الصوتي تماماً، واستبداله بشاشة تفاعلية وتنبيهات ضوئية.</p>
+            </div>
+            <div class="text-xs font-bold text-teal-800 bg-teal-50 p-2 rounded-lg">
+              تواصل بصري 100% بدون مايكروفون
+            </div>
+          </button>
+
+          <button onclick="selectDisabilityMode('visual')" id="mode-visual" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-400">اضغط للتفعيل</span>
+                <span class="text-sm font-black text-amber-800">بصري</span>
+              </div>
+              <h3 class="text-xl font-extrabold mt-2">مكفوفون وضعاف بصر</h3>
+              <p class="text-sm text-slate-600 mt-1">قراءة صوتية تلقائية للأصناف والأسعار، وأزرار ضخمة عالية التباين (للمرافق أو السائق).</p>
+            </div>
+            <div class="text-xs font-bold text-amber-800 bg-amber-50 p-2 rounded-lg">
+              توجيه صوتي كامل + تباين عالٍ
+            </div>
+          </button>
+
+          <button onclick="selectDisabilityMode('cognitive')" id="mode-cognitive" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-400">اضغط للتفعيل</span>
+                <span class="text-sm font-black text-purple-800">مبسّط</span>
+              </div>
+              <h3 class="text-xl font-extrabold mt-2">واجهة مبسطة وهادئة</h3>
+              <p class="text-sm text-slate-600 mt-1">مناسبة لطيف التوحد وكبار السن؛ خطوات واضحة بدون ضوضاء أو استعجال في المسار.</p>
+            </div>
+            <div class="text-xs font-bold text-purple-800 bg-purple-50 p-2 rounded-lg">
+              وقت مفتوح + تسليم هادئ
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2 space-y-6">
+          <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <div>
+                <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 2 من 3</span>
+                <h2 class="text-2xl font-black mt-1">قائمة الطلبات الميسّرة</h2>
+              </div>
+
+              <div class="flex flex-wrap gap-2">
+                <button onclick="filterCategory('all')" id="cat-all" class="cat-btn focus-ring px-4 py-2 rounded-xl font-bold text-sm bg-slate-900 text-white">الكل</button>
+                <button onclick="filterCategory('meals')" id="cat-meals" class="cat-btn focus-ring px-4 py-2 rounded-xl font-bold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">الوجبات الساخنة</button>
+                <button onclick="filterCategory('drinks')" id="cat-drinks" class="cat-btn focus-ring px-4 py-2 rounded-xl font-bold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">المشروبات والقهوة</button>
+                <button onclick="filterCategory('pharmacy')" id="cat-pharmacy" class="cat-btn focus-ring px-4 py-2 rounded-xl font-bold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">ركن الصيدلية السريع</button>
+              </div>
+            </div>
+
+            <div class="mb-6 bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p class="font-extrabold text-emerald-950">تخصيص التغليف الميسّر (Easy-Open Packaging)</p>
+                <p class="text-xs text-emerald-800">فتح العبوات مسبقاً أو وضعها في حامل مانع للانسكاب يسهل تناوله بيد واحدة</p>
+              </div>
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-white px-4 py-2 rounded-xl border border-emerald-300 font-bold text-sm text-emerald-900">
+                <input type="checkbox" id="easyPackToggle" checked onchange="updatePreferences()" class="w-5 h-5 accent-emerald-600 rounded">
+                <span>تفعيل التغليف الميسّر مجاناً</span>
+              </label>
+            </div>
+
+            <div id="menuGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+          </section>
+        </div>
+
+        <div class="space-y-6">
+          <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200 sticky top-20">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 3 من 3</span>
+            <h2 class="text-xl font-black mt-1 mb-4">بيانات المركبة وطريقة التسليم</h2>
+
+            <div class="space-y-4">
+              <div>
+                <label for="carDetails" class="block text-sm font-bold text-slate-700 mb-1">نوع ولون السيارة / رقم اللوحة</label>
+                <input id="carDetails" type="text" value="ميتسوبيشي باجيرو فضي - أ ب ج 2003" class="focus-ring w-full px-4 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-slate-50" placeholder="مثال: باجيرو فضي - 2003">
+              </div>
+
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">مكان تسليم الطلب في السيارة:</label>
+                <div class="grid grid-cols-1 gap-2">
+                  <button type="button" onclick="selectDeliverySpot('window', this)" class="spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-bold text-sm flex items-center justify-between">
+                    <span>تسليم عبر نافذة السائق بحامل ممتد</span>
+                    <span class="text-emerald-700 font-black">✓</span>
+                  </button>
+                  <button type="button" onclick="selectDeliverySpot('passenger', this)" class="spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-slate-200 hover:border-slate-300 font-bold text-sm flex items-center justify-between">
+                    <span>وضع الطلب على المقعد المجاور للسائق</span>
+                    <span class="text-slate-400">○</span>
+                  </button>
+                  <button type="button" onclick="selectDeliverySpot('trunk', this)" class="spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-slate-200 hover:border-slate-300 font-bold text-sm flex items-center justify-between">
+                    <span>وضع الطلب في الشنطة الخلفية للسيارة</span>
+                    <span class="text-slate-400">○</span>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">رقم موقف أو مسار الانتظار الذكي:</label>
+                <div class="grid grid-cols-3 gap-2">
+                  <button type="button" onclick="selectLane('مسار يُسر 1')" id="lane-1" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-black text-sm">مسار يُسر 1</button>
+                  <button type="button" onclick="selectLane('مسار يُسر 2')" id="lane-2" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm">مسار يُسر 2</button>
+                  <button type="button" onclick="selectLane('موقف خاص A')" id="lane-3" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm">موقف خاص A</button>
+                </div>
+              </div>
+
+              <hr class="border-slate-200 my-4">
+
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="font-extrabold text-slate-800">سلة طلبك الحالية</h3>
+                  <button onclick="clearCart()" class="text-xs font-bold text-rose-600 hover:underline">إفراغ السلة</button>
+                </div>
+                <div id="cartList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
+              </div>
+
+              <div class="bg-slate-100 p-4 rounded-2xl flex items-center justify-between">
+                <span class="font-extrabold text-slate-700">الإجمالي شامل الضريبة:</span>
+                <span class="text-2xl font-black text-emerald-700"><span id="cartTotal">0</span> ر.س</span>
+              </div>
+
+              <button onclick="submitAccessibleOrder()" class="focus-ring w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-lg py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+                <span>تأكيد الطلب وإشعار المسار الذكي</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div id="viewTracker" class="hidden space-y-8">
+      <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-slate-200">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
+          <div>
+            <span class="bg-emerald-100 text-emerald-800 font-extrabold px-3 py-1 rounded-full text-xs">لوحة التواصل اللالمسي والمباشر</span>
+            <h2 class="text-3xl font-black mt-2">شاشة المسار الذكي داخل السيارة</h2>
+            <p class="text-slate-600 text-sm mt-1">لا حاجة للتحدث عبر المايكروفون؛ كافة تحديثات طلبك وأزرار النداء السريع أمامك الآن.</p>
+          </div>
+          <div class="bg-slate-900 text-white px-6 py-4 rounded-2xl text-center">
+            <span class="text-xs text-slate-400 block">رقم طلب الأولوية</span>
+            <span id="orderNumberDisplay" class="text-3xl font-black text-emerald-400">#YSR-104</span>
+          </div>
+        </div>
+
+        <div class="py-8">
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+            <div id="step-1" class="step-box p-4 rounded-2xl border-2 border-emerald-600 bg-emerald-50">
+              <div class="text-xs font-extrabold text-emerald-700">المرحلة 1</div>
+              <div class="font-black text-lg mt-1">تم استلام الطلب وتكييف المسار</div>
+              <p class="text-xs text-slate-600 mt-1">تم إبلاغ الموظف بنوع الاحتياج وطريقة التسليم</p>
+            </div>
+            <div id="step-2" class="step-box p-4 rounded-2xl border-2 border-slate-200 bg-slate-50">
+              <div class="text-xs font-bold text-slate-500">المرحلة 2</div>
+              <div class="font-black text-lg mt-1">تجهيز وتغليف ميسّر</div>
+              <p class="text-xs text-slate-600 mt-1">تجهيز العبوات سهلة الفتح وحامل السيارة</p>
+            </div>
+            <div id="step-3" class="step-box p-4 rounded-2xl border-2 border-slate-200 bg-slate-50">
+              <div class="text-xs font-bold text-slate-500">المرحلة 3</div>
+              <div class="font-black text-lg mt-1">التعرف على وصول مركبتك</div>
+              <p class="text-xs text-slate-600 mt-1">المستشعر قرأ وجودك في <span id="trackerLaneName" class="font-bold">مسار يُسر 1</span></p>
+            </div>
+            <div id="step-4" class="step-box p-4 rounded-2xl border-2 border-slate-200 bg-slate-50">
+              <div class="text-xs font-bold text-slate-500">المرحلة 4</div>
+              <div class="font-black text-lg mt-1">التسليم المباشر لسيارتك</div>
+              <p class="text-xs text-slate-600 mt-1">الموظف في طريقه لباب المركبة الآن</p>
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-wrap items-center justify-between gap-3 bg-slate-100 p-4 rounded-2xl">
+            <span class="text-sm font-bold text-slate-700">محاكاة تقدم الطلب في المسار:</span>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="setOrderStep(1)" class="focus-ring px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs font-bold hover:bg-slate-200">1. استلام</button>
+              <button onclick="setOrderStep(2)" class="focus-ring px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs font-bold hover:bg-slate-200">2. تحضير ميسر</button>
+              <button onclick="setOrderStep(3)" class="focus-ring px-3 py-1.5 rounded-lg bg-white border border-slate-300 text-xs font-bold hover:bg-slate-200">3. وصول السيارة</button>
+              <button onclick="setOrderStep(4)" class="focus-ring px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-500">4. تسليم للسيارة</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-slate-200 pt-6">
+          <h3 class="text-xl font-black mb-2">أزرار التواصل السريع مع الموظف (بدون تحدث)</h3>
+          <p class="text-sm text-slate-600 mb-4">اضغط على أي زر لإرسال إشارة فورية لشاشة الموظف في النافذة:</p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <button onclick="sendQuickSignal('أنا وصلت في المسار المحدد وأنتظر بالسيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+              <span class="font-extrabold block mt-1">أنا في المسار الآن</span>
+              <span class="text-xs text-slate-500">إشعار بوصول السيارة لنقطة الاستلام</span>
+            </button>
+
+            <button onclick="sendQuickSignal('أحتاج وقتاً إضافياً، فضلاً لا تستعجل')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+              <span class="font-extrabold block mt-1">أحتاج وقتاً إضافياً</span>
+              <span class="text-xs text-slate-500">إيقاف مؤقت للاستعجال في المسار</span>
+            </button>
+
+            <button onclick="sendQuickSignal('أفضّل التواصل الكتابي أو بلغة الإشارة فقط')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+              <span class="font-extrabold block mt-1">تواصل كتابي / إشارة</span>
+              <span class="text-xs text-slate-500">تنبيه الموظف لعدم استخدام الصوت</span>
+            </button>
+
+            <button onclick="sendQuickSignal('يرجى إحضار جهاز الدفع (الشبكة) لنافذة السيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+              <span class="font-extrabold block mt-1">إحضار جهاز الشبكة</span>
+              <span class="text-xs text-slate-500">مدّ جهاز الدفع اللاسلكي للسيارة</span>
+            </button>
+          </div>
+
+          <div id="signalConfirmation" class="mt-4 hidden bg-emerald-900 text-white p-4 rounded-2xl font-bold flex items-center justify-between">
+            <span id="signalConfirmationText">تم إرسال الإشارة للموظف بنجاح</span>
+            <span class="text-xs bg-emerald-700 px-3 py-1 rounded-full">وصلت للشاشة</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="viewStaff" class="hidden space-y-6">
+      <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-slate-700">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700 pb-5">
+          <div>
+            <span class="bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-full text-xs">شاشة طاقم الفرع - مسار الأولوية</span>
+            <h2 class="text-2xl sm:text-3xl font-black mt-2">لوحة استقبال طلبات "يُسْر درايف"</h2>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400 text-emerald-300 px-4 py-2 rounded-xl text-sm font-bold">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+              مستشعر المسار الذكي متصل
+            </span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+          <div class="lg:col-span-2 bg-slate-800 rounded-2xl p-6 border border-slate-700 space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="text-2xl font-black text-emerald-400" id="staffOrderCode">#YSR-104</span>
+              <span id="staffModeBadge" class="bg-emerald-500 text-slate-950 font-black px-4 py-1 rounded-full text-sm">إعاقة حركية</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/90 p-4 rounded-xl border border-slate-700">
+              <div>
+                <span class="text-xs text-slate-400 block">بيانات المركبة:</span>
+                <span id="staffCarInfo" class="font-extrabold text-white">ميتسوبيشي باجيرو فضي - أ ب ج 2003</span>
+              </div>
+              <div>
+                <span class="text-xs text-slate-400 block">المسار / الموقف:</span>
+                <span id="staffLaneInfo" class="font-extrabold text-amber-400">مسار يُسر 1</span>
+              </div>
+              <div>
+                <span class="text-xs text-slate-400 block">طريقة التسليم المطلوبة:</span>
+                <span id="staffSpotInfo" class="font-extrabold text-emerald-300">تسليم عبر نافذة السائق بحامل ممتد</span>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-extrabold text-slate-300 mb-2">إرشادات التعامل الخاصة بهذا العميل:</h3>
+              <div id="staffInstructionsBox" class="bg-amber-500/10 border border-amber-400/40 text-amber-200 p-4 rounded-xl text-sm font-bold leading-relaxed">
+                • العميل يستخدم مسار الإعاقة الحركية: استخدم صينية التسليم الممتدة حتى نافذة السائق، وتأكد من إحكام غلق المشروبات.
+              </div>
+            </div>
+
+            <div>
+              <h3 class="font-extrabold text-slate-300 mb-2">الأصناف المطلوبة:</h3>
+              <ul id="staffItemsList" class="space-y-2 text-sm font-bold bg-slate-900 p-4 rounded-xl"></ul>
+            </div>
+          </div>
+
+          <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col justify-between space-y-4">
+            <div>
+              <h3 class="font-black text-lg text-white mb-3">إشارات السائق اللحظية</h3>
+              <div id="staffSignalsLog" class="space-y-2 max-h-64 overflow-y-auto">
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
+                  بانتظار إشارات من شاشة سيارة العميل...
+                </div>
+              </div>
+            </div>
+
+            <div class="space-y-2 pt-4 border-t border-slate-700">
+              <span class="text-xs text-slate-400 block">إرسال تنبيه مباشر لشاشة العميل:</span>
+              <button onclick="triggerCustomerAlert('الموظف في طريقه إليك الآن ومعه الطلب')" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm transition">
+                إشعار العميل: الموظف قادم لسيارتك
+              </button>
+              <button onclick="triggerCustomerAlert('طلبك جاهز ومغلف بتغليف ميسّر سهل الفتح')" class="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm transition">
+                إشعار ضوئي وصوتي: الطلب جاهز
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-slate-900 text-slate-400 py-6 px-4 mt-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+      <p class="font-bold text-slate-200">منصة يُسْر درايف (Yusr Drive) — تطوير: كيان عادل عباس</p>
+      <p class="text-xs">يدعم قارئات الشاشة، التباين العالي، والتواصل غير الصوتي الكامل</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
