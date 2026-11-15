@@ -1710,19 +1710,82 @@
       renderCart();
     }
 
-    function speakText(text) {
-      if (currentView === 'staff') return;
-      if (!ttsEnabled || !('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = voiceLangCodes[currentLang] || 'ar-SA';
-      utterance.rate = 1;
-      window.speechSynthesis.speak(utterance);
+    // محرك النطق الذكي المحسّن (HD Multi-Language Voice Engine)
+    let availableVoices = [];
+    let currentCloudAudio = null;
+
+    function loadHDVoices() {
+      if ('speechSynthesis' in window) {
+        availableVoices = window.speechSynthesis.getVoices();
+      }
     }
 
-    function speakStep1() {
-      const t = translations[currentLang] || translations.ar;
-      speakText(t.step1Title);
+    if ('speechSynthesis' in window) {
+      loadHDVoices();
+      window.speechSynthesis.onvoiceschanged = loadHDVoices;
+    }
+
+    function getBestVoiceForLang(langCode) {
+      if (!availableVoices || availableVoices.length === 0) loadHDVoices();
+      const shortLang = langCode.split('-')[0].toLowerCase();
+
+      const matching = availableVoices.filter(v =>
+        v.lang.toLowerCase().replace('_', '-').startsWith(shortLang)
+      );
+
+      if (matching.length === 0) return null;
+
+      const hdKeywords = ['natural', 'online', 'neural', 'google', 'hamed', 'zariyah', 'salma', 'siri', 'premium', 'enhanced', 'emel', 'xiaoxiao', 'asad', 'uzma'];
+      for (const keyword of hdKeywords) {
+        const found = matching.find(v => v.name.toLowerCase().includes(keyword));
+        if (found) return found;
+      }
+
+      return matching[0];
+    }
+
+    function playCloudFallbackTTS(text, langCode) {
+      try {
+        if (currentCloudAudio) {
+          currentCloudAudio.pause();
+          currentCloudAudio = null;
+        }
+        const shortLang = langCode.split('-')[0];
+        const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${shortLang}&client=tw-ob`;
+        currentCloudAudio = new Audio(url);
+        currentCloudAudio.rate = 1.0;
+        currentCloudAudio.play().catch(() => {});
+      } catch (e) {}
+    }
+
+    function speakText(text) {
+      if (currentView === 'staff' || !ttsEnabled || !text) return;
+
+      const targetLang = voiceLangCodes[currentLang] || 'ar-SA';
+
+      if (currentCloudAudio) {
+        currentCloudAudio.pause();
+        currentCloudAudio = null;
+      }
+
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const bestVoice = getBestVoiceForLang(targetLang);
+
+        if (bestVoice) {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.voice = bestVoice;
+          utterance.lang = bestVoice.lang;
+          utterance.rate = currentLang === 'ar' || currentLang === 'ur' ? 0.95 : 1.0;
+          utterance.pitch = 1.0;
+          utterance.volume = 1.0;
+          utterance.onerror = () => playCloudFallbackTTS(text, targetLang);
+          window.speechSynthesis.speak(utterance);
+          return;
+        }
+      }
+
+      playCloudFallbackTTS(text, targetLang);
     }
 
     function triggerVisualBanner(message) {
