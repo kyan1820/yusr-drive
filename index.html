@@ -1847,7 +1847,8 @@
                 <div>السيارة: <span class="text-slate-900">${ord.car}</span></div>
                 <div>المسار: <span class="text-emerald-700">${ord.lane}</span></div>
                 <div class="col-span-2">مكان التسليم: <span class="text-slate-900">${ord.spot}</span></div>
-                <div class="col-span-2 text-[11px] text-slate-400">وقت إصدار الفاتورة: ${ord.orderTime || 'الآن'}</div>
+                <div class="col-span-2 text-emerald-800">طريقة الدفع: <span class="font-black">${ord.paymentMethod || 'مدى (Mada)'}</span></div>
+<div class="col-span-2 text-[11px] text-slate-500">التاريخ: ${ord.orderDate || 'اليوم'} — الوقت: ${ord.orderTime || 'الآن'}</div>
               </div>
 
               <div class="space-y-1 pt-1">
