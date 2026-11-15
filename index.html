@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,34 +8,72 @@
   <meta name="description" content="منصة يُسْر درايف - مسار الطلبات الخارجية الذكي المخصص لذوي الإعاقة">
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
- <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
 
+  <div id="welcomeModal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="bg-white text-slate-900 max-w-xl w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-emerald-500 text-center space-y-6">
+      <div class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full text-sm font-black">
+        <span>Yusr Drive | يُسْر درايف</span>
+      </div>
+
+      <div class="space-y-2">
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-900">أهلاً بك في مسار يُسْر الذكي</h2>
+        <p class="text-base font-bold text-slate-600">Welcome to Yusr Accessible Drive-Thru</p>
+        <p class="text-xs text-slate-500 pt-1">اختر لغتك المفضلة للبدء وتكييف الواجهة والقارئ الصوتي تلقائياً:</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <button onclick="startAppWithLanguage('ar')" class="focus-ring p-5 rounded-2xl border-2 border-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition flex flex-col items-center justify-center gap-2">
+          <span class="text-xs font-extrabold bg-emerald-600 text-white px-2.5 py-0.5 rounded-full">الافتراضي</span>
+          <span class="text-xl font-black text-slate-900">العربية</span>
+          <span class="text-xs text-slate-600 font-bold">واجهة وقارئ صوتي عربي</span>
+        </button>
+
+        <button onclick="startAppWithLanguage('en')" class="focus-ring p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-2">
+          <span class="text-xs font-extrabold bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">English</span>
+          <span class="text-xl font-black text-slate-900">English</span>
+          <span class="text-xs text-slate-600 font-bold">Voice & UI in English</span>
+        </button>
+
+        <button onclick="startAppWithLanguage('sign')" class="focus-ring p-5 rounded-2xl border-2 border-slate-200 hover:border-amber-500 bg-slate-50 hover:bg-amber-50 transition flex flex-col items-center justify-center gap-2">
+          <span class="text-xs font-extrabold bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">للصم</span>
+          <span class="text-lg font-black text-slate-900">بصري / إشارة</span>
+          <span class="text-xs text-slate-600 font-bold">تنبيهات ضوئية بدون صوت</span>
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400 font-bold">يمكنك تغيير اللغة في أي وقت من الشريط العلوي للموقع</p>
+    </div>
+  </div>
+
   <div id="visualAlertBanner" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-400 text-black font-black text-center py-4 text-xl shadow-lg border-b-4 border-black">
-    تنبيه بصري: <span id="visualAlertText">تم تحديث حالة الطلب!</span>
+    <span id="visualAlertText">تم تحديث حالة الطلب!</span>
   </div>
 
   <div class="bg-slate-900 text-white py-3 px-4 shadow-md sticky top-0 z-40 border-b border-slate-700">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-2">
-        <span class="bg-emerald-500 text-slate-950 font-extrabold px-3 py-1 rounded-full text-sm">شريط الوصول الشامل</span>
-        <span class="text-xs text-slate-300 hidden sm:inline">كيّف الواجهة حسب احتياجك بضغطة واحدة:</span>
+        <span id="accBadgeTitle" class="bg-emerald-500 text-slate-950 font-extrabold px-3 py-1 rounded-full text-sm">شريط الوصول الشامل</span>
+        <button onclick="openLanguageModal()" id="changeLangBtn" class="focus-ring bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-lg text-xs font-black transition">
+          تغيير اللغة (Language)
+        </button>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <button id="ttsToggleBtn" onclick="toggleTTS()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
           <span id="ttsStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-          <span>القارئ الصوتي: مفعّل</span>
+          <span id="ttsBtnText">القارئ الصوتي: مفعّل</span>
         </button>
-        <button onclick="toggleHighContrast()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+        <button onclick="toggleHighContrast()" id="contrastBtn" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
           <span>تباين عالٍ</span>
         </button>
         <button onclick="cycleFontSize()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
-          <span>حجم الخط: <span id="fontScaleLabel">100%</span></span>
+          <span id="fontBtnLabel">حجم الخط:</span> <span id="fontScaleLabel">100%</span>
         </button>
         <button id="visualFlashToggleBtn" onclick="toggleVisualFlashMode()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
-          <span>إشعارات ضوئية (للصم)</span>
+          <span id="flashBtnText">إشعارات ضوئية (للصم)</span>
         </button>
       </div>
     </div>
@@ -45,12 +83,12 @@
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
       <div class="space-y-3 text-center md:text-right max-w-2xl">
         <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 px-4 py-1.5 rounded-full text-emerald-200 text-sm font-bold">
-          <span>مبادرة المسار الذكي الميسّر لذوي الإعاقة</span>
+          <span id="heroBadge">مبادرة المسار الذكي الميسّر لذوي الإعاقة</span>
         </div>
         <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
-          يُسْر درايف | <span class="text-emerald-400">Yusr Drive</span>
+          <span id="heroMainTitle">يُسْر درايف</span> | <span class="text-emerald-400">Yusr Drive</span>
         </h1>
-        <p class="text-slate-200 text-lg font-medium leading-relaxed">
+        <p id="heroSubTitle" class="text-slate-200 text-lg font-medium leading-relaxed">
           اطلب من سيارتك باستقلالية تامة؛ بدون الحاجة للتحدث عبر المايكروفون التقليدي أو النزول من المركبة، مع تسليم مخصص لباب سيارتك.
         </p>
       </div>
@@ -74,10 +112,10 @@
       <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
           <div>
-            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 1 من 3</span>
-            <h2 class="text-2xl font-black mt-1">اختر نمط الخدمة وتكييف المسار</h2>
+            <span id="step1Badge" class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 1 من 3</span>
+            <h2 id="step1Title" class="text-2xl font-black mt-1">اختر نمط الخدمة وتكييف المسار</h2>
           </div>
-          <button onclick="speakText('الخطوة الأولى: اختر نمط الخدمة وتكييف المسار حسب احتياجك')" class="focus-ring self-start sm:self-auto text-sm bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-4 py-2 rounded-xl transition">
+          <button id="listenStep1Btn" onclick="speakStep1()" class="focus-ring self-start sm:self-auto text-sm bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-4 py-2 rounded-xl transition">
             استمع للشرح
           </button>
         </div>
@@ -89,8 +127,8 @@
                 <span class="text-xs font-extrabold bg-emerald-600 text-white px-2.5 py-1 rounded-full">مُفعّل</span>
                 <span class="text-sm font-black text-emerald-800">حركي</span>
               </div>
-              <h3 class="text-xl font-extrabold mt-2">إعاقة حركية</h3>
-              <p class="text-sm text-slate-600 mt-1">توصيل الطلب حتى نافذة السائق أو المقعد الخلفي دون الحاجة لمد اليد أو النزول.</p>
+              <h3 id="modeMobilityTitle" class="text-xl font-extrabold mt-2">إعاقة حركية</h3>
+              <p id="modeMobilityDesc" class="text-sm text-slate-600 mt-1">توصيل الطلب حتى نافذة السائق أو المقعد الخلفي دون الحاجة لمد اليد أو النزول.</p>
             </div>
             <div class="text-xs font-bold text-emerald-800 bg-emerald-100/80 p-2 rounded-lg">
               مسار واسع + حامل تسليم ممتد
@@ -100,11 +138,11 @@
           <button onclick="selectDisabilityMode('hearing')" id="mode-hearing" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-400">اضغط للتفعيل</span>
+                <span class="text-xs font-bold text-slate-400">تفعيل</span>
                 <span class="text-sm font-black text-teal-800">سمعي / نطق</span>
               </div>
-              <h3 class="text-xl font-extrabold mt-2">صم وضعاف سمع / نطق</h3>
-              <p class="text-sm text-slate-600 mt-1">إلغاء التخاطب الصوتي تماماً، واستبداله بشاشة تفاعلية وتنبيهات ضوئية.</p>
+              <h3 id="modeHearingTitle" class="text-xl font-extrabold mt-2">صم وضعاف سمع / نطق</h3>
+              <p id="modeHearingDesc" class="text-sm text-slate-600 mt-1">إلغاء التخاطب الصوتي تماماً، واستبداله بشاشة تفاعلية وتنبيهات ضوئية.</p>
             </div>
             <div class="text-xs font-bold text-teal-800 bg-teal-50 p-2 rounded-lg">
               تواصل بصري 100% بدون مايكروفون
@@ -114,11 +152,11 @@
           <button onclick="selectDisabilityMode('visual')" id="mode-visual" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-400">اضغط للتفعيل</span>
+                <span class="text-xs font-bold text-slate-400">تفعيل</span>
                 <span class="text-sm font-black text-amber-800">بصري</span>
               </div>
-              <h3 class="text-xl font-extrabold mt-2">مكفوفون وضعاف بصر</h3>
-              <p class="text-sm text-slate-600 mt-1">قراءة صوتية تلقائية للأصناف والأسعار، وأزرار ضخمة عالية التباين (للمرافق أو السائق).</p>
+              <h3 id="modeVisualTitle" class="text-xl font-extrabold mt-2">مكفوفون وضعاف بصر</h3>
+              <p id="modeVisualDesc" class="text-sm text-slate-600 mt-1">قراءة صوتية تلقائية للأصناف والأسعار، وأزرار ضخمة عالية التباين.</p>
             </div>
             <div class="text-xs font-bold text-amber-800 bg-amber-50 p-2 rounded-lg">
               توجيه صوتي كامل + تباين عالٍ
@@ -128,11 +166,11 @@
           <button onclick="selectDisabilityMode('cognitive')" id="mode-cognitive" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-400">اضغط للتفعيل</span>
+                <span class="text-xs font-bold text-slate-400">تفعيل</span>
                 <span class="text-sm font-black text-purple-800">مبسّط</span>
               </div>
-              <h3 class="text-xl font-extrabold mt-2">واجهة مبسطة وهادئة</h3>
-              <p class="text-sm text-slate-600 mt-1">مناسبة لطيف التوحد وكبار السن؛ خطوات واضحة بدون ضوضاء أو استعجال في المسار.</p>
+              <h3 id="modeCognitiveTitle" class="text-xl font-extrabold mt-2">واجهة مبسطة وهادئة</h3>
+              <p id="modeCognitiveDesc" class="text-sm text-slate-600 mt-1">مناسبة لطيف التوحد وكبار السن؛ خطوات واضحة بدون ضوضاء أو استعجال.</p>
             </div>
             <div class="text-xs font-bold text-purple-800 bg-purple-50 p-2 rounded-lg">
               وقت مفتوح + تسليم هادئ
@@ -146,8 +184,8 @@
           <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200">
             <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
               <div>
-                <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 2 من 3</span>
-                <h2 class="text-2xl font-black mt-1">قائمة الطلبات الميسّرة</h2>
+                <span id="step2Badge" class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 2 من 3</span>
+                <h2 id="step2Title" class="text-2xl font-black mt-1">قائمة الطلبات الميسّرة</h2>
               </div>
 
               <div class="flex flex-wrap gap-2">
@@ -160,12 +198,12 @@
 
             <div class="mb-6 bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p class="font-extrabold text-emerald-950">تخصيص التغليف الميسّر (Easy-Open Packaging)</p>
-                <p class="text-xs text-emerald-800">فتح العبوات مسبقاً أو وضعها في حامل مانع للانسكاب يسهل تناوله بيد واحدة</p>
+                <p id="easyPackTitle" class="font-extrabold text-emerald-950">تخصيص التغليف الميسّر (Easy-Open Packaging)</p>
+                <p id="easyPackDesc" class="text-xs text-emerald-800">فتح العبوات مسبقاً أو وضعها في حامل مانع للانسكاب يسهل تناوله بيد واحدة</p>
               </div>
               <label class="inline-flex items-center gap-2 cursor-pointer select-none bg-white px-4 py-2 rounded-xl border border-emerald-300 font-bold text-sm text-emerald-900">
                 <input type="checkbox" id="easyPackToggle" checked onchange="updatePreferences()" class="w-5 h-5 accent-emerald-600 rounded">
-                <span>تفعيل التغليف الميسّر مجاناً</span>
+                <span id="easyPackLabel">تفعيل التغليف الميسّر مجاناً</span>
               </label>
             </div>
 
@@ -175,35 +213,35 @@
 
         <div class="space-y-6">
           <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200 sticky top-20">
-            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 3 من 3</span>
-            <h2 class="text-xl font-black mt-1 mb-4">بيانات المركبة وطريقة التسليم</h2>
+            <span id="step3Badge" class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 3 من 3</span>
+            <h2 id="step3Title" class="text-xl font-black mt-1 mb-4">بيانات المركبة وطريقة التسليم</h2>
 
             <div class="space-y-4">
               <div>
-                <label for="carDetails" class="block text-sm font-bold text-slate-700 mb-1">نوع ولون السيارة / رقم اللوحة</label>
-                <input id="carDetails" type="text" value="ميتسوبيشي باجيرو فضي - أ ب ج 2003" class="focus-ring w-full px-4 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-slate-50" placeholder="مثال: باجيرو فضي - 2003">
+                <label id="carDetailsLabel" for="carDetails" class="block text-sm font-bold text-slate-700 mb-1">نوع ولون السيارة / رقم اللوحة</label>
+                <input id="carDetails" type="text" value="ميتسوبيشي باجيرو فضي - أ ب ج 2003" class="focus-ring w-full px-4 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-slate-50">
               </div>
 
               <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2">مكان تسليم الطلب في السيارة:</label>
+                <label id="spotLabel" class="block text-sm font-bold text-slate-700 mb-2">مكان تسليم الطلب في السيارة:</label>
                 <div class="grid grid-cols-1 gap-2">
                   <button type="button" onclick="selectDeliverySpot('window', this)" class="spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-bold text-sm flex items-center justify-between">
-                    <span>تسليم عبر نافذة السائق بحامل ممتد</span>
+                    <span id="spotWindowText">تسليم عبر نافذة السائق بحامل ممتد</span>
                     <span class="text-emerald-700 font-black">✓</span>
                   </button>
                   <button type="button" onclick="selectDeliverySpot('passenger', this)" class="spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-slate-200 hover:border-slate-300 font-bold text-sm flex items-center justify-between">
-                    <span>وضع الطلب على المقعد المجاور للسائق</span>
+                    <span id="spotPassengerText">وضع الطلب على المقعد المجاور للسائق</span>
                     <span class="text-slate-400">○</span>
                   </button>
                   <button type="button" onclick="selectDeliverySpot('trunk', this)" class="spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-slate-200 hover:border-slate-300 font-bold text-sm flex items-center justify-between">
-                    <span>وضع الطلب في الشنطة الخلفية للسيارة</span>
+                    <span id="spotTrunkText">وضع الطلب في الشنطة الخلفية للسيارة</span>
                     <span class="text-slate-400">○</span>
                   </button>
                 </div>
               </div>
 
               <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2">رقم موقف أو مسار الانتظار الذكي:</label>
+                <label id="laneLabel" class="block text-sm font-bold text-slate-700 mb-2">رقم موقف أو مسار الانتظار الذكي:</label>
                 <div class="grid grid-cols-3 gap-2">
                   <button type="button" onclick="selectLane('مسار يُسر 1')" id="lane-1" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-black text-sm">مسار يُسر 1</button>
                   <button type="button" onclick="selectLane('مسار يُسر 2')" id="lane-2" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm">مسار يُسر 2</button>
@@ -215,19 +253,19 @@
 
               <div>
                 <div class="flex items-center justify-between mb-2">
-                  <h3 class="font-extrabold text-slate-800">سلة طلبك الحالية</h3>
-                  <button onclick="clearCart()" class="text-xs font-bold text-rose-600 hover:underline">إفراغ السلة</button>
+                  <h3 id="cartHeaderTitle" class="font-extrabold text-slate-800">سلة طلبك الحالية</h3>
+                  <button onclick="clearCart()" id="clearCartBtn" class="text-xs font-bold text-rose-600 hover:underline">إفراغ السلة</button>
                 </div>
                 <div id="cartList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
               </div>
 
               <div class="bg-slate-100 p-4 rounded-2xl flex items-center justify-between">
-                <span class="font-extrabold text-slate-700">الإجمالي شامل الضريبة:</span>
-                <span class="text-2xl font-black text-emerald-700"><span id="cartTotal">0</span> ر.س</span>
+                <span id="totalLabel" class="font-extrabold text-slate-700">الإجمالي شامل الضريبة:</span>
+                <span class="text-2xl font-black text-emerald-700"><span id="cartTotal">0</span> <span id="currencyLabel">ر.س</span></span>
               </div>
 
               <button onclick="submitAccessibleOrder()" class="focus-ring w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-lg py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
-                <span>تأكيد الطلب وإشعار المسار الذكي</span>
+                <span id="submitOrderBtnText">تأكيد الطلب وإشعار المسار الذكي</span>
               </button>
             </div>
           </section>
