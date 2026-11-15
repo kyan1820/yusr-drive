@@ -10,11 +10,30 @@ let selectedMode = 'mobility';
 let selectedSpot = 'تسليم عبر نافذة السائق بحامل ممتد';
 let selectedLane = 'مسار يُسر 1';
 let currentCategory = 'all';
+let currentView = 'customer';
 
 // قناة المزامنة السحابية الفورية بين جوال العميل وشاشة الموظف
 const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v1';
 let activeOrderId = null;
-let lastAlertStamp = 0;
+let lastEventStamp = 0;
+
+// معرف فريد لكل جلسة/جهاز للتفريق بين جهاز الموظف وجهاز العميل
+const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
+
+const stepMessages = {
+  ar: {
+    1: 'تم استلام الطلب وتكييف المسار',
+    2: 'جاري تجهيز الطلب بتغليف ميسّر سهل الفتح',
+    3: 'تم التعرف على وصول سيارتك في المسار الذكي',
+    4: 'الموظف في طريقه لباب سيارتك الآن لتسليم الطلب'
+  },
+  en: {
+    1: 'Order received and smart lane adapted',
+    2: 'Preparing your order with easy-open packaging',
+    3: 'Your vehicle arrival has been detected in the smart lane',
+    4: 'Staff member is on the way to your car door now'
+  }
+};
 
 const translations = {
   ar: {
@@ -192,7 +211,6 @@ const yusrMenu = [
   }
 ];
 
-// السلة تبدأ فارغة تماماً بدون طلبات مسبقة
 let cart = [];
 
 function getModeDetails(mode) {
@@ -219,7 +237,6 @@ function getModeDetails(mode) {
   }
 }
 
-// تصفير شاشة الموظف عند عدم وجود طلبات
 function resetStaffScreenToEmpty() {
   document.getElementById('staffOrderCode').textContent = 'لا يوجد طلب نشط';
   document.getElementById('staffModeBadge').textContent = 'بانتظار عميل...';
@@ -235,7 +252,6 @@ function resetStaffScreenToEmpty() {
   `;
 }
 
-// تحديث شاشة الموظف عند وصول طلب حقيقي
 function renderOrderOnStaffScreen(orderData) {
   if (!orderData) {
     resetStaffScreenToEmpty();
@@ -261,8 +277,9 @@ function renderOrderOnStaffScreen(orderData) {
   document.getElementById('trackerLaneName').textContent = orderData.lane;
 }
 
-// إرسال الحدث عبر السحابة ليصل لكل الأجهزة المفتوحة فوراً
 async function publishSyncEvent(payload) {
+  payload.senderId = clientSessionId;
+  payload.stamp = Date.now();
   localStorage.setItem('yusr_latest_event', JSON.stringify(payload));
   try {
     await fetch(`https://ntfy.sh/${SYNC_TOPIC}`, {
@@ -270,11 +287,10 @@ async function publishSyncEvent(payload) {
       body: JSON.stringify(payload)
     });
   } catch (e) {
-    console.warn('Local mode active');
+    console.warn('Local sync only');
   }
 }
 
-// الاستماع اللحظي للطلبات والإشارات من الأجهزة الأخرى
 function startLiveCloudSync() {
   try {
     const eventSource = new EventSource(`https://ntfy.sh/${SYNC_TOPIC}/sse`);
@@ -299,28 +315,38 @@ function startLiveCloudSync() {
 
 function handleIncomingSyncData(data) {
   if (!data || !data.type) return;
+  if (data.stamp && data.stamp === lastEventStamp) return;
+  lastEventStamp = data.stamp || Date.now();
+
+  const isFromMe = data.senderId === clientSessionId;
 
   if (data.type === 'NEW_ORDER') {
-    const isNew = activeOrderId !== data.order.code;
     activeOrderId = data.order.code;
     renderOrderOnStaffScreen(data.order);
-    if (isNew) {
+    if (!isFromMe && currentView === 'staff') {
       triggerVisualBanner('وصل طلب جديد للمسار الذكي: ' + data.order.code);
     }
   } else if (data.type === 'SIGNAL') {
-    appendSignalToStaffLog(data.signalText, data.time);
-    triggerVisualBanner('إشارة جديدة من السائق: ' + data.signalText);
+    if (!isFromMe) {
+      appendSignalToStaffLog(data.signalText, data.time);
+      if (currentView === 'staff') {
+        triggerVisualBanner('إشارة جديدة من السائق: ' + data.signalText);
+      }
+    }
   } else if (data.type === 'STAFF_ALERT') {
-    if (data.stamp && data.stamp !== lastAlertStamp) {
-      lastAlertStamp = data.stamp;
+    // يشتغل الصوت والتنبيه عند الزائر فقط وليس عند الموظف الذي ضغط الزر
+    if (!isFromMe && currentView !== 'staff') {
       triggerVisualBanner(data.msg);
       speakText(data.msg);
     }
   } else if (data.type === 'STEP_UPDATE') {
     updateStepUIOnly(data.stepNum);
-  } else if (data.type === 'CLEAR_ORDER') {
-    activeOrderId = null;
-    resetStaffScreenToEmpty();
+    // يشتغل الصوت الذكي لتقدم المرحلة عند الزائر فقط
+    if (!isFromMe && currentView !== 'staff') {
+      const msg = (stepMessages[currentLang] && stepMessages[currentLang][data.stepNum]) || stepMessages.ar[data.stepNum];
+      triggerVisualBanner(msg);
+      speakText(msg);
+    }
   }
 }
 
@@ -657,7 +683,7 @@ function submitAccessibleOrder() {
     return;
   }
 
-  const carInput = document.getElementById('carDetails').value.trim() || 'سيارة العميل';
+  const carInput = document.getElementById('carDetails').value.trim() || 'سيارة العميل (لم يحدد اللوحة)';
   const randomNum = Math.floor(100 + Math.random() * 900);
   const orderCode = '#YSR-' + randomNum;
 
@@ -683,6 +709,7 @@ function submitAccessibleOrder() {
 }
 
 function switchMainView(view) {
+  currentView = view;
   const views = {
     customer: document.getElementById('viewCustomer'),
     tracker: document.getElementById('viewTracker'),
@@ -720,20 +747,11 @@ function updateStepUIOnly(stepNum) {
   }
 }
 
+// عندما يضغط الموظف على تحديث المرحلة: يتحدث عند العميل بالصوت دون إزعاج الموظف بالصوت
 function setOrderStep(stepNum) {
   updateStepUIOnly(stepNum);
   publishSyncEvent({ type: 'STEP_UPDATE', stepNum: stepNum });
-
-  const messages = {
-    1: 'تم استلام الطلب وتكييف المسار',
-    2: 'جاري تجهيز الطلب بتغليف ميسّر سهل الفتح',
-    3: 'تم التعرف على وصول سيارتك في المسار الذكي',
-    4: 'الموظف في طريقه لباب سيارتك الآن لتسليم الطلب'
-  };
-  speakText(messages[stepNum]);
-  if (visualFlashMode) {
-    triggerVisualBanner(messages[stepNum]);
-  }
+  triggerVisualBanner('تم إرسال تحديث (المرحلة ' + stepNum + ') وصوت التنبيه لشاشة العميل');
 }
 
 function appendSignalToStaffLog(signalText, timeStr) {
@@ -759,10 +777,10 @@ function sendQuickSignal(signalText) {
   speakText(currentLang === 'en' ? 'Signal sent to staff screen' : 'تم إرسال الإشارة إلى شاشة الموظف');
 }
 
+// عندما يرسل الموظف تنبيهاً خاصاً: يخرج الصوت عند الزائر فقط
 function triggerCustomerAlert(msg) {
-  triggerVisualBanner(msg);
-  speakText(msg);
-  publishSyncEvent({ type: 'STAFF_ALERT', msg: msg, stamp: Date.now() });
+  publishSyncEvent({ type: 'STAFF_ALERT', msg: msg });
+  triggerVisualBanner('تم إرسال التنبيه الصوتي والضوئي لشاشة العميل بنجاح');
 }
 
 window.addEventListener('DOMContentLoaded', () => {
