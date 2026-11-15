@@ -1872,10 +1872,30 @@
       renderMenu();
     }
 
+// أيقونة شعار الريال السعودي الرسمي (SVG) مطابقة للشعار المعتمد
+    const saudiRiyalLogoSVG = `
+      <svg class="inline-block w-5 h-5 fill-current shrink-0" viewBox="0 0 100 100" aria-label="ريال سعودي">
+        <path d="M58 12 L70 6 L70 72 L58 76 Z" />
+        <path d="M36 20 L48 14 L48 72 C48 82 42 88 31 91 L15 95 L18 82 L31 79 C35 78 36 75 36 70 Z" />
+        <path d="M18 53 L88 38 L85 50 L15 65 Z" />
+        <path d="M58 67 L86 60 L83 72 L58 78 Z" />
+        <path d="M52 86 L84 79 L81 91 L49 98 Z" />
+      </svg>
+    `;
+
+    // وضع شعار الريال في خانة الإجمالي تلقائياً
+    setTimeout(() => {
+      const currEl = document.getElementById('currencyLabel');
+      if (currEl) currEl.innerHTML = saudiRiyalLogoSVG;
+    }, 50);
+
     function renderMenu() {
       const grid = document.getElementById('menuGrid');
       const t = translations[currentLang] || translations.ar;
       const filtered = yusrMenu.filter(i => i.category === currentCategory);
+
+      const currEl = document.getElementById('currencyLabel');
+      if (currEl) currEl.innerHTML = saudiRiyalLogoSVG;
 
       grid.innerHTML = filtered.map(item => {
         const title = getItemTitle(item);
@@ -1892,7 +1912,10 @@
               <p class="secondary-ui text-xs text-slate-600 mt-1 leading-relaxed">${desc}</p>
             </div>
             <div class="flex items-center justify-between pt-3 border-t border-slate-200">
-              <span class="text-lg font-black text-emerald-700">${item.price} ${t.currency}</span>
+              <span class="text-lg font-black text-emerald-700 inline-flex items-center gap-1">
+                <span>${item.price}</span>
+                ${saudiRiyalLogoSVG}
+              </span>
               <div class="flex items-center gap-1.5">
                 <button type="button" onclick="speakText('${title}, ${item.price} ${t.currency}')" class="secondary-ui focus-ring px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-xs font-bold">
                   ${t.voiceBtn}
