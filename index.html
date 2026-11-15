@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
 
@@ -288,18 +288,18 @@
       </div>
     </div>
 
-    <!-- شاشة متابعة المسار للعميل (عرض فقط بدون أزرار تحكم بالمراحل) -->
+    <!-- شاشة المسار للعميل -->
     <div id="viewTracker" class="hidden space-y-8">
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-slate-200">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
           <div>
             <span class="bg-emerald-100 text-emerald-800 font-extrabold px-3 py-1 rounded-full text-xs">لوحة التواصل اللالمسي والمباشر</span>
             <h2 class="text-3xl font-black mt-2">شاشة المسار الذكي داخل السيارة</h2>
-            <p class="text-slate-600 text-sm mt-1">لا حاجة للتحدث عبر المايكروفون؛ تتحدث مراحل طلبك تلقائياً من قِبل موظف المسار.</p>
+            <p class="text-slate-600 text-sm mt-1">لا حاجة للتحدث عبر المايكروفون؛ تتحدث مراحل طلبك وتصل ردود الموظف تلقائياً أمامك الآن.</p>
           </div>
           <div class="bg-slate-900 text-white px-6 py-4 rounded-2xl text-center">
             <span class="text-xs text-slate-400 block">رقم طلب الأولوية</span>
-            <span id="orderNumberDisplay" class="text-3xl font-black text-emerald-400">#YSR-104</span>
+            <span id="orderNumberDisplay" class="text-3xl font-black text-emerald-400">—</span>
           </div>
         </div>
 
@@ -330,7 +330,7 @@
 
         <div class="border-t border-slate-200 pt-6">
           <h3 class="text-xl font-black mb-2">أزرار التواصل السريع مع الموظف (بدون تحدث)</h3>
-          <p class="text-sm text-slate-600 mb-4">اضغط على أي زر لإرسال إشارة فورية لشاشة الموظف في النافذة:</p>
+          <p class="text-sm text-slate-600 mb-4">اضغط على أي زر لإرسال إشارة فورية لشاشة الموظف واستقبال رده مباشرة:</p>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <button onclick="sendQuickSignal('أنا وصلت في المسار المحدد وأنتظر بالسيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
@@ -356,18 +356,24 @@
 
           <div id="signalConfirmation" class="mt-4 hidden bg-emerald-900 text-white p-4 rounded-2xl font-bold flex items-center justify-between">
             <span id="signalConfirmationText">تم إرسال الإشارة للموظف بنجاح</span>
-            <span class="text-xs bg-emerald-700 px-3 py-1 rounded-full">وصلت للشاشة</span>
+            <span class="text-xs bg-emerald-700 px-3 py-1 rounded-full">مباشر</span>
+          </div>
+
+          <!-- صندوق ردود الموظف المباشرة التي تصل للعميل -->
+          <div id="customerChatBox" class="mt-4 hidden bg-amber-50 border-2 border-amber-400 rounded-2xl p-4 space-y-2">
+            <div class="text-xs font-black text-amber-900">ردود موظف المسار المباشرة:</div>
+            <div id="customerRepliesList" class="space-y-2 text-sm font-extrabold text-slate-900"></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- شاشة الموظف (فيها التحكم بمراحل تقدم الطلب للعميل) -->
+    <!-- شاشة الموظف -->
     <div id="viewStaff" class="hidden space-y-6">
       <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-slate-700">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700 pb-5">
           <div>
-            <span class="bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-full text-xs">شاشة طاقم الفرع - مسار الأولوية</span>
+            <span class="bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-full text-xs">شاشة طاقم الفرع - مسار الأولوية (صامتة للموظف)</span>
             <h2 class="text-2xl sm:text-3xl font-black mt-2">لوحة استقبال طلبات "يُسْر درايف"</h2>
           </div>
           <div class="flex items-center gap-3">
@@ -381,8 +387,13 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
           <div class="lg:col-span-2 bg-slate-800 rounded-2xl p-6 border border-slate-700 space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <span class="text-2xl font-black text-emerald-400" id="staffOrderCode">لا يوجد طلب نشط</span>
-              <span id="staffModeBadge" class="bg-emerald-500 text-slate-950 font-black px-4 py-1 rounded-full text-sm">بانتظار عميل...</span>
+              <div class="flex items-center gap-3">
+                <span class="text-2xl font-black text-emerald-400" id="staffOrderCode">لا يوجد طلب نشط</span>
+                <span id="staffModeBadge" class="bg-emerald-500 text-slate-950 font-black px-4 py-1 rounded-full text-sm">بانتظار عميل...</span>
+              </div>
+              <button onclick="completeAndDeleteOrder()" class="focus-ring bg-rose-600 hover:bg-rose-500 text-white font-black px-4 py-2 rounded-xl text-xs transition shadow">
+                ✓ اكتمال الطلب وحذفه
+              </button>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/90 p-4 rounded-xl border border-slate-700">
@@ -414,7 +425,7 @@
 
             <!-- تحكم الموظف في تحديث مرحلة الطلب عند العميل -->
             <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-3">
-              <span class="text-xs font-extrabold text-emerald-400 block">تحكم الموظف في تحديث مرحلة الطلب (يظهر للعميل مباشرة):</span>
+              <span class="text-xs font-extrabold text-emerald-400 block">تحكم الموظف في مرحلة الطلب (ينطق الصوت عند العميل فقط):</span>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <button onclick="setOrderStep(1)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">1. استلام الطلب</button>
                 <button onclick="setOrderStep(2)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">2. تحضير ميسر</button>
@@ -426,20 +437,39 @@
 
           <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 flex flex-col justify-between space-y-4">
             <div>
-              <h3 class="font-black text-lg text-white mb-3">إشارات السائق اللحظية</h3>
-              <div id="staffSignalsLog" class="space-y-2 max-h-64 overflow-y-auto">
+              <h3 class="font-black text-lg text-white mb-3">إشارات السائق والمحادثة المباشرة</h3>
+              <div id="staffSignalsLog" class="space-y-2 max-h-56 overflow-y-auto">
                 <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
                   بانتظار إشارات من شاشة سيارة العميل...
                 </div>
               </div>
             </div>
 
-            <div class="space-y-2 pt-4 border-t border-slate-700">
-              <span class="text-xs text-slate-400 block">إرسال تنبيه مباشر لشاشة العميل:</span>
-              <button onclick="triggerCustomerAlert('الموظف في طريقه إليك الآن ومعه الطلب')" class="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm transition">
+            <!-- ردود الموظف الجاهزة على المحادثة -->
+            <div class="space-y-2 pt-3 border-t border-slate-700">
+              <span class="text-xs font-extrabold text-emerald-400 block">ردود جاهزة سريعة على محادثة العميل:</span>
+              <div class="grid grid-cols-1 gap-1.5">
+                <button onclick="sendStaffQuickReply('أهلاً بك، تم رصد وصول سيارتك للمسار وجاري خدمتك')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
+                  رد: أهلاً بك، تم رصد وصولك للمسار
+                </button>
+                <button onclick="sendStaffQuickReply('ولا يهمك، خذ وقتك بالكامل نحن بانتظارك بدون استعجال')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
+                  رد: خذ وقتك بالكامل بدون استعجال
+                </button>
+                <button onclick="sendStaffQuickReply('تم التأكيد، سنتواصل معك كتابياً وبلغة الإشارة فقط')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
+                  رد: سنتواصل معك كتابياً وبإشارة اليد فقط
+                </button>
+                <button onclick="sendStaffQuickReply('أبشر، الموظف قادم لنافذتك الآن ومعه جهاز الشبكة')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
+                  رد: الموظف قادم إليك بجهاز الشبكة الآن
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-2 pt-3 border-t border-slate-700">
+              <span class="text-xs text-slate-400 block">إشعارات حالة التسليم السريعة:</span>
+              <button onclick="triggerCustomerAlert('الموظف في طريقه إليك الآن ومعه الطلب')" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition">
                 إشعار العميل: الموظف قادم لسيارتك
               </button>
-              <button onclick="triggerCustomerAlert('طلبك جاهز ومغلف بتغليف ميسّر سهل الفتح')" class="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm transition">
+              <button onclick="triggerCustomerAlert('طلبك جاهز ومغلف بتغليف ميسّر سهل الفتح')" class="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition">
                 إشعار ضوئي وصوتي: الطلب جاهز
               </button>
             </div>
@@ -458,7 +488,7 @@
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
   <script>
     function openAdminModal() {
       document.getElementById('adminPinInput').value = '';
