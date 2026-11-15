@@ -9,7 +9,12 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
+  <style>
+    body.simple-mode-active .secondary-ui {
+      display: none !important;
+    }
+  </style>
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
 
@@ -27,19 +32,19 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <button onclick="startAppWithLanguage('ar')" class="focus-ring p-5 rounded-2xl border-2 border-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition flex flex-col items-center justify-center gap-2">
+        <button type="button" onclick="startAppWithLanguage('ar')" class="focus-ring p-5 rounded-2xl border-2 border-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition flex flex-col items-center justify-center gap-2">
           <span class="text-xs font-extrabold bg-emerald-600 text-white px-2.5 py-0.5 rounded-full">الافتراضي</span>
           <span class="text-xl font-black text-slate-900">العربية</span>
           <span class="text-xs text-slate-600 font-bold">واجهة وقارئ صوتي عربي</span>
         </button>
 
-        <button onclick="startAppWithLanguage('en')" class="focus-ring p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-2">
+        <button type="button" onclick="startAppWithLanguage('en')" class="focus-ring p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-2">
           <span class="text-xs font-extrabold bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">English</span>
           <span class="text-xl font-black text-slate-900">English</span>
           <span class="text-xs text-slate-600 font-bold">Voice & UI in English</span>
         </button>
 
-        <button onclick="startAppWithLanguage('sign')" class="focus-ring p-5 rounded-2xl border-2 border-slate-200 hover:border-amber-500 bg-slate-50 hover:bg-amber-50 transition flex flex-col items-center justify-center gap-2">
+        <button type="button" onclick="startAppWithLanguage('sign')" class="focus-ring p-5 rounded-2xl border-2 border-slate-200 hover:border-amber-500 bg-slate-50 hover:bg-amber-50 transition flex flex-col items-center justify-center gap-2">
           <span class="text-xs font-extrabold bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">للصم</span>
           <span class="text-lg font-black text-slate-900">بصري / إشارة</span>
           <span class="text-xs text-slate-600 font-bold">تنبيهات ضوئية بدون صوت</span>
@@ -58,8 +63,8 @@
       <input id="adminPinInput" type="password" inputmode="numeric" placeholder="••••" class="w-full text-center text-2xl tracking-widest font-black px-4 py-3 rounded-xl bg-slate-800 border-2 border-slate-600 text-emerald-400 focus:outline-none focus:border-emerald-400">
       <p id="adminPinError" class="hidden text-xs text-rose-400 font-bold">الرمز غير صحيح! حاول مرة أخرى</p>
       <div class="flex gap-2 pt-2">
-        <button onclick="verifyAdminPin()" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl transition">دخول المشرف</button>
-        <button onclick="document.getElementById('adminPinModal').classList.add('hidden')" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition">إلغاء</button>
+        <button type="button" onclick="verifyAdminPin()" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl transition">دخول المشرف</button>
+        <button type="button" onclick="document.getElementById('adminPinModal').classList.add('hidden')" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition">إلغاء</button>
       </div>
     </div>
   </div>
@@ -68,60 +73,60 @@
     <span id="visualAlertText">تم تحديث حالة الطلب!</span>
   </div>
 
-  <!-- الشريط العلوي مع زر التبسيط الأساسي -->
+  <!-- الشريط العلوي مع زر التبسيط -->
   <div class="bg-slate-900 text-white py-3 px-4 shadow-md sticky top-0 z-40 border-b border-slate-700">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       <div class="flex flex-wrap items-center gap-2">
-        <span id="accBadgeTitle" class="bg-emerald-500 text-slate-950 font-extrabold px-3 py-1 rounded-full text-sm">شريط الوصول الشامل</span>
-        <!-- زر التبسيط للعملاء -->
-        <button onclick="toggleSimpleMode()" id="simpleModeBtn" class="focus-ring bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-1.5 rounded-xl text-sm font-black transition shadow flex items-center gap-1.5">
+        <span id="accBadgeTitle" class="secondary-ui bg-emerald-500 text-slate-950 font-extrabold px-3 py-1 rounded-full text-sm">شريط الوصول الشامل</span>
+        <!-- زر التبسيط الأساسي للعملاء -->
+        <button type="button" onclick="toggleSimpleMode()" id="simpleModeBtn" class="focus-ring bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-1.5 rounded-xl text-sm font-black transition shadow flex items-center gap-2">
           <span id="simpleModeDot" class="w-2.5 h-2.5 rounded-full bg-slate-950"></span>
-          <span id="simpleModeBtnText">زر التبسيط: متوقف</span>
+          <span id="simpleModeBtnText">زر التبسيط: إخفاء الأزرار الثانوية</span>
         </button>
-        <button onclick="openLanguageModal()" id="changeLangBtn" class="secondary-ui focus-ring bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-black transition">
+        <button type="button" onclick="openLanguageModal()" id="changeLangBtn" class="secondary-ui focus-ring bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-black transition">
           تغيير اللغة (Language)
         </button>
       </div>
       <div class="flex flex-wrap items-center gap-2">
-        <button id="ttsToggleBtn" onclick="toggleTTS()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+        <button type="button" id="ttsToggleBtn" onclick="toggleTTS()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
           <span id="ttsStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
           <span id="ttsBtnText">القارئ الصوتي: مفعّل</span>
         </button>
-        <button onclick="toggleHighContrast()" id="contrastBtn" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+        <button type="button" onclick="toggleHighContrast()" id="contrastBtn" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
           <span>تباين عالٍ</span>
         </button>
-        <button onclick="cycleFontSize()" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+        <button type="button" onclick="cycleFontSize()" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
           <span id="fontBtnLabel">حجم الخط:</span> <span id="fontScaleLabel">100%</span>
         </button>
-        <button id="visualFlashToggleBtn" onclick="toggleVisualFlashMode()" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+        <button type="button" id="visualFlashToggleBtn" onclick="toggleVisualFlashMode()" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
           <span id="flashBtnText">إشعارات ضوئية (للصم)</span>
         </button>
       </div>
     </div>
   </div>
 
-  <header class="bg-gradient-to-l from-emerald-800 via-teal-800 to-slate-900 text-white py-8 px-4 shadow-lg">
+  <header class="bg-gradient-to-l from-emerald-800 via-teal-800 to-slate-900 text-white py-6 px-4 shadow-lg">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-      <div class="space-y-3 text-center md:text-right max-w-2xl">
+      <div class="space-y-2 text-center md:text-right max-w-2xl">
         <div class="secondary-ui inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 px-4 py-1.5 rounded-full text-emerald-200 text-sm font-bold">
           <span id="heroBadge">مبادرة المسار الذكي الميسّر لذوي الإعاقة</span>
         </div>
-        <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
           <span id="heroMainTitle">يُسْر درايف</span> | <span class="text-emerald-400">Yusr Drive</span>
         </h1>
-        <p id="heroSubTitle" class="secondary-ui text-slate-200 text-lg font-medium leading-relaxed">
+        <p id="heroSubTitle" class="secondary-ui text-slate-200 text-base font-medium leading-relaxed">
           اطلب من سيارتك باستقلالية تامة؛ بدون الحاجة للتحدث عبر المايكروفون التقليدي أو النزول من المركبة، مع تسليم مخصص لباب سيارتك.
         </p>
       </div>
 
       <div class="bg-slate-900/80 p-2 rounded-2xl border border-slate-700 flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-        <button onclick="switchMainView('customer')" id="tabCustomer" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition bg-emerald-500 text-slate-950 shadow">
+        <button type="button" onclick="switchMainView('customer')" id="tabCustomer" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition bg-emerald-500 text-slate-950 shadow">
           واجهة العميل (الطلب)
         </button>
-        <button onclick="switchMainView('tracker')" id="tabTracker" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
+        <button type="button" onclick="switchMainView('tracker')" id="tabTracker" class="focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
           مسار الدرايف ثرو المباشر
         </button>
-        <button onclick="switchMainView('staff')" id="tabStaff" class="hidden focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
+        <button type="button" onclick="switchMainView('staff')" id="tabStaff" class="hidden focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800">
           شاشة الموظف (محاكاة)
         </button>
       </div>
@@ -130,20 +135,20 @@
 
   <main class="max-w-7xl mx-auto w-full flex-1 p-4 sm:p-6 space-y-8">
     <div id="viewCustomer" class="space-y-8">
-      <!-- قسم اختيار نمط الإعاقة (يختفي عند تفعيل زر التبسيط لتسهيل الطلب المباشر) -->
+      <!-- قسم اختيار نمط الخدمة (يختفي عند تفعيل زر التبسيط) -->
       <section class="secondary-ui bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
           <div>
             <span id="step1Badge" class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 1 من 3</span>
             <h2 id="step1Title" class="text-2xl font-black mt-1">اختر نمط الخدمة وتكييف المسار</h2>
           </div>
-          <button id="listenStep1Btn" onclick="speakStep1()" class="focus-ring self-start sm:self-auto text-sm bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-4 py-2 rounded-xl transition">
+          <button type="button" id="listenStep1Btn" onclick="speakStep1()" class="focus-ring self-start sm:self-auto text-sm bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-4 py-2 rounded-xl transition">
             استمع للشرح
           </button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button onclick="selectDisabilityMode('mobility')" id="mode-mobility" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-emerald-600 bg-emerald-50/70 transition flex flex-col justify-between gap-3">
+          <button type="button" onclick="selectDisabilityMode('mobility')" id="mode-mobility" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-emerald-600 bg-emerald-50/70 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
                 <span class="text-xs font-extrabold bg-emerald-600 text-white px-2.5 py-1 rounded-full">مُفعّل</span>
@@ -157,7 +162,7 @@
             </div>
           </button>
 
-          <button onclick="selectDisabilityMode('hearing')" id="mode-hearing" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
+          <button type="button" onclick="selectDisabilityMode('hearing')" id="mode-hearing" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-400">تفعيل</span>
@@ -171,7 +176,7 @@
             </div>
           </button>
 
-          <button onclick="selectDisabilityMode('visual')" id="mode-visual" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
+          <button type="button" onclick="selectDisabilityMode('visual')" id="mode-visual" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-400">تفعيل</span>
@@ -185,7 +190,7 @@
             </div>
           </button>
 
-          <button onclick="selectDisabilityMode('cognitive')" id="mode-cognitive" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
+          <button type="button" onclick="selectDisabilityMode('cognitive')" id="mode-cognitive" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-400">تفعيل</span>
@@ -210,18 +215,21 @@
                   <span id="step2Badge" class="secondary-ui text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 2 من 3</span>
                   <h2 id="step2Title" class="text-2xl font-black mt-1">منيو مطعم يُسْر المبسط</h2>
                 </div>
+                <!-- زر تبسيط إضافي واضح داخل المنيو نفسه -->
+                <button type="button" onclick="toggleSimpleMode()" id="inlineSimpleBtn" class="focus-ring bg-amber-100 hover:bg-amber-200 text-amber-950 border-2 border-amber-400 px-4 py-2 rounded-xl text-xs font-black transition">
+                  تفعيل / إيقاف وضع التبسيط السريع
+                </button>
               </div>
 
-              <!-- أقسام المنيو الـ 7 المطلوبة (تبقى ظاهرة، وتختفي عند التبسيط الشامل لعرض كل الأصناف مباشرة) -->
-              <div class="secondary-ui flex flex-wrap gap-2 pt-1">
-                <button onclick="filterCategory('all')" id="cat-all" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-900 text-white">الكل</button>
-                <button onclick="filterCategory('offers')" id="cat-offers" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-amber-100 text-amber-900 hover:bg-amber-200">قسم العروض</button>
-                <button onclick="filterCategory('breakfast')" id="cat-breakfast" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">وجبات الفطور</button>
-                <button onclick="filterCategory('lunch')" id="cat-lunch" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">وجبات الغداء</button>
-                <button onclick="filterCategory('dinner')" id="cat-dinner" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">وجبات العشاء</button>
-                <button onclick="filterCategory('fastfood')" id="cat-fastfood" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">الوجبات السريعة</button>
-                <button onclick="filterCategory('desserts')" id="cat-desserts" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">قسم الحلى</button>
-                <button onclick="filterCategory('drinks')" id="cat-drinks" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">قسم المشروبات</button>
+              <!-- أقسام المطعم الـ 7 فقط (بدون خانة الكل) -->
+              <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 pt-2">
+                <button type="button" onclick="filterCategory('offers')" id="cat-offers" class="cat-btn focus-ring py-3 px-2 rounded-xl font-black text-xs sm:text-sm bg-emerald-600 text-white shadow">قسم العروض</button>
+                <button type="button" onclick="filterCategory('breakfast')" id="cat-breakfast" class="cat-btn focus-ring py-3 px-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-800 hover:bg-slate-200">وجبات الفطور</button>
+                <button type="button" onclick="filterCategory('lunch')" id="cat-lunch" class="cat-btn focus-ring py-3 px-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-800 hover:bg-slate-200">وجبات الغداء</button>
+                <button type="button" onclick="filterCategory('dinner')" id="cat-dinner" class="cat-btn focus-ring py-3 px-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-800 hover:bg-slate-200">وجبات العشاء</button>
+                <button type="button" onclick="filterCategory('fastfood')" id="cat-fastfood" class="cat-btn focus-ring py-3 px-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-800 hover:bg-slate-200">الوجبات السريعة</button>
+                <button type="button" onclick="filterCategory('desserts')" id="cat-desserts" class="cat-btn focus-ring py-3 px-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-800 hover:bg-slate-200">قسم الحلى</button>
+                <button type="button" onclick="filterCategory('drinks')" id="cat-drinks" class="cat-btn focus-ring py-3 px-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-800 hover:bg-slate-200">قسم المشروبات</button>
               </div>
             </div>
 
@@ -284,7 +292,7 @@
               <div>
                 <div class="flex items-center justify-between mb-2">
                   <h3 id="cartHeaderTitle" class="font-extrabold text-slate-800">سلة طلبك الحالية</h3>
-                  <button onclick="clearCart()" id="clearCartBtn" class="secondary-ui text-xs font-bold text-rose-600 hover:underline">إفراغ السلة</button>
+                  <button type="button" onclick="clearCart()" id="clearCartBtn" class="secondary-ui text-xs font-bold text-rose-600 hover:underline">إفراغ السلة</button>
                 </div>
                 <div id="cartList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
               </div>
@@ -294,7 +302,7 @@
                 <span class="text-2xl font-black text-emerald-700"><span id="cartTotal">0</span> <span id="currencyLabel">ر.س</span></span>
               </div>
 
-              <button onclick="submitAccessibleOrder()" class="focus-ring w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-lg py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
+              <button type="button" onclick="submitAccessibleOrder()" class="focus-ring w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-lg py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
                 <span id="submitOrderBtnText">تأكيد الطلب وإشعار المسار الذكي</span>
               </button>
             </div>
@@ -349,22 +357,22 @@
             <p class="text-sm text-slate-600">اضغط على أي زر لإرسال إشارة فورية أو اكتب رسالتك في الشات المباشر:</p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <button onclick="sendQuickSignal('أنا وصلت في المسار المحدد وأنتظر بالسيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+              <button type="button" onclick="sendQuickSignal('أنا وصلت في المسار المحدد وأنتظر بالسيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
                 <span class="font-extrabold block mt-1">أنا في المسار الآن</span>
                 <span class="text-xs text-slate-500">إشعار بوصول السيارة لنقطة الاستلام</span>
               </button>
 
-              <button onclick="sendQuickSignal('أحتاج وقتاً إضافياً، فضلاً لا تستعجل')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+              <button type="button" onclick="sendQuickSignal('أحتاج وقتاً إضافياً، فضلاً لا تستعجل')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
                 <span class="font-extrabold block mt-1">أحتاج وقتاً إضافياً</span>
                 <span class="text-xs text-slate-500">إيقاف مؤقت للاستعجال في المسار</span>
               </button>
 
-              <button onclick="sendQuickSignal('أفضّل التواصل الكتابي أو بلغة الإشارة فقط')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+              <button type="button" onclick="sendQuickSignal('أفضّل التواصل الكتابي أو بلغة الإشارة فقط')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
                 <span class="font-extrabold block mt-1">تواصل كتابي / إشارة</span>
                 <span class="text-xs text-slate-500">تنبيه الموظف لعدم استخدام الصوت</span>
               </button>
 
-              <button onclick="sendQuickSignal('يرجى إحضار جهاز الدفع (الشبكة) لنافذة السيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
+              <button type="button" onclick="sendQuickSignal('يرجى إحضار جهاز الدفع (الشبكة) لنافذة السيارة')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 text-right transition">
                 <span class="font-extrabold block mt-1">إحضار جهاز الشبكة</span>
                 <span class="text-xs text-slate-500">مدّ جهاز الدفع اللاسلكي للسيارة</span>
               </button>
@@ -386,7 +394,7 @@
 
             <div class="pt-3 border-t border-slate-700 flex gap-2">
               <input id="customerChatInput" type="text" onkeydown="if(event.key==='Enter') sendCustomCustomerMessage()" placeholder="اكتب رسالة للموظف هنا..." class="flex-1 px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-600 text-xs font-bold text-white focus:outline-none focus:border-emerald-400">
-              <button onclick="sendCustomCustomerMessage()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs transition">
+              <button type="button" onclick="sendCustomCustomerMessage()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs transition">
                 إرسال
               </button>
             </div>
@@ -418,7 +426,7 @@
                 <span class="text-2xl font-black text-emerald-400" id="staffOrderCode">لا يوجد طلب نشط</span>
                 <span id="staffModeBadge" class="bg-emerald-500 text-slate-950 font-black px-4 py-1 rounded-full text-sm">بانتظار عميل...</span>
               </div>
-              <button onclick="completeAndDeleteOrder()" class="focus-ring bg-rose-600 hover:bg-rose-500 text-white font-black px-4 py-2 rounded-xl text-xs transition shadow">
+              <button type="button" onclick="completeAndDeleteOrder()" class="focus-ring bg-rose-600 hover:bg-rose-500 text-white font-black px-4 py-2 rounded-xl text-xs transition shadow">
                 ✓ اكتمال الطلب وحذفه
               </button>
             </div>
@@ -453,10 +461,10 @@
             <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-3">
               <span class="text-xs font-extrabold text-emerald-400 block">تحكم الموظف في مرحلة الطلب (ينطق الصوت عند العميل فقط):</span>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <button onclick="setOrderStep(1)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">1. استلام الطلب</button>
-                <button onclick="setOrderStep(2)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">2. تحضير ميسر</button>
-                <button onclick="setOrderStep(3)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">3. وصول السيارة</button>
-                <button onclick="setOrderStep(4)" class="focus-ring py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition">4. تسليم للسيارة</button>
+                <button type="button" onclick="setOrderStep(1)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">1. استلام الطلب</button>
+                <button type="button" onclick="setOrderStep(2)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">2. تحضير ميسر</button>
+                <button type="button" onclick="setOrderStep(3)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">3. وصول السيارة</button>
+                <button type="button" onclick="setOrderStep(4)" class="focus-ring py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition">4. تسليم للسيارة</button>
               </div>
             </div>
           </div>
@@ -473,7 +481,7 @@
 
             <div class="flex gap-2 pt-2">
               <input id="staffChatInput" type="text" onkeydown="if(event.key==='Enter') sendCustomStaffMessage()" placeholder="اكتب رداً مخصصاً للعميل..." class="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-600 text-xs font-bold text-white focus:outline-none focus:border-amber-400">
-              <button onclick="sendCustomStaffMessage()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3 py-2 rounded-xl text-xs transition">
+              <button type="button" onclick="sendCustomStaffMessage()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3 py-2 rounded-xl text-xs transition">
                 إرسال
               </button>
             </div>
@@ -481,16 +489,16 @@
             <div class="space-y-2 pt-3 border-t border-slate-700">
               <span class="text-xs font-extrabold text-emerald-400 block">ردود جاهزة سريعة على محادثة العميل:</span>
               <div class="grid grid-cols-1 gap-1.5">
-                <button onclick="sendStaffQuickReply('أهلاً بك، تم رصد وصول سيارتك للمسار وجاري خدمتك')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
+                <button type="button" onclick="sendStaffQuickReply('أهلاً بك، تم رصد وصول سيارتك للمسار وجاري خدمتك')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
                   رد: أهلاً بك، تم رصد وصولك للمسار
                 </button>
-                <button onclick="sendStaffQuickReply('ولا يهمك، خذ وقتك بالكامل نحن بانتظارك بدون استعجال')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
+                <button type="button" onclick="sendStaffQuickReply('ولا يهمك، خذ وقتك بالكامل نحن بانتظارك بدون استعجال')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
                   رد: خذ وقتك بالكامل بدون استعجال
                 </button>
-                <button onclick="sendStaffQuickReply('تم التأكيد، سنتواصل معك كتابياً وبلغة الإشارة فقط')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
+                <button type="button" onclick="sendStaffQuickReply('تم التأكيد، سنتواصل معك كتابياً وبلغة الإشارة فقط')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
                   رد: سنتواصل معك كتابياً وبإشارة اليد فقط
                 </button>
-                <button onclick="sendStaffQuickReply('أبشر، الموظف قادم لنافذتك الآن ومعه جهاز الشبكة')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
+                <button type="button" onclick="sendStaffQuickReply('أبشر، الموظف قادم لنافذتك الآن ومعه جهاز الشبكة')" class="w-full text-right px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 transition">
                   رد: الموظف قادم إليك بجهاز الشبكة الآن
                 </button>
               </div>
@@ -498,10 +506,10 @@
 
             <div class="space-y-2 pt-3 border-t border-slate-700">
               <span class="text-xs text-slate-400 block">إشعارات حالة التسليم السريعة:</span>
-              <button onclick="triggerCustomerAlert('الموظف في طريقه إليك الآن ومعه الطلب')" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition">
+              <button type="button" onclick="triggerCustomerAlert('الموظف في طريقه إليك الآن ومعه الطلب')" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition">
                 إشعار العميل: الموظف قادم لسيارتك
               </button>
-              <button onclick="triggerCustomerAlert('طلبك جاهز ومغلف بتغليف ميسّر سهل الفتح')" class="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition">
+              <button type="button" onclick="triggerCustomerAlert('طلبك جاهز ومغلف بتغليف ميسّر سهل الفتح')" class="w-full py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs transition">
                 إشعار ضوئي وصوتي: الطلب جاهز
               </button>
             </div>
@@ -520,8 +528,524 @@
     </div>
   </footer>
 
-  <script src="app.js?v=5"></script>
+  <!-- الكود البرمجي الكامل مدمج هنا لضمان العمل الفوري 100% دون مشاكل كاش -->
   <script>
+    console.log("Yusr Drive System v6 Embedded Initialized - Developer: Kayan Adel Abbas");
+
+    let currentLang = 'ar';
+    let ttsEnabled = true;
+    let visualFlashMode = false;
+    let simpleMode = false;
+    let fontScaleIndex = 0;
+    const fontScales = [1, 1.15, 1.3];
+
+    let selectedMode = 'mobility';
+    let selectedSpot = 'تسليم عبر نافذة السائق بحامل ممتد';
+    let selectedLane = 'مسار يُسر 1';
+    let currentCategory = 'offers'; // يبدأ بقسم العروض مباشرة بدون خانة الكل
+    let currentView = 'customer';
+
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v6';
+    let activeOrderId = null;
+    let lastEventStamp = 0;
+    const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
+    let chatHasMessages = false;
+
+    const allCategories = ['offers', 'breakfast', 'lunch', 'dinner', 'fastfood', 'desserts', 'drinks'];
+
+    const stepMessages = {
+      ar: {
+        1: 'المرحلة الأولى: تم استلام طلبك وتكييف المسار الذكي',
+        2: 'المرحلة الثانية: جاري تجهيز طلبك بتغليف ميسّر سهل الفتح',
+        3: 'المرحلة الثالثة: تم التعرف على وصول سيارتك في المسار الذكي',
+        4: 'المرحلة الرابعة: الموظف في طريقه لباب سيارتك الآن لتسليم الطلب'
+      },
+      en: {
+        1: 'Stage 1: Order received and smart lane adapted',
+        2: 'Stage 2: Preparing your order with easy-open packaging',
+        3: 'Stage 3: Your vehicle arrival has been detected in the smart lane',
+        4: 'Stage 4: Staff member is on the way to your car door now'
+      }
+    };
+
+    const translations = {
+      ar: {
+        dir: 'rtl',
+        accBadgeTitle: 'شريط الوصول الشامل',
+        simpleOn: 'زر التبسيط: مفعّل (الأزرار الأساسية فقط)',
+        simpleOff: 'زر التبسيط: إخفاء الأزرار الثانوية',
+        changeLangBtn: 'تغيير اللغة (Language)',
+        ttsActive: 'القارئ الصوتي: مفعّل',
+        ttsMuted: 'القارئ الصوتي: متوقف',
+        contrastBtn: 'تباين عالٍ',
+        fontBtnLabel: 'حجم الخط:',
+        flashBtnText: 'إشعارات ضوئية (للصم)',
+        heroBadge: 'مبادرة المسار الذكي الميسّر لذوي الإعاقة',
+        heroMainTitle: 'يُسْر درايف',
+        heroSubTitle: 'اطلب من سيارتك باستقلالية تامة؛ بدون الحاجة للتحدث عبر المايكروفون التقليدي أو النزول من المركبة، مع تسليم مخصص لباب سيارتك.',
+        tabCustomer: 'واجهة العميل (الطلب)',
+        tabTracker: 'مسار الدرايف ثرو المباشر',
+        tabStaff: 'شاشة الموظف (محاكاة)',
+        step1Badge: 'الخطوة 1 من 3',
+        step1Title: 'اختر نمط الخدمة وتكييف المسار',
+        listenStep1Btn: 'استمع للشرح',
+        modeMobilityTitle: 'إعاقة حركية',
+        modeMobilityDesc: 'توصيل الطلب حتى نافذة السائق أو المقعد الخلفي دون الحاجة لمد اليد أو النزول.',
+        modeHearingTitle: 'صم وضعاف سمع / نطق',
+        modeHearingDesc: 'إلغاء التخاطب الصوتي تماماً، واستبداله بشاشة تفاعلية وتنبيهات ضوئية.',
+        modeVisualTitle: 'مكفوفون وضعاف بصر',
+        modeVisualDesc: 'قراءة صوتية تلقائية للأصناف والأسعار، وأزرار ضخمة عالية التباين.',
+        modeCognitiveTitle: 'واجهة مبسطة وهادئة',
+        modeCognitiveDesc: 'مناسبة لطيف التوحد وكبار السن؛ خطوات واضحة بدون ضوضاء أو استعجال.',
+        step2Badge: 'الخطوة 2 من 3',
+        step2Title: 'منيو مطعم يُسْر المبسط',
+        catOffers: 'قسم العروض',
+        catBreakfast: 'وجبات الفطور',
+        catLunch: 'وجبات الغداء',
+        catDinner: 'وجبات العشاء',
+        catFastfood: 'الوجبات السريعة',
+        catDesserts: 'قسم الحلى',
+        catDrinks: 'قسم المشروبات',
+        easyPackTitle: 'تخصيص التغليف الميسّر (Easy-Open Packaging)',
+        easyPackDesc: 'فتح العبوات مسبقاً أو وضعها في حامل مانع للانسكاب يسهل تناوله بيد واحدة',
+        easyPackLabel: 'تفعيل التغليف الميسّر مجاناً',
+        step3Badge: 'الخطوة 3 من 3',
+        step3Title: 'بيانات المركبة وإتمام الطلب',
+        carDetailsLabel: 'نوع ولون السيارة / رقم اللوحة',
+        spotLabel: 'مكان تسليم الطلب في السيارة:',
+        spotWindowText: 'تسليم عبر نافذة السائق بحامل ممتد',
+        spotPassengerText: 'وضع الطلب على المقعد المجاور للسائق',
+        spotTrunkText: 'وضع الطلب في الشنطة الخلفية للسيارة',
+        laneLabel: 'رقم موقف أو مسار الانتظار الذكي:',
+        cartHeaderTitle: 'سلة طلبك الحالية',
+        clearCartBtn: 'إفراغ السلة',
+        totalLabel: 'الإجمالي شامل الضريبة:',
+        currency: 'ر.س',
+        submitOrderBtnText: 'تأكيد الطلب وإشعار المسار الذكي',
+        addBtn: '+ أضف للسلة',
+        voiceBtn: 'صوت',
+        welcomeSpeech: 'أهلاً بك في مطعم ومسار يسر درايف. اختر القسم المطلوب أو اضغط زر التبسيط في الأعلى.'
+      },
+      en: {
+        dir: 'ltr',
+        accBadgeTitle: 'Universal Access Bar',
+        simpleOn: 'Simplify Mode: ON (Basic Buttons Only)',
+        simpleOff: 'Simplify Mode: Hide Secondary Buttons',
+        changeLangBtn: 'Change Language (اللغة)',
+        ttsActive: 'Voice Reader: ON',
+        ttsMuted: 'Voice Reader: OFF',
+        contrastBtn: 'High Contrast',
+        fontBtnLabel: 'Font Size:',
+        flashBtnText: 'Visual Flash (Deaf)',
+        heroBadge: 'Smart Accessible Drive-Thru Initiative',
+        heroMainTitle: 'Yusr Drive',
+        heroSubTitle: 'Order independently from your vehicle without traditional speaker boxes or stepping out, with tailored delivery right to your car door.',
+        tabCustomer: 'Customer Order View',
+        tabTracker: 'Live Drive-Thru Tracker',
+        tabStaff: 'Staff Screen (Simulation)',
+        step1Badge: 'Step 1 of 3',
+        step1Title: 'Select Accessibility & Service Mode',
+        listenStep1Btn: 'Listen to Guide',
+        modeMobilityTitle: 'Mobility Impairment',
+        modeMobilityDesc: 'Extended tray delivery right to the driver window or back seat without reaching out.',
+        modeHearingTitle: 'Deaf / Hard of Hearing',
+        modeHearingDesc: '100% visual communication and screen alerts with zero microphone usage.',
+        modeVisualTitle: 'Blind / Low Vision',
+        modeVisualDesc: 'Automated voice reading for items and prices with large high-contrast buttons.',
+        modeCognitiveTitle: 'Calm & Simple Mode',
+        modeCognitiveDesc: 'Designed for autism spectrum & seniors; clear steps with no rush or noise.',
+        step2Badge: 'Step 2 of 3',
+        step2Title: 'Yusr Restaurant Menu',
+        catOffers: 'Offers',
+        catBreakfast: 'Breakfast',
+        catLunch: 'Lunch',
+        catDinner: 'Dinner',
+        catFastfood: 'Fast Food',
+        catDesserts: 'Desserts',
+        catDrinks: 'Drinks',
+        easyPackTitle: 'Easy-Open Packaging Customization',
+        easyPackDesc: 'Pre-opened seals and spill-proof holders designed for single-handed use',
+        easyPackLabel: 'Enable Free Easy-Open Packaging',
+        step3Badge: 'Step 3 of 3',
+        step3Title: 'Vehicle Info & Checkout',
+        carDetailsLabel: 'Car Model, Color & Plate Number',
+        spotLabel: 'Where to place your order in the car:',
+        spotWindowText: 'Driver window via extended tray',
+        spotPassengerText: 'Place on front passenger seat',
+        spotTrunkText: 'Place inside the rear trunk',
+        laneLabel: 'Smart Waiting Lane / Spot:',
+        cartHeaderTitle: 'Your Current Cart',
+        clearCartBtn: 'Clear Cart',
+        totalLabel: 'Total (VAT Included):',
+        currency: 'SAR',
+        submitOrderBtnText: 'Confirm Order & Notify Smart Lane',
+        addBtn: '+ Add to Cart',
+        voiceBtn: 'Audio',
+        welcomeSpeech: 'Welcome to Yusr Drive Restaurant. Select a menu category or use the Simplify button.'
+      }
+    };
+
+    // منيو المطعم المتكامل: وجبات مخصصة لكل قسم من الأقسام الـ 7
+    const yusrMenu = [
+      // 1. قسم العروض (4 وجبات مخصصة)
+      {
+        id: 101,
+        name: 'عرض التوفير الفردي المتكامل',
+        nameEn: 'Complete Solo Saver Offer',
+        category: 'offers',
+        price: 29,
+        desc: 'ساندوتش دجاج مشوي + بطاطس + مشروب بارد + حلى صغير في بوكس ميسّر للسيارة',
+        descEn: 'Grilled chicken sandwich + fries + cold drink + mini dessert in a car box',
+        badge: 'عرض التوفير',
+        badgeEn: 'Special Offer'
+      },
+      {
+        id: 102,
+        name: 'عرض الوجبتين (للأصدقاء)',
+        nameEn: 'Duo Meal Box Offer',
+        category: 'offers',
+        price: 49,
+        desc: 'وجبتان برجر أو راب مع مشروبين وبطاطس عائلية بتغليف سهل الفتح',
+        descEn: '2 burger/wrap meals with 2 drinks and family fries in easy-open packs',
+        badge: 'خصم 25%',
+        badgeEn: '25% OFF'
+      },
+      {
+        id: 103,
+        name: 'بوكس الجمعات العائلي الميسّر',
+        nameEn: 'Family Gathering Box Offer',
+        category: 'offers',
+        price: 79,
+        desc: '4 ساندوتشات متنوعة + بطاطس حجم عائلي + 4 مشروبات في صينية منظمة للسيارة',
+        descEn: '4 assorted sandwiches + family fries + 4 drinks in an organized tray',
+        badge: 'عرض عائلي',
+        badgeEn: 'Family Deal'
+      },
+      {
+        id: 104,
+        name: 'عرض الطالب السريع (غداء + مشروب)',
+        nameEn: 'Student Express Combo Offer',
+        category: 'offers',
+        price: 22,
+        desc: 'راب كريسبي أو شاورما + بطاطس + مشروب غازي بغطاء مانع للانسكاب',
+        descEn: 'Crispy or shawarma wrap + fries + soft drink with safety lid',
+        badge: 'سعر خاص',
+        badgeEn: 'Student Offer'
+      },
+
+      // 2. وجبات الفطور (4 وجبات مخصصة)
+      {
+        id: 201,
+        name: 'بوكس فطور الصباح العربي',
+        nameEn: 'Arabic Morning Breakfast Box',
+        category: 'breakfast',
+        price: 22,
+        desc: 'فطيرة جبن وعسل + ساندوتش بيض بالجبن + كوب شاي ساخن بغطاء أمان',
+        descEn: 'Cheese honey pie + egg cheese sandwich + hot tea with safety lid',
+        badge: 'وجبات الفطور',
+        badgeEn: 'Breakfast'
+      },
+      {
+        id: 202,
+        name: 'ساندوتش حلوم مشوي مع القهوة',
+        nameEn: 'Grilled Halloumi & Coffee Combo',
+        category: 'breakfast',
+        price: 19,
+        desc: 'خبز بريوش طري بحلوم مشوي وطماطم مجففة مع قهوة اليوم الساخنة',
+        descEn: 'Soft brioche with grilled halloumi and hot coffee of the day',
+        badge: 'فطور صحي',
+        badgeEn: 'Healthy Start'
+      },
+      {
+        id: 203,
+        name: 'كلوب ساندوتش البيض والديك الرومي',
+        nameEn: 'Egg & Turkey Club Sandwich',
+        category: 'breakfast',
+        price: 21,
+        desc: 'مقطع إلى مثلثات سهلة الإمساك بيد واحدة مع عصير برتقال',
+        descEn: 'Cut into easy single-hand triangles served with orange juice',
+        badge: 'سهل التناول',
+        badgeEn: 'Easy Grip'
+      },
+      {
+        id: 204,
+        name: 'بان كيك دافئ بالعسل والفواكه',
+        nameEn: 'Warm Honey & Fruit Pancakes',
+        category: 'breakfast',
+        price: 18,
+        desc: 'قطع بان كيك مقطعة مسبقاً وجاهزة للأكل بالشوكة داخل العلبة مباشرة',
+        descEn: 'Pre-cut pancake bites ready to eat with a fork inside the box',
+        badge: 'فطور شهي',
+        badgeEn: 'Sweet Morning'
+      },
+
+      // 3. وجبات الغداء (4 وجبات مخصصة)
+      {
+        id: 301,
+        name: 'وجبة كبسة دجاج محمر (بدون عظم)',
+        nameEn: 'Boneless Roasted Chicken Kabsa',
+        category: 'lunch',
+        price: 32,
+        desc: 'أرز بسمتي مع دجاج مخلي تماماً من العظم لتسهيل الأكل بالملعقة بيد واحدة',
+        descEn: 'Basmati rice with boneless roasted chicken for easy spoon eating',
+        badge: 'وجبات الغداء',
+        badgeEn: 'Lunch'
+      },
+      {
+        id: 302,
+        name: 'طبق شيش طاووق مشوي مع الأرز',
+        nameEn: 'Grilled Shish Tawook Rice Bowl',
+        category: 'lunch',
+        price: 30,
+        desc: 'قطع دجاج مشوية طرية مع أرز أبيض وصوص ثوم في حافظة طعام مانعة للانسكاب',
+        descEn: 'Tender grilled chicken cubes with rice in a spill-proof bowl',
+        badge: 'مشوي طازج',
+        badgeEn: 'Fresh Grill'
+      },
+      {
+        id: 303,
+        name: 'وجبة فيليه سمك مشوي مع أرز الصيادية',
+        nameEn: 'Grilled Fish Fillet & Sayadiyah Rice',
+        category: 'lunch',
+        price: 35,
+        desc: 'قطع سمك فيليه طرية خالية من الشوك تماماً مع أرز الصيادية والطحينة',
+        descEn: 'Boneless tender fish fillet with seasoned rice and tahini',
+        badge: 'خالي من الشوك',
+        badgeEn: 'Boneless Fish'
+      },
+      {
+        id: 304,
+        name: 'إيدام دجاج بالكاري مع الأرز الأبيض',
+        nameEn: 'Chicken Curry & White Rice Bowl',
+        category: 'lunch',
+        price: 28,
+        desc: 'مقدم في وعاء عميق محكم الغلق يسهل تناوله داخل المركبة دون انسكاب',
+        descEn: 'Served in a deep sealed bowl for easy dining inside your car',
+        badge: 'غداء ساخن',
+        badgeEn: 'Hot Lunch'
+      },
+
+      // 4. وجبات العشاء (4 وجبات مخصصة)
+      {
+        id: 401,
+        name: 'وجبة مشويات مشكلة (عشاء فاخر)',
+        nameEn: 'Mixed Grill Dinner Box',
+        category: 'dinner',
+        price: 36,
+        desc: 'كباب لحم وأوصال دجاج مشوية مقطعة وجاهزة للتناول مع خبز طري وحمص',
+        descEn: 'Pre-sliced beef & chicken kebab with soft bread and hummus',
+        badge: 'وجبات العشاء',
+        badgeEn: 'Dinner'
+      },
+      {
+        id: 402,
+        name: 'باستا الدجاج بالصلصة البيضاء',
+        nameEn: 'Creamy Chicken Pasta Box',
+        category: 'dinner',
+        price: 27,
+        desc: 'مكرونة بينا بصلصة الكريمة وقطع الدجاج المشوي في علبة عميقة سهلة الاستخدام',
+        descEn: 'Penne pasta with creamy sauce and grilled chicken in a deep bowl',
+        badge: 'عشاء إيطالي',
+        badgeEn: 'Creamy Pasta'
+      },
+      {
+        id: 403,
+        name: 'صينية شاورما عربي مقطعة',
+        nameEn: 'Sliced Arabic Shawarma Platter',
+        category: 'dinner',
+        price: 25,
+        desc: 'قطع شاورما جاهزة للأكل بالشوكة مع البطاطس والثوم في بوكس مقسم',
+        descEn: 'Bite-sized shawarma pieces with fries and garlic sauce',
+        badge: 'مقطعة جاهزة',
+        badgeEn: 'Bite-Sized'
+      },
+      {
+        id: 404,
+        name: 'سلطة سيزر بالدجاج المشوي (عشاء خفيف)',
+        nameEn: 'Grilled Chicken Caesar Salad',
+        category: 'dinner',
+        price: 23,
+        desc: 'خس طازج وقطع دجاج مشوي مع خبز محمص وصوص سيزر مخلوط وجاهز',
+        descEn: 'Fresh lettuce and warm grilled chicken strips with mixed dressing',
+        badge: 'عشاء خفيف',
+        badgeEn: 'Light Dinner'
+      },
+
+      // 5. الوجبات السريعة (4 وجبات مخصصة)
+      {
+        id: 501,
+        name: 'وجبة برجر دجاج كريسبي أو مشوي',
+        nameEn: 'Crispy / Grilled Chicken Burger Meal',
+        category: 'fastfood',
+        price: 24,
+        desc: 'برجر مقسوم لنصفين في غلاف يفتح بيد واحدة مع حامل بطاطس للسيارة',
+        descEn: 'Burger cut in half with single-hand wrap and car fry holder',
+        badge: 'الوجبات السريعة',
+        badgeEn: 'Fast Food'
+      },
+      {
+        id: 502,
+        name: 'وجبة دبل برجر لحم أنجوس',
+        nameEn: 'Double Angus Beef Burger Meal',
+        category: 'fastfood',
+        price: 28,
+        desc: 'شريحتا لحم أنجوس بالجبن في خبز طري مغلف بإحكام لمنع تساقط الصوص',
+        descEn: 'Double angus beef with cheese in a spill-proof wrap with fries',
+        badge: 'الأكثر مبيعاً',
+        badgeEn: 'Best Seller'
+      },
+      {
+        id: 503,
+        name: 'بوكس مسحب دجاج (ناجتس 8 قطع)',
+        nameEn: 'Boneless Chicken Strips Box (8 Pcs)',
+        category: 'fastfood',
+        price: 20,
+        desc: 'قطع دجاج مسحب مقرمشة سهلة الأكل باليد مباشرة مع البطاطس والصوص',
+        descEn: 'Easy finger-food chicken strips with fries and dipping sauce',
+        badge: 'سهل الأكل باليد',
+        badgeEn: 'Finger Food'
+      },
+      {
+        id: 504,
+        name: 'راب تورتيلا زنجر حار / عادي',
+        nameEn: 'Zinger Tortilla Wrap (Spicy / Regular)',
+        category: 'fastfood',
+        price: 19,
+        desc: 'ملفوف بإحكام في قصدير سهل السحب والتناول بيد واحدة أثناء التوقف',
+        descEn: 'Tightly rolled in easy-pull foil for one-handed eating',
+        badge: 'سريع وميسّر',
+        badgeEn: 'Quick Wrap'
+      },
+
+      // 6. قسم الحلى (4 أصناف مخصصة)
+      {
+        id: 601,
+        name: 'تشيز كيك التوت البري',
+        nameEn: 'Blueberry Cheesecake Cup',
+        category: 'desserts',
+        price: 15,
+        desc: 'يقدم في كوب عريض سهل التناول بالملعقة بيد واحدة بدون صحن',
+        descEn: 'Served in a wide cup for easy single-handed spoon eating',
+        badge: 'قسم الحلى',
+        badgeEn: 'Desserts'
+      },
+      {
+        id: 602,
+        name: 'كوكيز شوكولاتة دافئ مع آيسكريم',
+        nameEn: 'Warm Chocolate Cookie & Ice Cream',
+        category: 'desserts',
+        price: 14,
+        desc: 'قطع كوكيز طرية مقطعة مسبقاً في علبة محكمة',
+        descEn: 'Pre-sliced soft warm cookie pieces in a secure cup',
+        badge: 'حلى دافئ',
+        badgeEn: 'Warm Sweet'
+      },
+      {
+        id: 603,
+        name: 'بودينغ التمر والكراميل الدافئ',
+        nameEn: 'Warm Date & Caramel Pudding Cup',
+        category: 'desserts',
+        price: 16,
+        desc: 'كيك التمر الطري بصوص الكراميل يقدم في كوب حراري مريح',
+        descEn: 'Soft date cake with caramel sauce in an easy-hold cup',
+        badge: 'طعم أصيل',
+        badgeEn: 'Signature'
+      },
+      {
+        id: 604,
+        name: 'كوب آيسكريم فانيليا وشوكولاتة',
+        nameEn: 'Vanilla & Chocolate Ice Cream Cup',
+        category: 'desserts',
+        price: 11,
+        desc: 'كوب يثبت في حامل أكواب السيارة مع ملعقة عريضة مريحة',
+        descEn: 'Cup-holder friendly ice cream tub with wide spoon',
+        badge: 'بارد ومنعش',
+        badgeEn: 'Cold Treat'
+      },
+
+      // 7. قسم المشروبات (4 مشروبات مخصصة)
+      {
+        id: 701,
+        name: 'قهوة مختصة (باردة / ساخنة)',
+        nameEn: 'Specialty Coffee (Iced / Hot)',
+        category: 'drinks',
+        price: 14,
+        desc: 'كوب مزود بغطاء أمان مانع للانسكاب ومصاصة ثابتة',
+        descEn: 'Equipped with anti-spill safety lid and fixed straw',
+        badge: 'قسم المشروبات',
+        badgeEn: 'Drinks'
+      },
+      {
+        id: 702,
+        name: 'عصير برتقال طبيعي طازج',
+        nameEn: '100% Fresh Orange Juice',
+        category: 'drinks',
+        price: 13,
+        desc: 'عبوة مريحة سهلة الإمساك بيد واحدة مع غطاء محكم',
+        descEn: 'Easy one-hand grip bottle with spill-proof cap',
+        badge: 'طبيعي 100%',
+        badgeEn: '100% Fresh'
+      },
+      {
+        id: 703,
+        name: 'شاي أحمر / شاي كرك ساخن',
+        nameEn: 'Hot Red Tea / Karak Tea',
+        category: 'drinks',
+        price: 9,
+        desc: 'كوب حراري مزدوج العزل لحماية اليد من الحرارة مع غطاء أمان',
+        descEn: 'Double-insulated cup to protect hands from heat with safety lid',
+        badge: 'كوب عازل للحرارة',
+        badgeEn: 'Heat-Safe Cup'
+      },
+      {
+        id: 704,
+        name: 'مشروب غازي / مياه معدنية',
+        nameEn: 'Soft Drink / Mineral Water',
+        category: 'drinks',
+        price: 7,
+        desc: 'يقدم مفتوح الغطاء مسبقاً حسب الرغبة مع مصاصة مرنة',
+        descEn: 'Pre-opened upon request with a flexible straw',
+        badge: 'بارد',
+        badgeEn: 'Chilled'
+      }
+    ];
+
+    let cart = [];
+
+    // تفعيل / إيقاف زر التبسيط للعملاء (مضمون بـ CSS Class + DOM)
+    function toggleSimpleMode() {
+      simpleMode = !simpleMode;
+      const t = translations[currentLang];
+      const btn = document.getElementById('simpleModeBtn');
+      const btnText = document.getElementById('simpleModeBtnText');
+      const dot = document.getElementById('simpleModeDot');
+
+      document.body.classList.toggle('simple-mode-active', simpleMode);
+
+      if (simpleMode) {
+        btn.className = 'focus-ring bg-emerald-400 hover:bg-emerald-300 text-slate-950 px-4 py-1.5 rounded-xl text-sm font-black transition shadow flex items-center gap-2';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-950 animate-ping';
+        btnText.textContent = t.simpleOn;
+        const msg = currentLang === 'en'
+          ? 'Simplify mode enabled: secondary buttons hidden, keeping essential buttons only.'
+          : 'تم تفعيل زر التبسيط: تم إخفاء الأزرار الثانوية والإبقاء على الأزرار الأساسية فقط.';
+        triggerVisualBanner(msg);
+        speakText(msg);
+      } else {
+        btn.className = 'focus-ring bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-1.5 rounded-xl text-sm font-black transition shadow flex items-center gap-2';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-950';
+        btnText.textContent = t.simpleOff;
+        const msg = currentLang === 'en'
+          ? 'Full view restored.'
+          : 'تم إيقاف وضع التبسيط وإظهار جميع الخيارات.';
+        triggerVisualBanner(msg);
+        speakText(msg);
+      }
+
+      renderMenu();
+      renderCart();
+    }
+
     function openAdminModal() {
       document.getElementById('adminPinInput').value = '';
       document.getElementById('adminPinError').classList.add('hidden');
@@ -538,6 +1062,668 @@
         document.getElementById('adminPinError').classList.remove('hidden');
       }
     }
+
+    function getModeDetails(mode) {
+      if (mode === 'mobility') {
+        return {
+          badge: 'إعاقة حركية',
+          instructions: '• العميل يستخدم مسار الإعاقة الحركية: استخدم صينية التسليم الممتدة حتى نافذة السائق أو ضع الطلب في المكان المحدد دون إجهاد العميل.'
+        };
+      } else if (mode === 'hearing') {
+        return {
+          badge: 'صم وضعاف سمع / نطق',
+          instructions: '• تنبيه هام: العميل أصم أو يفضل عدم التخاطب الصوتي. لا تستخدم المايكروفون إطلاقاً، تواصل عبر الشاشة والابتسامة ولغة الإشارة.'
+        };
+      } else if (mode === 'visual') {
+        return {
+          badge: 'مكفوفون وضعاف بصر',
+          instructions: '• العميل/المرافق يستخدم التوجيه الصوتي: عند الوصول للنافذة عرّف بنفسك صوتياً بوضوح واشرح مكان وضع المشروبات والوجبات.'
+        };
+      } else {
+        return {
+          badge: 'واجهة مبسطة وهادئة',
+          instructions: '• العميل يفضل بيئة هادئة بدون استعجال: امنحه الوقت الكافي وتجنب الأصوات العالية أو الإرباك عند نافذة التسليم.'
+        };
+      }
+    }
+
+    function resetStaffScreenToEmpty() {
+      chatHasMessages = false;
+      document.getElementById('staffOrderCode').textContent = 'لا يوجد طلب نشط';
+      document.getElementById('staffModeBadge').textContent = 'بانتظار عميل...';
+      document.getElementById('staffCarInfo').textContent = '—';
+      document.getElementById('staffLaneInfo').textContent = '—';
+      document.getElementById('staffSpotInfo').textContent = '—';
+      document.getElementById('staffInstructionsBox').textContent = '• شاشة الاستقبال جاهزة؛ ستظهر هنا تفاصيل مركبة العميل والأصناف المطلوبة فور إرسال الطلب.';
+      document.getElementById('staffItemsList').innerHTML = `<li class="text-slate-400">لا توجد طلبات مرسلة حتى الآن</li>`;
+      document.getElementById('staffSignalsLog').innerHTML = `
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
+          بانتظار إشارات من شاشة سيارة العميل...
+        </div>
+      `;
+      const custLog = document.getElementById('customerSignalsLog');
+      if (custLog) {
+        custLog.innerHTML = `
+          <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
+            بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...
+          </div>
+        `;
+      }
+    }
+
+    function renderOrderOnStaffScreen(orderData) {
+      if (!orderData) {
+        resetStaffScreenToEmpty();
+        return;
+      }
+      const modeInfo = getModeDetails(orderData.mode);
+      document.getElementById('staffOrderCode').textContent = orderData.code;
+      document.getElementById('staffModeBadge').textContent = modeInfo.badge;
+      document.getElementById('staffCarInfo').textContent = orderData.car;
+      document.getElementById('staffLaneInfo').textContent = orderData.lane;
+      document.getElementById('staffSpotInfo').textContent = orderData.spot;
+      document.getElementById('staffInstructionsBox').textContent = modeInfo.instructions;
+
+      const staffList = document.getElementById('staffItemsList');
+      staffList.innerHTML = orderData.items.map(item => `
+        <li class="flex items-center justify-between border-b border-slate-800 pb-2">
+          <span>${item.qty}x ${item.name}</span>
+          <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">${item.note}</span>
+        </li>
+      `).join('');
+
+      document.getElementById('orderNumberDisplay').textContent = orderData.code;
+      document.getElementById('trackerLaneName').textContent = orderData.lane;
+    }
+
+    async function publishSyncEvent(payload) {
+      payload.senderId = clientSessionId;
+      payload.stamp = Date.now();
+      localStorage.setItem('yusr_latest_event_v6', JSON.stringify(payload));
+      try {
+        await fetch(`https://ntfy.sh/${SYNC_TOPIC}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+          body: JSON.stringify(payload)
+        });
+      } catch (e) {}
+    }
+
+    function startLiveCloudSync() {
+      try {
+        const eventSource = new EventSource(`https://ntfy.sh/${SYNC_TOPIC}/sse`);
+        eventSource.onmessage = (event) => {
+          try {
+            const wrapper = JSON.parse(event.data);
+            if (!wrapper.message) return;
+            const data = JSON.parse(wrapper.message);
+            handleIncomingSyncData(data);
+          } catch (err) {}
+        };
+      } catch (e) {}
+
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'yusr_latest_event_v6' && e.newValue) {
+          try {
+            handleIncomingSyncData(JSON.parse(e.newValue));
+          } catch (err) {}
+        }
+      });
+    }
+
+    function handleIncomingSyncData(data) {
+      if (!data || !data.type) return;
+      if (data.stamp && data.stamp === lastEventStamp) return;
+      lastEventStamp = data.stamp || Date.now();
+
+      const isFromMe = data.senderId === clientSessionId;
+
+      if (data.type === 'NEW_ORDER') {
+        activeOrderId = data.order.code;
+        renderOrderOnStaffScreen(data.order);
+        updateStepUIOnly(1);
+        if (currentView === 'staff') {
+          triggerVisualBanner('وصل طلب جديد للمسار الذكي: ' + data.order.code);
+        }
+      } else if (data.type === 'SIGNAL') {
+        if (!isFromMe) {
+          appendMessageToBothLogs(data.signalText, data.time, 'customer');
+          if (currentView === 'staff') {
+            triggerVisualBanner('رسالة من السائق: ' + data.signalText);
+          }
+        }
+      } else if (data.type === 'STAFF_REPLY') {
+        if (!isFromMe) {
+          appendMessageToBothLogs(data.replyText, data.time, 'staff');
+        }
+        if (currentView !== 'staff') {
+          triggerVisualBanner('رد الموظف: ' + data.replyText);
+          speakText('رد من موظف المسار: ' + data.replyText);
+        }
+      } else if (data.type === 'STAFF_ALERT') {
+        if (currentView !== 'staff') {
+          triggerVisualBanner(data.msg);
+          speakText(data.msg);
+        }
+      } else if (data.type === 'STEP_UPDATE') {
+        updateStepUIOnly(data.stepNum);
+        if (currentView !== 'staff') {
+          const msg = (stepMessages[currentLang] && stepMessages[currentLang][data.stepNum]) || stepMessages.ar[data.stepNum];
+          triggerVisualBanner(msg);
+          speakText(msg);
+        }
+      } else if (data.type === 'COMPLETE_ORDER') {
+        activeOrderId = null;
+        resetStaffScreenToEmpty();
+        updateStepUIOnly(1);
+        document.getElementById('orderNumberDisplay').textContent = '—';
+        if (currentView !== 'staff') {
+          const doneMsg = currentLang === 'en'
+            ? 'Your order has been delivered and completed. Thank you for using Yusr Drive!'
+            : 'تم تسليم وإكمال طلبك بنجاح! شكراً لاستخدامك مسار يسر الذكي.';
+          triggerVisualBanner(doneMsg);
+          speakText(doneMsg);
+          switchMainView('customer');
+        }
+      }
+    }
+
+    function startAppWithLanguage(langSelection) {
+      const modal = document.getElementById('welcomeModal');
+      modal.classList.add('hidden');
+
+      if (langSelection === 'sign') {
+        currentLang = 'ar';
+        applyLanguage('ar');
+        selectDisabilityMode('hearing');
+        triggerVisualBanner('أهلاً بك! تم تفعيل نمط التواصل البصري ولغة الإشارة بدون صوت');
+        return;
+      }
+
+      currentLang = langSelection;
+      applyLanguage(langSelection);
+      const t = translations[currentLang];
+      speakText(t.welcomeSpeech);
+    }
+
+    function openLanguageModal() {
+      document.getElementById('welcomeModal').classList.remove('hidden');
+    }
+
+    function applyLanguage(lang) {
+      const t = translations[lang];
+      const root = document.getElementById('htmlRoot');
+      root.lang = lang;
+      root.dir = t.dir;
+
+      document.getElementById('accBadgeTitle').textContent = t.accBadgeTitle;
+      document.getElementById('simpleModeBtnText').textContent = simpleMode ? t.simpleOn : t.simpleOff;
+      document.getElementById('changeLangBtn').textContent = t.changeLangBtn;
+      document.getElementById('ttsBtnText').textContent = ttsEnabled ? t.ttsActive : t.ttsMuted;
+      document.getElementById('contrastBtn').textContent = t.contrastBtn;
+      document.getElementById('fontBtnLabel').textContent = t.fontBtnLabel;
+      document.getElementById('flashBtnText').textContent = t.flashBtnText;
+      document.getElementById('heroBadge').textContent = t.heroBadge;
+      document.getElementById('heroMainTitle').textContent = t.heroMainTitle;
+      document.getElementById('heroSubTitle').textContent = t.heroSubTitle;
+      document.getElementById('tabCustomer').textContent = t.tabCustomer;
+      document.getElementById('tabTracker').textContent = t.tabTracker;
+      document.getElementById('tabStaff').textContent = t.tabStaff;
+      document.getElementById('step1Badge').textContent = t.step1Badge;
+      document.getElementById('step1Title').textContent = t.step1Title;
+      document.getElementById('listenStep1Btn').textContent = t.listenStep1Btn;
+      document.getElementById('modeMobilityTitle').textContent = t.modeMobilityTitle;
+      document.getElementById('modeMobilityDesc').textContent = t.modeMobilityDesc;
+      document.getElementById('modeHearingTitle').textContent = t.modeHearingTitle;
+      document.getElementById('modeHearingDesc').textContent = t.modeHearingDesc;
+      document.getElementById('modeVisualTitle').textContent = t.modeVisualTitle;
+      document.getElementById('modeVisualDesc').textContent = t.modeVisualDesc;
+      document.getElementById('modeCognitiveTitle').textContent = t.modeCognitiveTitle;
+      document.getElementById('modeCognitiveDesc').textContent = t.modeCognitiveDesc;
+      document.getElementById('step2Badge').textContent = t.step2Badge;
+      document.getElementById('step2Title').textContent = t.step2Title;
+
+      document.getElementById('cat-offers').textContent = t.catOffers;
+      document.getElementById('cat-breakfast').textContent = t.catBreakfast;
+      document.getElementById('cat-lunch').textContent = t.catLunch;
+      document.getElementById('cat-dinner').textContent = t.catDinner;
+      document.getElementById('cat-fastfood').textContent = t.catFastfood;
+      document.getElementById('cat-desserts').textContent = t.catDesserts;
+      document.getElementById('cat-drinks').textContent = t.catDrinks;
+
+      document.getElementById('easyPackTitle').textContent = t.easyPackTitle;
+      document.getElementById('easyPackDesc').textContent = t.easyPackDesc;
+      document.getElementById('easyPackLabel').textContent = t.easyPackLabel;
+      document.getElementById('step3Badge').textContent = t.step3Badge;
+      document.getElementById('step3Title').textContent = t.step3Title;
+      document.getElementById('carDetailsLabel').textContent = t.carDetailsLabel;
+      document.getElementById('spotLabel').textContent = t.spotLabel;
+      document.getElementById('spotWindowText').textContent = t.spotWindowText;
+      document.getElementById('spotPassengerText').textContent = t.spotPassengerText;
+      document.getElementById('spotTrunkText').textContent = t.spotTrunkText;
+      document.getElementById('laneLabel').textContent = t.laneLabel;
+      document.getElementById('cartHeaderTitle').textContent = t.cartHeaderTitle;
+      document.getElementById('clearCartBtn').textContent = t.clearCartBtn;
+      document.getElementById('totalLabel').textContent = t.totalLabel;
+      document.getElementById('currencyLabel').textContent = t.currency;
+      document.getElementById('submitOrderBtnText').textContent = t.submitOrderBtnText;
+
+      renderMenu();
+      renderCart();
+    }
+
+    function speakText(text) {
+      if (currentView === 'staff') return;
+      if (!ttsEnabled || !('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = currentLang === 'en' ? 'en-US' : 'ar-SA';
+      utterance.rate = 1;
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function speakStep1() {
+      if (currentLang === 'en') {
+        speakText('Step 1: Select your accessibility mode so we can adapt the drive-thru lane for you.');
+      } else {
+        speakText('الخطوة الأولى: اختر نمط الخدمة وتكييف المسار حسب احتياجك');
+      }
+    }
+
+    function triggerVisualBanner(message) {
+      const banner = document.getElementById('visualAlertBanner');
+      const textEl = document.getElementById('visualAlertText');
+      textEl.textContent = message;
+      banner.classList.remove('hidden');
+      document.body.classList.add('visual-alert-active');
+      setTimeout(() => {
+        banner.classList.add('hidden');
+        document.body.classList.remove('visual-alert-active');
+      }, 4000);
+    }
+
+    function toggleTTS() {
+      ttsEnabled = !ttsEnabled;
+      const t = translations[currentLang];
+      const btn = document.getElementById('ttsToggleBtn');
+      if (ttsEnabled) {
+        btn.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span><span id="ttsBtnText">${t.ttsActive}</span>`;
+        speakText(currentLang === 'en' ? 'Voice reader enabled' : 'تم تفعيل القارئ الصوتي');
+      } else {
+        window.speechSynthesis.cancel();
+        btn.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span><span id="ttsBtnText">${t.ttsMuted}</span>`;
+      }
+    }
+
+    function toggleHighContrast() {
+      document.body.classList.toggle('high-contrast');
+      speakText(currentLang === 'en' ? 'High contrast mode toggled' : 'تم تبديل وضع التباين العالي');
+    }
+
+    function cycleFontSize() {
+      fontScaleIndex = (fontScaleIndex + 1) % fontScales.length;
+      const scale = fontScales[fontScaleIndex];
+      document.documentElement.style.setProperty('--font-scale', scale);
+      document.getElementById('fontScaleLabel').textContent = Math.round(scale * 100) + '%';
+    }
+
+    function toggleVisualFlashMode() {
+      visualFlashMode = !visualFlashMode;
+      const btn = document.getElementById('visualFlashToggleBtn');
+      if (visualFlashMode) {
+        btn.classList.add('bg-amber-400', 'text-slate-950');
+        btn.classList.remove('bg-slate-800');
+        triggerVisualBanner(currentLang === 'en' ? 'Visual Flash Alerts Enabled' : 'تم تفعيل الإشعارات الضوئية البصرية للصم وضعاف السمع');
+      } else {
+        btn.classList.remove('bg-amber-400', 'text-slate-950');
+        btn.classList.add('bg-slate-800');
+      }
+    }
+
+    function selectDisabilityMode(mode) {
+      selectedMode = mode;
+      const modes = ['mobility', 'hearing', 'visual', 'cognitive'];
+      modes.forEach(m => {
+        const card = document.getElementById('mode-' + m);
+        if (m === mode) {
+          card.className = 'mode-card focus-ring text-right p-5 rounded-2xl border-2 border-emerald-600 bg-emerald-50/80 transition flex flex-col justify-between gap-3 shadow-sm';
+        } else {
+          card.className = 'mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3';
+        }
+      });
+
+      if (mode === 'mobility') {
+        speakText(currentLang === 'en' ? 'Mobility mode selected' : 'تم اختيار نمط الإعاقة الحركية');
+      } else if (mode === 'hearing') {
+        if (!visualFlashMode) toggleVisualFlashMode();
+      } else if (mode === 'visual') {
+        if (!ttsEnabled) toggleTTS();
+        speakText(currentLang === 'en' ? 'Blind and low vision audio mode active' : 'تم اختيار نمط المكفوفين وضعاف البصر');
+      } else if (mode === 'cognitive') {
+        if (!simpleMode) toggleSimpleMode();
+      }
+    }
+
+    // فلترة الأقسام الـ 7 وعرض وجبات كل قسم فوراً
+    function filterCategory(cat) {
+      currentCategory = cat;
+      allCategories.forEach(c => {
+        const btn = document.getElementById('cat-' + c);
+        if (!btn) return;
+        if (c === cat) {
+          btn.className = 'cat-btn focus-ring py-3 px-2 rounded-xl font-black text-xs sm:text-sm bg-emerald-600 text-white shadow';
+        } else {
+          btn.className = 'cat-btn focus-ring py-3 px-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-800 hover:bg-slate-200';
+        }
+      });
+      renderMenu();
+    }
+
+    function renderMenu() {
+      const grid = document.getElementById('menuGrid');
+      const t = translations[currentLang];
+      const filtered = yusrMenu.filter(i => i.category === currentCategory);
+
+      grid.innerHTML = filtered.map(item => {
+        const title = currentLang === 'en' ? item.nameEn : item.name;
+        const desc = currentLang === 'en' ? item.descEn : item.desc;
+        const badge = currentLang === 'en' ? item.badgeEn : item.badge;
+
+        return `
+          <div class="p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3 bg-slate-50/70">
+            <div>
+              <div class="secondary-ui flex items-start justify-between gap-2 mb-1">
+                <span class="text-xs font-extrabold bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full">${badge}</span>
+              </div>
+              <h3 class="font-black text-lg">${title}</h3>
+              <p class="secondary-ui text-xs text-slate-600 mt-1 leading-relaxed">${desc}</p>
+            </div>
+            <div class="flex items-center justify-between pt-3 border-t border-slate-200">
+              <span class="text-lg font-black text-emerald-700">${item.price} ${t.currency}</span>
+              <div class="flex items-center gap-1.5">
+                <button type="button" onclick="speakText('${title}, ${item.price} ${t.currency}')" class="secondary-ui focus-ring px-3 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-xs font-bold">
+                  ${t.voiceBtn}
+                </button>
+                <button type="button" onclick="addToCart(${item.id})" class="focus-ring px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-sm transition shadow">
+                  ${t.addBtn}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addToCart(id) {
+      const item = yusrMenu.find(i => i.id === id);
+      const easyPackEl = document.getElementById('easyPackToggle');
+      const easyPack = easyPackEl ? easyPackEl.checked : true;
+      const existing = cart.find(c => c.id === id);
+
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({
+          id: item.id,
+          name: item.name,
+          nameEn: item.nameEn,
+          price: item.price,
+          qty: 1,
+          note: easyPack ? 'تغليف ميسّر سهل الفتح' : 'تغليف عادي'
+        });
+      }
+      renderCart();
+      const title = currentLang === 'en' ? item.nameEn : item.name;
+      speakText(currentLang === 'en' ? 'Added ' + title : 'تمت إضافة ' + title + ' إلى السلة');
+    }
+
+    function changeQty(id, delta) {
+      const item = cart.find(c => c.id === id);
+      if (!item) return;
+      item.qty += delta;
+      if (item.qty <= 0) {
+        cart = cart.filter(c => c.id !== id);
+      }
+      renderCart();
+    }
+
+    function clearCart() {
+      cart = [];
+      renderCart();
+      speakText(currentLang === 'en' ? 'Cart cleared' : 'تم إفراغ السلة');
+    }
+
+    function updatePreferences() {
+      const easyPack = document.getElementById('easyPackToggle').checked;
+      cart.forEach(c => {
+        c.note = easyPack ? 'تغليف ميسّر سهل الفتح' : 'تغليف عادي';
+      });
+      renderCart();
+    }
+
+    function renderCart() {
+      const list = document.getElementById('cartList');
+      const totalEl = document.getElementById('cartTotal');
+
+      if (cart.length === 0) {
+        list.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">${currentLang === 'en' ? 'Your cart is empty — select items from the menu' : 'السلة فارغة حالياً، اختر وجبتك من الأقسام'}</p>`;
+        totalEl.textContent = '0';
+        return;
+      }
+
+      let total = 0;
+      list.innerHTML = cart.map(item => {
+        total += item.price * item.qty;
+        const title = currentLang === 'en' ? (item.nameEn || item.name) : item.name;
+        return `
+          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex items-center justify-between gap-2">
+            <div>
+              <p class="font-bold text-sm">${title}</p>
+              <span class="secondary-ui text-[11px] text-emerald-700 font-bold">${item.note}</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button type="button" onclick="changeQty(${item.id}, -1)" class="w-7 h-7 rounded-lg bg-slate-200 font-black">-</button>
+              <span class="font-black text-sm">${item.qty}</span>
+              <button type="button" onclick="changeQty(${item.id}, 1)" class="w-7 h-7 rounded-lg bg-emerald-600 text-white font-black">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      totalEl.textContent = total;
+    }
+
+    function selectDeliverySpot(spotKey, btnEl) {
+      const map = {
+        window: 'تسليم عبر نافذة السائق بحامل ممتد',
+        passenger: 'وضع الطلب على المقعد المجاور للسائق',
+        trunk: 'وضع الطلب في الشنطة الخلفية للسيارة'
+      };
+      selectedSpot = map[spotKey];
+
+      document.querySelectorAll('.spot-btn').forEach(btn => {
+        btn.className = 'spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-slate-200 hover:border-slate-300 font-bold text-sm flex items-center justify-between';
+        btn.querySelector('span:last-child').textContent = '○';
+      });
+
+      btnEl.className = 'spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-bold text-sm flex items-center justify-between';
+      btnEl.querySelector('span:last-child').textContent = '✓';
+    }
+
+    function selectLane(laneName) {
+      selectedLane = laneName;
+      document.getElementById('trackerLaneName').textContent = laneName;
+
+      ['lane-1', 'lane-2', 'lane-3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el.textContent === laneName) {
+          el.className = 'lane-btn focus-ring py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-black text-sm';
+        } else {
+          el.className = 'lane-btn focus-ring py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm';
+        }
+      });
+    }
+
+    function submitAccessibleOrder() {
+      if (cart.length === 0) {
+        const alertMsg = currentLang === 'en' ? 'Please add at least one meal to your cart first' : 'يرجى اختيار وجبة واحدة على الأقل قبل تأكيد الطلب';
+        speakText(alertMsg);
+        triggerVisualBanner(alertMsg);
+        return;
+      }
+
+      const carInput = document.getElementById('carDetails').value.trim() || 'سيارة العميل (بدون لوحة مدخلة)';
+      const randomNum = Math.floor(100 + Math.random() * 900);
+      const orderCode = '#YSR-' + randomNum;
+
+      const orderData = {
+        code: orderCode,
+        mode: selectedMode,
+        car: carInput,
+        lane: selectedLane,
+        spot: selectedSpot,
+        items: cart.map(i => ({ qty: i.qty, name: i.name, note: i.note })),
+        timestamp: Date.now()
+      };
+
+      activeOrderId = orderCode;
+      renderOrderOnStaffScreen(orderData);
+      publishSyncEvent({ type: 'NEW_ORDER', order: orderData });
+
+      speakText(currentLang === 'en' ? `Order confirmed! Your number is ${orderCode}` : `تم تأكيد طلبك وإرساله للموظف بنجاح! رقم طلبك هو ${orderCode}`);
+      if (visualFlashMode) {
+        triggerVisualBanner(`تم تأكيد الطلب ${orderCode} — توجه إلى ${selectedLane}`);
+      }
+      switchMainView('tracker');
+    }
+
+    function switchMainView(view) {
+      currentView = view;
+      if (view === 'staff' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      const views = {
+        customer: document.getElementById('viewCustomer'),
+        tracker: document.getElementById('viewTracker'),
+        staff: document.getElementById('viewStaff')
+      };
+      const tabs = {
+        customer: document.getElementById('tabCustomer'),
+        tracker: document.getElementById('tabTracker'),
+        staff: document.getElementById('tabStaff')
+      };
+
+      Object.keys(views).forEach(k => {
+        if (k === view) {
+          views[k].classList.remove('hidden');
+          tabs[k].className = 'focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition bg-emerald-500 text-slate-950 shadow';
+        } else {
+          views[k].classList.add('hidden');
+          if (k === 'staff' && tabs.staff.classList.contains('hidden')) {
+            // إبقاء زر الموظف مخفياً للزوار
+          } else {
+            tabs[k].className = 'focus-ring px-5 py-3 rounded-xl font-extrabold text-sm transition text-slate-200 hover:bg-slate-800';
+          }
+        }
+      });
+    }
+
+    function updateStepUIOnly(stepNum) {
+      for (let i = 1; i <= 4; i++) {
+        const box = document.getElementById('step-' + i);
+        if (i <= stepNum) {
+          box.className = 'step-box p-4 rounded-2xl border-2 border-emerald-600 bg-emerald-50';
+        } else {
+          box.className = 'step-box p-4 rounded-2xl border-2 border-slate-200 bg-slate-50';
+        }
+      }
+    }
+
+    function setOrderStep(stepNum) {
+      updateStepUIOnly(stepNum);
+      publishSyncEvent({ type: 'STEP_UPDATE', stepNum: stepNum });
+      triggerVisualBanner('تم إرسال (المرحلة ' + stepNum + ') لجوال العميل بنجاح');
+    }
+
+    function completeAndDeleteOrder() {
+      activeOrderId = null;
+      cart = [];
+      renderCart();
+      resetStaffScreenToEmpty();
+      publishSyncEvent({ type: 'COMPLETE_ORDER' });
+      triggerVisualBanner('تم إكمال الطلب وحذفه من لوحة الموظف بنجاح');
+    }
+
+    function appendMessageToBothLogs(text, timeStr, senderType) {
+      const staffLog = document.getElementById('staffSignalsLog');
+      const custLog = document.getElementById('customerSignalsLog');
+
+      if (!chatHasMessages) {
+        chatHasMessages = true;
+        if (staffLog) staffLog.innerHTML = '';
+        if (custLog) custLog.innerHTML = '';
+      }
+
+      const cardHTML = senderType === 'staff'
+        ? `
+          <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
+            <span class="text-amber-400 block mb-1">[${timeStr}] رد موظف المسار:</span>
+            ${text}
+          </div>
+        `
+        : `
+          <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold">
+            <span class="text-emerald-400 block mb-1">[${timeStr}] إشارة من السيارة:</span>
+            ${text}
+          </div>
+        `;
+
+      if (staffLog) staffLog.innerHTML = cardHTML + staffLog.innerHTML;
+      if (custLog) custLog.innerHTML = cardHTML + custLog.innerHTML;
+    }
+
+    function sendQuickSignal(signalText) {
+      const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+      appendMessageToBothLogs(signalText, time, 'customer');
+      publishSyncEvent({ type: 'SIGNAL', signalText: signalText, time: time });
+      speakText(currentLang === 'en' ? 'Message sent to staff' : 'تم إرسال رسالتك للموظف');
+    }
+
+    function sendCustomCustomerMessage() {
+      const input = document.getElementById('customerChatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      sendQuickSignal(text);
+    }
+
+    function sendStaffQuickReply(replyText) {
+      const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+      appendMessageToBothLogs(replyText, time, 'staff');
+      publishSyncEvent({ type: 'STAFF_REPLY', replyText: replyText, time: time });
+      triggerVisualBanner('تم إرسال الرد لشات العميل: ' + replyText);
+    }
+
+    function sendCustomStaffMessage() {
+      const input = document.getElementById('staffChatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      sendStaffQuickReply(text);
+    }
+
+    function triggerCustomerAlert(msg) {
+      publishSyncEvent({ type: 'STAFF_ALERT', msg: msg });
+      triggerVisualBanner('تم إرسال التنبيه لشاشة العميل بنجاح');
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      filterCategory('offers');
+      renderCart();
+      resetStaffScreenToEmpty();
+      startLiveCloudSync();
+    });
   </script>
 </body>
 </html>
