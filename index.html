@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
@@ -23,7 +23,7 @@
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
 
-  <!-- 1. شاشة الكلمة الترحيبية الافتتاحية (تظهر أول ما يفتح الموقع ثم تختفي تلقائياً) -->
+  <!-- 1. شاشة الكلمة الترحيبية الافتتاحية -->
   <div id="introSplash" class="fixed inset-0 z-[60] bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white flex items-center justify-center p-6 text-center">
     <div class="max-w-lg w-full space-y-5 animate-pulse">
       <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-5 py-2 rounded-full text-sm font-black">
@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <!-- 2. شاشة اختيار اللغات (تظهر تلقائياً بعد اختفاء الكلمة الترحيبية) -->
+  <!-- 2. شاشة اختيار اللغات -->
   <div id="welcomeModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white text-slate-900 max-w-2xl w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-emerald-500 text-center space-y-6 my-auto">
       <div class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 px-4 py-1.5 rounded-full text-sm font-black">
@@ -54,42 +54,36 @@
       </div>
 
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        <!-- العربية -->
         <button type="button" onclick="startAppWithLanguage('ar')" class="focus-ring p-4 rounded-2xl border-2 border-emerald-600 bg-emerald-50 hover:bg-emerald-100 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-emerald-600 text-white px-2.5 py-0.5 rounded-full">الافتراضي</span>
           <span class="text-xl font-black text-slate-900">العربية</span>
           <span class="text-[11px] text-slate-600 font-bold">واجهة وصوت عربي</span>
         </button>
 
-        <!-- الإنجليزية -->
         <button type="button" onclick="startAppWithLanguage('en')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-slate-200 text-slate-700 px-2.5 py-0.5 rounded-full">English</span>
           <span class="text-xl font-black text-slate-900">English</span>
           <span class="text-[11px] text-slate-600 font-bold">Voice & UI in English</span>
         </button>
 
-        <!-- التركية -->
         <button type="button" onclick="startAppWithLanguage('tr')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-rose-100 text-rose-800 px-2.5 py-0.5 rounded-full">Türkçe</span>
           <span class="text-xl font-black text-slate-900">Türkçe</span>
           <span class="text-[11px] text-slate-600 font-bold">Sesli ve Türkçe Arayüz</span>
         </button>
 
-        <!-- الأردو -->
         <button type="button" onclick="startAppWithLanguage('ur')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-teal-100 text-teal-800 px-2.5 py-0.5 rounded-full">اردو</span>
           <span class="text-xl font-black text-slate-900">اردو</span>
           <span class="text-[11px] text-slate-600 font-bold">اردو انٹرفیس اور آواز</span>
         </button>
 
-        <!-- الصينية -->
         <button type="button" onclick="startAppWithLanguage('zh')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-emerald-600 bg-slate-50 hover:bg-emerald-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-red-100 text-red-800 px-2.5 py-0.5 rounded-full">中文</span>
           <span class="text-xl font-black text-slate-900">中文 (简体)</span>
           <span class="text-[11px] text-slate-600 font-bold">中文界面与语音导览</span>
         </button>
 
-        <!-- لغة الإشارة / بصري للصم -->
         <button type="button" onclick="startAppWithLanguage('sign')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 bg-slate-50 hover:bg-amber-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">للصم / Deaf</span>
           <span class="text-lg font-black text-slate-900">بصري / إشارة</span>
@@ -115,11 +109,28 @@
     </div>
   </div>
 
+  <!-- نافذة تأكيد إكمال أو حذف الطلب (تظهر للموظف بخياري تأكيد أو إلغاء) -->
+  <div id="staffConfirmModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="staffConfirmBox" class="bg-slate-900 text-white max-w-md w-full rounded-3xl p-6 shadow-2xl border-2 border-emerald-500 text-center space-y-4">
+      <span id="staffConfirmBadge" class="inline-block text-xs font-black px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300">تأكيد العملية</span>
+      <h3 id="staffConfirmTitle" class="text-xl font-black">هل أنت متأكد؟</h3>
+      <p id="staffConfirmDesc" class="text-sm text-slate-300 font-bold leading-relaxed"></p>
+      <div class="flex gap-3 pt-3">
+        <button type="button" id="staffConfirmYesBtn" onclick="executeConfirmedOrderAction()" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl transition shadow">
+          تأكيد
+        </button>
+        <button type="button" onclick="closeStaffConfirmModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 font-black py-3 rounded-xl transition">
+          إلغاء
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div id="visualAlertBanner" class="hidden fixed top-0 left-0 right-0 z-50 bg-amber-400 text-black font-black text-center py-4 text-xl shadow-lg border-b-4 border-black">
     <span id="visualAlertText">تم تحديث حالة الطلب!</span>
   </div>
 
-  <!-- الشريط العلوي مع زر التبسيط وتغيير اللغة -->
+  <!-- الشريط العلوي -->
   <div class="bg-slate-900 text-white py-3 px-4 shadow-md sticky top-0 z-40 border-b border-slate-700">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       <div class="flex flex-wrap items-center gap-2">
@@ -329,7 +340,10 @@
 
               <div class="bg-slate-100 p-4 rounded-2xl flex items-center justify-between">
                 <span id="totalLabel" class="font-extrabold text-slate-700">الإجمالي شامل الضريبة:</span>
-               <span class="text-2xl font-black text-emerald-700 inline-flex items-center gap-1.5"><span id="cartTotal">0</span> <span id="currencyLabel" class="inline-flex items-center"></span></span>
+                <span class="text-2xl font-black text-emerald-700 inline-flex items-center gap-1.5">
+                  <span id="cartTotal">0</span>
+                  <span id="currencyLabel" class="inline-flex items-center"></span>
+                </span>
               </div>
 
               <button type="button" onclick="submitAccessibleOrder()" class="focus-ring w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-lg py-4 rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
@@ -341,17 +355,17 @@
       </div>
     </div>
 
-    <!-- شاشة المسار للعميل مع شات مباشر -->
+    <!-- شاشة المسار للعميل (معزولة برقم طلب العميل الخاص فقط) -->
     <div id="viewTracker" class="hidden space-y-8">
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-slate-200">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
           <div>
             <span class="bg-emerald-100 text-emerald-800 font-extrabold px-3 py-1 rounded-full text-xs">لوحة التواصل اللالمسي والمباشر</span>
             <h2 class="text-3xl font-black mt-2">شاشة المسار الذكي داخل السيارة</h2>
-            <p class="text-slate-600 text-sm mt-1">لا حاجة للتحدث عبر المايكروفون؛ تتحدث مراحل طلبك وتصل محادثتك مع الموظف مباشرة أمامك الآن.</p>
+            <p class="text-slate-600 text-sm mt-1">لا حاجة للتحدث عبر المايكروفون؛ هذه الشاشة مرتبطة بطلبك أنت فقط وتتحدث تلقائياً.</p>
           </div>
           <div class="bg-slate-900 text-white px-6 py-4 rounded-2xl text-center">
-            <span class="text-xs text-slate-400 block">رقم طلب الأولوية</span>
+            <span class="text-xs text-slate-400 block">رقم طلبك الخاص</span>
             <span id="orderNumberDisplay" class="text-3xl font-black text-emerald-400">—</span>
           </div>
         </div>
@@ -433,9 +447,9 @@
       </div>
     </div>
 
-    <!-- شاشة الموظف -->
+    <!-- شاشة الموظف (تدعم طابور الطلبات المتعددة + زرين منفصلين مع تأكيد + سجل الطلبات) -->
     <div id="viewStaff" class="hidden space-y-6">
-      <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-slate-700">
+      <div class="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl border-2 border-slate-700 space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700 pb-5">
           <div>
             <span class="bg-amber-400 text-slate-950 font-black px-3 py-1 rounded-full text-xs">شاشة طاقم الفرع - مسار الأولوية (صامتة للموظف)</span>
@@ -444,21 +458,38 @@
           <div class="flex items-center gap-3">
             <span class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400 text-emerald-300 px-4 py-2 rounded-xl text-sm font-bold">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-              مستشعر المسار الذكي متصل
+              الطلبات النشطة بالانتظار: <span id="activeOrdersCountBadge" class="font-black text-white">0</span>
             </span>
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+        <!-- شريط طابور الطلبات النشطة (يمنع حذف الطلب الأول عند وصول طلب ثاني) -->
+        <div class="bg-slate-800/90 p-4 rounded-2xl border border-slate-700 space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-slate-300">طابور الطلبات النشطة حالياً (اضغط على رقم الطلب للتبديل والتحكم به):</span>
+          </div>
+          <div id="activeOrdersQueueBar" class="flex flex-wrap gap-2 pt-1">
+            <span class="text-xs text-slate-400 font-bold">لا توجد طلبات نشطة في الطابور حالياً...</span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 bg-slate-800 rounded-2xl p-6 border border-slate-700 space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center justify-between gap-3">
               <div class="flex items-center gap-3">
                 <span class="text-2xl font-black text-emerald-400" id="staffOrderCode">لا يوجد طلب نشط</span>
                 <span id="staffModeBadge" class="bg-emerald-500 text-slate-950 font-black px-4 py-1 rounded-full text-sm">بانتظار عميل...</span>
               </div>
-              <button type="button" onclick="completeAndDeleteOrder()" class="focus-ring bg-rose-600 hover:bg-rose-500 text-white font-black px-4 py-2 rounded-xl text-xs transition shadow">
-                ✓ اكتمال الطلب وحذفه
-              </button>
+
+              <!-- خياران منفصلان: طلب مكتمل (أخضر) + حذف الطلب (أحمر) مع نافذة تأكيد -->
+              <div class="flex flex-wrap items-center gap-2">
+                <button type="button" onclick="promptStaffOrderAction('complete')" class="focus-ring bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                  <span>✓ طلب مكتمل</span>
+                </button>
+                <button type="button" onclick="promptStaffOrderAction('delete')" class="focus-ring bg-rose-600 hover:bg-rose-500 text-white font-black px-4 py-2.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                  <span>✕ حذف الطلب</span>
+                </button>
+              </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-slate-900/90 p-4 rounded-xl border border-slate-700">
@@ -489,12 +520,12 @@
             </div>
 
             <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-3">
-              <span class="text-xs font-extrabold text-emerald-400 block">تحكم الموظف في مرحلة الطلب (ينطق الصوت عند العميل فقط):</span>
+              <span class="text-xs font-extrabold text-emerald-400 block">تحكم الموظف في مرحلة الطلب المحدد (يصل الصوت والتحديث لصاحب هذا الطلب فقط):</span>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <button type="button" onclick="setOrderStep(1)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">1. استلام الطلب</button>
-                <button type="button" onclick="setOrderStep(2)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">2. تحضير ميسر</button>
-                <button type="button" onclick="setOrderStep(3)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">3. وصول السيارة</button>
-                <button type="button" onclick="setOrderStep(4)" class="focus-ring py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition">4. تسليم للسيارة</button>
+                <button type="button" id="staff-step-btn-1" onclick="setOrderStep(1)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">1. استلام الطلب</button>
+                <button type="button" id="staff-step-btn-2" onclick="setOrderStep(2)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">2. تحضير ميسر</button>
+                <button type="button" id="staff-step-btn-3" onclick="setOrderStep(3)" class="focus-ring py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-white transition">3. وصول السيارة</button>
+                <button type="button" id="staff-step-btn-4" onclick="setOrderStep(4)" class="focus-ring py-2.5 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition">4. تسليم للسيارة</button>
               </div>
             </div>
           </div>
@@ -545,6 +576,22 @@
             </div>
           </div>
         </div>
+
+        <!-- قسم سجل الطلبات (يحفظ الطلبات المكتملة والمحذوفة) -->
+        <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700 pb-3">
+            <div class="flex items-center gap-2">
+              <h3 class="font-black text-lg text-white">سجل الطلبات (المكتملة والمحذوفة)</h3>
+              <span id="historyCountBadge" class="bg-slate-700 text-emerald-300 text-xs font-black px-2.5 py-0.5 rounded-full">0</span>
+            </div>
+            <button type="button" onclick="clearOrdersHistory()" class="text-xs font-bold text-rose-400 hover:underline">
+              مسح السجل بالكامل
+            </button>
+          </div>
+          <div id="ordersHistoryList" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-72 overflow-y-auto pr-1">
+            <p class="text-xs text-slate-400 font-bold">لا توجد طلبات في السجل حتى الآن...</p>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -559,7 +606,7 @@
   </footer>
 
   <script>
-    console.log("Yusr Drive System v8 Complete Initialized - Developer: Kayan Adel Abbas");
+    console.log("Yusr Drive System v9 Multi-Order Queue & History Initialized - Developer: Kayan Adel Abbas");
 
     let currentLang = 'ar';
     let ttsEnabled = true;
@@ -574,11 +621,32 @@
     let currentCategory = 'offers';
     let currentView = 'customer';
 
-    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v8';
-    let activeOrderId = null;
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v9';
     let lastEventStamp = 0;
     const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
-    let chatHasMessages = false;
+
+    // عزل طلب العميل الحالي عن بقية العملاء، وطابور طلبات الموظف + سجل الطلبات
+    let myCustomerOrderCode = null;
+    let activeOrders = []; // مصفوفة الطلبات النشطة عند الموظف
+    let staffSelectedOrderCode = null; // الطلب المعروض حالياً أمام الموظف
+    let ordersHistory = []; // سجل الطلبات المكتملة والمحذوفة
+    let pendingConfirmAction = null; // 'complete' or 'delete'
+
+    try {
+      const savedHistory = localStorage.getItem('yusr_orders_history_v9');
+      if (savedHistory) ordersHistory = JSON.parse(savedHistory);
+    } catch (e) {}
+
+    // شعار الريال السعودي الرسمي (SVG)
+    const saudiRiyalLogoSVG = `
+      <svg class="inline-block w-5 h-5 fill-current shrink-0" viewBox="0 0 100 100" aria-label="ريال سعودي">
+        <path d="M58 12 L70 6 L70 72 L58 76 Z" />
+        <path d="M36 20 L48 14 L48 72 C48 82 42 88 31 91 L15 95 L18 82 L31 79 C35 78 36 75 36 70 Z" />
+        <path d="M18 53 L88 38 L85 50 L15 65 Z" />
+        <path d="M58 67 L86 60 L83 72 L58 78 Z" />
+        <path d="M52 86 L84 79 L81 91 L49 98 Z" />
+      </svg>
+    `;
 
     const allCategories = ['offers', 'breakfast', 'lunch', 'dinner', 'fastfood', 'desserts', 'drinks'];
 
@@ -678,7 +746,7 @@
         clearCartBtn: 'إفراغ السلة',
         emptyCartText: 'السلة فارغة حالياً، اختر وجبتك من الأقسام',
         totalLabel: 'الإجمالي شامل الضريبة:',
-        currency: 'ر.س',
+        currency: 'ريال سعودي',
         submitOrderBtnText: 'تأكيد الطلب وإشعار المسار الذكي',
         addBtn: '+ أضف للسلة',
         voiceBtn: 'صوت',
@@ -738,7 +806,7 @@
         clearCartBtn: 'Clear Cart',
         emptyCartText: 'Your cart is empty — select meals from the categories',
         totalLabel: 'Total (VAT Included):',
-        currency: 'SAR',
+        currency: 'Saudi Riyals',
         submitOrderBtnText: 'Confirm Order & Notify Smart Lane',
         addBtn: '+ Add to Cart',
         voiceBtn: 'Audio',
@@ -798,7 +866,7 @@
         clearCartBtn: 'Sepeti Temizle',
         emptyCartText: 'Sepetiniz boş — lütfen menüden seçim yapın',
         totalLabel: 'Toplam (KDV Dahil):',
-        currency: 'SAR',
+        currency: 'Suudi Riyali',
         submitOrderBtnText: 'Siparişi Onayla ve Akıllı Hattı Bilgilendir',
         addBtn: '+ Sepete Ekle',
         voiceBtn: 'Ses',
@@ -858,7 +926,7 @@
         clearCartBtn: 'ٹوکری خالی کریں',
         emptyCartText: 'ٹوکری خالی ہے — مینو سے اپنا پسندیدہ کھانا منتخب کریں',
         totalLabel: 'کل رقم (بشمول ٹیکس):',
-        currency: 'ریال',
+        currency: 'سعودی ریال',
         submitOrderBtnText: 'آرڈر کی تصدیق کریں اور سمارٹ لین کو مطلع کریں',
         addBtn: '+ شامل کریں',
         voiceBtn: 'آواز',
@@ -918,7 +986,7 @@
         clearCartBtn: '清空',
         emptyCartText: '购物车为空 — 请从上方分类中选择餐点',
         totalLabel: '总计（含税）：',
-        currency: 'SAR',
+        currency: '沙特里亚尔',
         submitOrderBtnText: '确认下单并通知智能车道',
         addBtn: '+ 加入购物车',
         voiceBtn: '语音',
@@ -1424,7 +1492,6 @@
       return item.desc;
     }
 
-    // محرك النطق السليم بدون أي تعليق للأزرار
     function prepareTextForSpeech(text, lang) {
       if (!text) return '';
       return text
@@ -1560,59 +1627,249 @@
       }
     }
 
-    function resetStaffScreenToEmpty() {
-      chatHasMessages = false;
-      document.getElementById('staffOrderCode').textContent = 'لا يوجد طلب نشط';
-      document.getElementById('staffModeBadge').textContent = 'بانتظار عميل...';
-      document.getElementById('staffCarInfo').textContent = '—';
-      document.getElementById('staffLaneInfo').textContent = '—';
-      document.getElementById('staffSpotInfo').textContent = '—';
-      document.getElementById('staffInstructionsBox').textContent = '• شاشة الاستقبال جاهزة؛ ستظهر هنا تفاصيل مركبة العميل والأصناف المطلوبة فور إرسال الطلب.';
-      document.getElementById('staffItemsList').innerHTML = `<li class="text-slate-400">لا توجد طلبات مرسلة حتى الآن</li>`;
-      document.getElementById('staffSignalsLog').innerHTML = `
-        <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
-          بانتظار إشارات من شاشة سيارة العميل...
-        </div>
-      `;
-      const custLog = document.getElementById('customerSignalsLog');
-      if (custLog) {
-        custLog.innerHTML = `
-          <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
-            بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...
-          </div>
-        `;
+    // إدارة طابور الطلبات المتعددة في شاشة الموظف
+    function getSelectedStaffOrder() {
+      if (!staffSelectedOrderCode && activeOrders.length > 0) {
+        staffSelectedOrderCode = activeOrders[0].code;
       }
+      return activeOrders.find(o => o.code === staffSelectedOrderCode) || null;
     }
 
-    function renderOrderOnStaffScreen(orderData) {
-      if (!orderData) {
-        resetStaffScreenToEmpty();
+    function selectOrderInStaffQueue(code) {
+      staffSelectedOrderCode = code;
+      renderStaffActiveQueueAndDetails();
+    }
+
+    function renderStaffChatMessages(messages) {
+      const staffLog = document.getElementById('staffSignalsLog');
+      if (!staffLog) return;
+      if (!messages || messages.length === 0) {
+        staffLog.innerHTML = `
+          <div class="bg-slate-900 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
+            بانتظار إشارات من شاشة سيارة العميل لهذا الطلب...
+          </div>
+        `;
         return;
       }
-      const modeInfo = getModeDetails(orderData.mode);
-      document.getElementById('staffOrderCode').textContent = orderData.code;
+      staffLog.innerHTML = messages.map(m => m.senderType === 'staff'
+        ? `
+          <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
+            <span class="text-amber-400 block mb-1">[${m.time}] رد موظف المسار:</span>
+            ${m.text}
+          </div>
+        `
+        : `
+          <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold">
+            <span class="text-emerald-400 block mb-1">[${m.time}] إشارة من السيارة:</span>
+            ${m.text}
+          </div>
+        `
+      ).join('');
+    }
+
+    function renderStaffActiveQueueAndDetails() {
+      const countBadge = document.getElementById('activeOrdersCountBadge');
+      const queueBar = document.getElementById('activeOrdersQueueBar');
+      if (countBadge) countBadge.textContent = activeOrders.length;
+
+      if (activeOrders.length === 0) {
+        staffSelectedOrderCode = null;
+        if (queueBar) {
+          queueBar.innerHTML = `<span class="text-xs text-slate-400 font-bold">لا توجد طلبات نشطة في الطابور حالياً...</span>`;
+        }
+        document.getElementById('staffOrderCode').textContent = 'لا يوجد طلب نشط';
+        document.getElementById('staffModeBadge').textContent = 'بانتظار عميل...';
+        document.getElementById('staffCarInfo').textContent = '—';
+        document.getElementById('staffLaneInfo').textContent = '—';
+        document.getElementById('staffSpotInfo').textContent = '—';
+        document.getElementById('staffInstructionsBox').textContent = '• شاشة الاستقبال جاهزة؛ ستظهر هنا تفاصيل مركبة العميل والأصناف المطلوبة فور إرسال الطلب.';
+        document.getElementById('staffItemsList').innerHTML = `<li class="text-slate-400">لا توجد طلبات مرسلة حتى الآن</li>`;
+        renderStaffChatMessages([]);
+        return;
+      }
+
+      if (!activeOrders.some(o => o.code === staffSelectedOrderCode)) {
+        staffSelectedOrderCode = activeOrders[0].code;
+      }
+
+      if (queueBar) {
+        queueBar.innerHTML = activeOrders.map((ord, idx) => {
+          const isSelected = ord.code === staffSelectedOrderCode;
+          return `
+            <button type="button" onclick="selectOrderInStaffQueue('${ord.code}')" class="focus-ring px-4 py-2 rounded-xl font-black text-xs transition flex items-center gap-2 ${
+              isSelected
+                ? 'bg-emerald-500 text-slate-950 shadow-lg ring-2 ring-emerald-300'
+                : 'bg-slate-900 hover:bg-slate-700 text-slate-200 border border-slate-600'
+            }">
+              <span>#${idx + 1}</span>
+              <span>${ord.code}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded-full ${isSelected ? 'bg-slate-950 text-emerald-300' : 'bg-slate-800 text-amber-300'}">${ord.lane}</span>
+            </button>
+          `;
+        }).join('');
+      }
+
+      const currentOrd = getSelectedStaffOrder();
+      if (!currentOrd) return;
+
+      const modeInfo = getModeDetails(currentOrd.mode);
+      document.getElementById('staffOrderCode').textContent = currentOrd.code;
       document.getElementById('staffModeBadge').textContent = modeInfo.badge;
-      document.getElementById('staffCarInfo').textContent = orderData.car;
-      document.getElementById('staffLaneInfo').textContent = orderData.lane;
-      document.getElementById('staffSpotInfo').textContent = orderData.spot;
+      document.getElementById('staffCarInfo').textContent = currentOrd.car;
+      document.getElementById('staffLaneInfo').textContent = currentOrd.lane;
+      document.getElementById('staffSpotInfo').textContent = currentOrd.spot;
       document.getElementById('staffInstructionsBox').textContent = modeInfo.instructions;
 
       const staffList = document.getElementById('staffItemsList');
-      staffList.innerHTML = orderData.items.map(item => `
+      staffList.innerHTML = currentOrd.items.map(item => `
         <li class="flex items-center justify-between border-b border-slate-800 pb-2">
           <span>${item.qty}x ${item.name}</span>
           <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">${item.note}</span>
         </li>
       `).join('');
 
-      document.getElementById('orderNumberDisplay').textContent = orderData.code;
-      document.getElementById('trackerLaneName').textContent = orderData.lane;
+      renderStaffChatMessages(currentOrd.messages || []);
+    }
+
+    // عرض سجل الطلبات في شاشة الموظف
+    function renderOrdersHistory() {
+      const listEl = document.getElementById('ordersHistoryList');
+      const badgeEl = document.getElementById('historyCountBadge');
+      if (!listEl || !badgeEl) return;
+
+      badgeEl.textContent = ordersHistory.length;
+
+      if (ordersHistory.length === 0) {
+        listEl.innerHTML = `<p class="text-xs text-slate-400 font-bold">لا توجد طلبات في السجل حتى الآن...</p>`;
+        return;
+      }
+
+      listEl.innerHTML = ordersHistory.map(h => {
+        const isCompleted = h.status === 'completed';
+        const statusBadge = isCompleted
+          ? `<span class="bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-[11px] font-black px-2.5 py-0.5 rounded-full">✓ طلب مكتمل</span>`
+          : `<span class="bg-rose-500/20 border border-rose-400 text-rose-300 text-[11px] font-black px-2.5 py-0.5 rounded-full">✕ طلب محذوف</span>`;
+
+        const itemsSummary = (h.items || []).map(i => `${i.qty}x ${i.name}`).join(' ، ');
+
+        return `
+          <div class="bg-slate-900 p-4 rounded-xl border ${isCompleted ? 'border-emerald-700/60' : 'border-rose-700/60'} space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="font-black text-base text-white">${h.code}</span>
+              ${statusBadge}
+            </div>
+            <div class="text-xs text-slate-300 font-bold">
+              <span>السيارة: ${h.car}</span> • <span class="text-amber-400">${h.lane}</span>
+            </div>
+            <div class="text-xs text-slate-400">
+              الأصناف: ${itemsSummary}
+            </div>
+            <div class="text-[11px] text-slate-500 font-bold pt-1 border-t border-slate-800">
+              الوقت: ${h.actionTime}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function clearOrdersHistory() {
+      ordersHistory = [];
+      try { localStorage.removeItem('yusr_orders_history_v9'); } catch (e) {}
+      renderOrdersHistory();
+      triggerVisualBanner('تم مسح سجل الطلبات بالكامل');
+    }
+
+    // نافذة التأكيد (تأكيد / إلغاء) عند الضغط على طلب مكتمل أو حذف الطلب
+    function promptStaffOrderAction(actionType) {
+      const currentOrd = getSelectedStaffOrder();
+      if (!currentOrd) {
+        triggerVisualBanner('لا يوجد طلب نشط محدد حالياً!');
+        return;
+      }
+
+      pendingConfirmAction = actionType;
+      const modal = document.getElementById('staffConfirmModal');
+      const box = document.getElementById('staffConfirmBox');
+      const badge = document.getElementById('staffConfirmBadge');
+      const title = document.getElementById('staffConfirmTitle');
+      const desc = document.getElementById('staffConfirmDesc');
+      const yesBtn = document.getElementById('staffConfirmYesBtn');
+
+      if (actionType === 'complete') {
+        box.className = 'bg-slate-900 text-white max-w-md w-full rounded-3xl p-6 shadow-2xl border-2 border-emerald-500 text-center space-y-4';
+        badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300';
+        badge.textContent = 'تأكيد إكمال الطلب';
+        title.textContent = `إكمال الطلب ${currentOrd.code}؟`;
+        desc.textContent = `سيتم تسجيل الطلب (${currentOrd.code}) كطلب مكتمل في سجل الطلبات وإبلاغ العميل باستلام طلبه بنجاح.`;
+        yesBtn.className = 'flex-1 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3 rounded-xl transition shadow';
+        yesBtn.textContent = 'تأكيد الإكمال';
+      } else {
+        box.className = 'bg-slate-900 text-white max-w-md w-full rounded-3xl p-6 shadow-2xl border-2 border-rose-500 text-center space-y-4';
+        badge.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-rose-500/20 text-rose-300';
+        badge.textContent = 'تأكيد حذف الطلب';
+        title.textContent = `حذف الطلب ${currentOrd.code}؟`;
+        desc.textContent = `هل أنت متأكد من حذف وإلغاء الطلب (${currentOrd.code})؟ سيتم نقله إلى سجل الطلبات كطلب محذوف.`;
+        yesBtn.className = 'flex-1 bg-rose-600 hover:bg-rose-500 text-white font-black py-3 rounded-xl transition shadow';
+        yesBtn.textContent = 'تأكيد الحذف';
+      }
+
+      modal.classList.remove('hidden');
+    }
+
+    function closeStaffConfirmModal() {
+      pendingConfirmAction = null;
+      document.getElementById('staffConfirmModal').classList.add('hidden');
+    }
+
+    function executeConfirmedOrderAction() {
+      const currentOrd = getSelectedStaffOrder();
+      const actionType = pendingConfirmAction;
+      closeStaffConfirmModal();
+
+      if (!currentOrd || !actionType) return;
+
+      const targetCode = currentOrd.code;
+      const timeStr = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+
+      // إضافة الطلب إلى سجل الطلبات
+      ordersHistory.unshift({
+        code: currentOrd.code,
+        car: currentOrd.car,
+        lane: currentOrd.lane,
+        items: currentOrd.items,
+        status: actionType === 'complete' ? 'completed' : 'deleted',
+        actionTime: timeStr
+      });
+
+      try {
+        localStorage.setItem('yusr_orders_history_v9', JSON.stringify(ordersHistory));
+      } catch (e) {}
+
+      // إزالة هذا الطلب فقط من الطابور وبقاء الطلبات الأخرى كما هي
+      activeOrders = activeOrders.filter(o => o.code !== targetCode);
+      staffSelectedOrderCode = activeOrders.length > 0 ? activeOrders[0].code : null;
+
+      renderStaffActiveQueueAndDetails();
+      renderOrdersHistory();
+
+      publishSyncEvent({
+        type: actionType === 'complete' ? 'COMPLETE_ORDER' : 'DELETE_ORDER',
+        orderCode: targetCode,
+        orderSnapshot: currentOrd,
+        time: timeStr
+      });
+
+      triggerVisualBanner(
+        actionType === 'complete'
+          ? `تم إكمال الطلب ${targetCode} وإضافته إلى سجل الطلبات`
+          : `تم حذف الطلب ${targetCode} وإضافته إلى سجل الطلبات`
+      );
     }
 
     async function publishSyncEvent(payload) {
       payload.senderId = clientSessionId;
       payload.stamp = Date.now();
-      localStorage.setItem('yusr_latest_event_v8', JSON.stringify(payload));
+      localStorage.setItem('yusr_latest_event_v9', JSON.stringify(payload));
       try {
         await fetch(`https://ntfy.sh/${SYNC_TOPIC}`, {
           method: 'POST',
@@ -1636,7 +1893,7 @@
       } catch (e) {}
 
       window.addEventListener('storage', (e) => {
-        if (e.key === 'yusr_latest_event_v8' && e.newValue) {
+        if (e.key === 'yusr_latest_event_v9' && e.newValue) {
           try {
             handleIncomingSyncData(JSON.parse(e.newValue));
           } catch (err) {}
@@ -1652,52 +1909,145 @@
       const isFromMe = data.senderId === clientSessionId;
 
       if (data.type === 'NEW_ORDER') {
-        activeOrderId = data.order.code;
-        renderOrderOnStaffScreen(data.order);
-        updateStepUIOnly(1);
-        if (currentView === 'staff') {
-          triggerVisualBanner('وصل طلب جديد للمسار الذكي: ' + data.order.code);
-        }
-      } else if (data.type === 'SIGNAL') {
-        if (!isFromMe) {
-          appendMessageToBothLogs(data.signalText, data.time, 'customer');
-          if (currentView === 'staff') {
-            triggerVisualBanner('رسالة من السائق: ' + data.signalText);
+        const incomingOrder = data.order;
+        incomingOrder.messages = incomingOrder.messages || [];
+        incomingOrder.step = incomingOrder.step || 1;
+
+        // إضافة الطلب لطابور الموظف دون مسح الطلبات السابقة!
+        const exists = activeOrders.some(o => o.code === incomingOrder.code);
+        if (!exists) {
+          activeOrders.push(incomingOrder);
+          // إذا لم يكن لدى الموظف طلب محدد حالياً، نحدد هذا الطلب الأول تلقائياً، وإذا كان لديه طلب أول مفتوح لا نغيره حتى لا ينحذف من أمامه
+          if (!staffSelectedOrderCode) {
+            staffSelectedOrderCode = incomingOrder.code;
           }
         }
-      } else if (data.type === 'STAFF_REPLY') {
-        if (!isFromMe) {
-          appendMessageToBothLogs(data.replyText, data.time, 'staff');
+        renderStaffActiveQueueAndDetails();
+
+        if (currentView === 'staff') {
+          triggerVisualBanner(`وصل طلب جديد (${incomingOrder.code}) — إجمالي الطلبات النشطة: ${activeOrders.length}`);
         }
-        if (currentView !== 'staff') {
+      } else if (data.type === 'SIGNAL') {
+        const targetOrd = activeOrders.find(o => o.code === data.orderCode);
+        if (targetOrd) {
+          targetOrd.messages = targetOrd.messages || [];
+          if (!isFromMe) {
+            targetOrd.messages.unshift({ text: data.signalText, time: data.time, senderType: 'customer' });
+          }
+          if (staffSelectedOrderCode === data.orderCode) {
+            renderStaffChatMessages(targetOrd.messages);
+          }
+        }
+        if (!isFromMe && currentView === 'staff') {
+          triggerVisualBanner(`إشارة من صاحب الطلب ${data.orderCode}: ${data.signalText}`);
+        }
+      } else if (data.type === 'STAFF_REPLY') {
+        const targetOrd = activeOrders.find(o => o.code === data.orderCode);
+        if (targetOrd && !isFromMe) {
+          targetOrd.messages = targetOrd.messages || [];
+          targetOrd.messages.unshift({ text: data.replyText, time: data.time, senderType: 'staff' });
+          if (staffSelectedOrderCode === data.orderCode) {
+            renderStaffChatMessages(targetOrd.messages);
+          }
+        }
+        // لا يظهر ولا ينطق إلا عند العميل صاحب هذا الطلب تحديداً
+        if (currentView !== 'staff' && myCustomerOrderCode && data.orderCode === myCustomerOrderCode) {
+          if (!isFromMe) {
+            appendMessageToCustomerLogOnly(data.replyText, data.time, 'staff');
+          }
           triggerVisualBanner('رد الموظف: ' + data.replyText);
           speakText(data.replyText);
         }
       } else if (data.type === 'STAFF_ALERT') {
-        if (currentView !== 'staff') {
+        if (currentView !== 'staff' && myCustomerOrderCode && data.orderCode === myCustomerOrderCode) {
           triggerVisualBanner(data.msg);
           speakText(data.msg);
         }
       } else if (data.type === 'STEP_UPDATE') {
-        updateStepUIOnly(data.stepNum);
-        if (currentView !== 'staff') {
+        const targetOrd = activeOrders.find(o => o.code === data.orderCode);
+        if (targetOrd) targetOrd.step = data.stepNum;
+
+        // لا تتحدث المرحلة ولا ينطق الصوت إلا عند العميل صاحب هذا الطلب تحديداً
+        if (currentView !== 'staff' && myCustomerOrderCode && data.orderCode === myCustomerOrderCode) {
+          updateStepUIOnly(data.stepNum);
           const langPack = stepMessages[currentLang] || stepMessages.ar;
           const msg = langPack[data.stepNum] || stepMessages.ar[data.stepNum];
           triggerVisualBanner(msg);
           speakText(msg);
         }
-      } else if (data.type === 'COMPLETE_ORDER') {
-        activeOrderId = null;
-        resetStaffScreenToEmpty();
-        updateStepUIOnly(1);
-        document.getElementById('orderNumberDisplay').textContent = '—';
-        if (currentView !== 'staff') {
-          const doneMsg = 'تم تسليم وإكمال طلبك بنجاح! شكراً لاستخدامك مسار يسر الذكي.';
-          triggerVisualBanner(doneMsg);
-          speakText(doneMsg);
+      } else if (data.type === 'COMPLETE_ORDER' || data.type === 'DELETE_ORDER') {
+        const isComplete = data.type === 'COMPLETE_ORDER';
+        if (!isFromMe) {
+          activeOrders = activeOrders.filter(o => o.code !== data.orderCode);
+          if (staffSelectedOrderCode === data.orderCode) {
+            staffSelectedOrderCode = activeOrders.length > 0 ? activeOrders[0].code : null;
+          }
+          if (data.orderSnapshot) {
+            ordersHistory.unshift({
+              code: data.orderSnapshot.code,
+              car: data.orderSnapshot.car,
+              lane: data.orderSnapshot.lane,
+              items: data.orderSnapshot.items,
+              status: isComplete ? 'completed' : 'deleted',
+              actionTime: data.time || ''
+            });
+          }
+          renderStaffActiveQueueAndDetails();
+          renderOrdersHistory();
+        }
+
+        // تنبيه العميل صاحب هذا الطلب فقط وإعادته للصفحة الرئيسية
+        if (currentView !== 'staff' && myCustomerOrderCode && data.orderCode === myCustomerOrderCode) {
+          myCustomerOrderCode = null;
+          updateStepUIOnly(1);
+          document.getElementById('orderNumberDisplay').textContent = '—';
+          resetCustomerChatBox();
+          const msg = isComplete
+            ? 'تم تسليم وإكمال طلبك بنجاح! شكراً لاستخدامك مسار يسر الذكي.'
+            : 'تم إلغاء وحذف طلبك من قِبل الفرع.';
+          triggerVisualBanner(msg);
+          speakText(msg);
           switchMainView('customer');
         }
       }
+    }
+
+    function resetCustomerChatBox() {
+      const custLog = document.getElementById('customerSignalsLog');
+      if (custLog) {
+        custLog.innerHTML = `
+          <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
+            بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...
+          </div>
+        `;
+      }
+      customerChatHasMessages = false;
+    }
+
+    let customerChatHasMessages = false;
+    function appendMessageToCustomerLogOnly(text, timeStr, senderType) {
+      const custLog = document.getElementById('customerSignalsLog');
+      if (!custLog) return;
+
+      if (!customerChatHasMessages) {
+        customerChatHasMessages = true;
+        custLog.innerHTML = '';
+      }
+
+      const cardHTML = senderType === 'staff'
+        ? `
+          <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
+            <span class="text-amber-400 block mb-1">[${timeStr}] رد موظف المسار:</span>
+            ${text}
+          </div>
+        `
+        : `
+          <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold">
+            <span class="text-emerald-400 block mb-1">[${timeStr}] إشارتك المرسلة:</span>
+            ${text}
+          </div>
+        `;
+      custLog.innerHTML = cardHTML + custLog.innerHTML;
     }
 
     function startAppWithLanguage(langSelection) {
@@ -1779,7 +2129,7 @@
       document.getElementById('cartHeaderTitle').textContent = t.cartHeaderTitle;
       document.getElementById('clearCartBtn').textContent = t.clearCartBtn;
       document.getElementById('totalLabel').textContent = t.totalLabel;
-      document.getElementById('currencyLabel').textContent = t.currency;
+      document.getElementById('currencyLabel').innerHTML = saudiRiyalLogoSVG;
       document.getElementById('submitOrderBtnText').textContent = t.submitOrderBtnText;
 
       renderMenu();
@@ -1871,23 +2221,6 @@
       });
       renderMenu();
     }
-
-// أيقونة شعار الريال السعودي الرسمي (SVG) مطابقة للشعار المعتمد
-    const saudiRiyalLogoSVG = `
-      <svg class="inline-block w-5 h-5 fill-current shrink-0" viewBox="0 0 100 100" aria-label="ريال سعودي">
-        <path d="M58 12 L70 6 L70 72 L58 76 Z" />
-        <path d="M36 20 L48 14 L48 72 C48 82 42 88 31 91 L15 95 L18 82 L31 79 C35 78 36 75 36 70 Z" />
-        <path d="M18 53 L88 38 L85 50 L15 65 Z" />
-        <path d="M58 67 L86 60 L83 72 L58 78 Z" />
-        <path d="M52 86 L84 79 L81 91 L49 98 Z" />
-      </svg>
-    `;
-
-    // وضع شعار الريال في خانة الإجمالي تلقائياً
-    setTimeout(() => {
-      const currEl = document.getElementById('currencyLabel');
-      if (currEl) currEl.innerHTML = saudiRiyalLogoSVG;
-    }, 50);
 
     function renderMenu() {
       const grid = document.getElementById('menuGrid');
@@ -2058,12 +2391,29 @@
         lane: selectedLane,
         spot: selectedSpot,
         items: cart.map(i => ({ qty: i.qty, name: i.name, note: i.note })),
+        messages: [],
+        step: 1,
         timestamp: Date.now()
       };
 
-      activeOrderId = orderCode;
-      renderOrderOnStaffScreen(orderData);
+      // تثبيت رقم الطلب لهذا العميل تحديداً ولا يتأثر بأي طلب آخر يأتي بعده
+      myCustomerOrderCode = orderCode;
+      document.getElementById('orderNumberDisplay').textContent = orderCode;
+      document.getElementById('trackerLaneName').textContent = selectedLane;
+      updateStepUIOnly(1);
+      resetCustomerChatBox();
+
+      // إضافته أيضاً في طابور الموظف دون حذف أي طلب سابق
+      activeOrders.push(orderData);
+      if (!staffSelectedOrderCode) {
+        staffSelectedOrderCode = orderCode;
+      }
+      renderStaffActiveQueueAndDetails();
+
       publishSyncEvent({ type: 'NEW_ORDER', order: orderData });
+
+      cart = [];
+      renderCart();
 
       speakText(orderCode);
       triggerVisualBanner(`✓ ${orderCode} — ${selectedLane}`);
@@ -2114,52 +2464,34 @@
     }
 
     function setOrderStep(stepNum) {
-      updateStepUIOnly(stepNum);
-      publishSyncEvent({ type: 'STEP_UPDATE', stepNum: stepNum });
-      triggerVisualBanner('تم إرسال (المرحلة ' + stepNum + ') لجوال العميل بنجاح');
-    }
-
-    function completeAndDeleteOrder() {
-      activeOrderId = null;
-      cart = [];
-      renderCart();
-      resetStaffScreenToEmpty();
-      publishSyncEvent({ type: 'COMPLETE_ORDER' });
-      triggerVisualBanner('تم إكمال الطلب وحذفه من لوحة الموظف بنجاح');
-    }
-
-    function appendMessageToBothLogs(text, timeStr, senderType) {
-      const staffLog = document.getElementById('staffSignalsLog');
-      const custLog = document.getElementById('customerSignalsLog');
-
-      if (!chatHasMessages) {
-        chatHasMessages = true;
-        if (staffLog) staffLog.innerHTML = '';
-        if (custLog) custLog.innerHTML = '';
+      const currentOrd = getSelectedStaffOrder();
+      if (!currentOrd) {
+        triggerVisualBanner('يرجى تحديد طلب نشط أولاً!');
+        return;
       }
-
-      const cardHTML = senderType === 'staff'
-        ? `
-          <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
-            <span class="text-amber-400 block mb-1">[${timeStr}] رد موظف المسار:</span>
-            ${text}
-          </div>
-        `
-        : `
-          <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold">
-            <span class="text-emerald-400 block mb-1">[${timeStr}] إشارة من السيارة:</span>
-            ${text}
-          </div>
-        `;
-
-      if (staffLog) staffLog.innerHTML = cardHTML + staffLog.innerHTML;
-      if (custLog) custLog.innerHTML = cardHTML + custLog.innerHTML;
+      currentOrd.step = stepNum;
+      publishSyncEvent({ type: 'STEP_UPDATE', orderCode: currentOrd.code, stepNum: stepNum });
+      triggerVisualBanner(`تم إرسال (المرحلة ${stepNum}) لصاحب الطلب ${currentOrd.code}`);
     }
 
     function sendQuickSignal(signalText) {
+      if (!myCustomerOrderCode) {
+        triggerVisualBanner('يرجى إرسال طلب أولاً قبل بدء المحادثة');
+        return;
+      }
       const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-      appendMessageToBothLogs(signalText, time, 'customer');
-      publishSyncEvent({ type: 'SIGNAL', signalText: signalText, time: time });
+      appendMessageToCustomerLogOnly(signalText, time, 'customer');
+
+      const localOrd = activeOrders.find(o => o.code === myCustomerOrderCode);
+      if (localOrd) {
+        localOrd.messages = localOrd.messages || [];
+        localOrd.messages.unshift({ text: signalText, time: time, senderType: 'customer' });
+        if (staffSelectedOrderCode === myCustomerOrderCode) {
+          renderStaffChatMessages(localOrd.messages);
+        }
+      }
+
+      publishSyncEvent({ type: 'SIGNAL', orderCode: myCustomerOrderCode, signalText: signalText, time: time });
     }
 
     function sendCustomCustomerMessage() {
@@ -2171,10 +2503,18 @@
     }
 
     function sendStaffQuickReply(replyText) {
+      const currentOrd = getSelectedStaffOrder();
+      if (!currentOrd) {
+        triggerVisualBanner('يرجى تحديد طلب نشط أولاً للرد عليه!');
+        return;
+      }
       const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-      appendMessageToBothLogs(replyText, time, 'staff');
-      publishSyncEvent({ type: 'STAFF_REPLY', replyText: replyText, time: time });
-      triggerVisualBanner('تم إرسال الرد لشات العميل: ' + replyText);
+      currentOrd.messages = currentOrd.messages || [];
+      currentOrd.messages.unshift({ text: replyText, time: time, senderType: 'staff' });
+      renderStaffChatMessages(currentOrd.messages);
+
+      publishSyncEvent({ type: 'STAFF_REPLY', orderCode: currentOrd.code, replyText: replyText, time: time });
+      triggerVisualBanner(`تم إرسال الرد لصاحب الطلب ${currentOrd.code}`);
     }
 
     function sendCustomStaffMessage() {
@@ -2186,17 +2526,25 @@
     }
 
     function triggerCustomerAlert(msg) {
-      publishSyncEvent({ type: 'STAFF_ALERT', msg: msg });
-      triggerVisualBanner('تم إرسال التنبيه لشاشة العميل بنجاح');
+      const currentOrd = getSelectedStaffOrder();
+      if (!currentOrd) {
+        triggerVisualBanner('يرجى تحديد طلب نشط أولاً!');
+        return;
+      }
+      publishSyncEvent({ type: 'STAFF_ALERT', orderCode: currentOrd.code, msg: msg });
+      triggerVisualBanner(`تم إرسال التنبيه لصاحب الطلب ${currentOrd.code}`);
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      const currEl = document.getElementById('currencyLabel');
+      if (currEl) currEl.innerHTML = saudiRiyalLogoSVG;
+
       filterCategory('offers');
       renderCart();
-      resetStaffScreenToEmpty();
+      renderStaffActiveQueueAndDetails();
+      renderOrdersHistory();
       startLiveCloudSync();
 
-      // إخفاء شاشة الكلمة الترحيبية بعد ثانيتين وإظهار شاشة اللغات
       const splash = document.getElementById('introSplash');
       const langModal = document.getElementById('welcomeModal');
       setTimeout(() => {
