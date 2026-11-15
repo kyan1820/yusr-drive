@@ -110,6 +110,74 @@
   </div>
 
   <!-- نافذة تأكيد إكمال أو حذف الطلب للموظف -->
+  <!-- نافذة الفاتورة الضريبية واختيار طريقة الدفع (مدى / Apple Pay / فيزا / نقدي) -->
+  <div id="invoiceCheckoutModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white text-slate-900 max-w-lg w-full rounded-3xl p-6 sm:p-7 shadow-2xl border-4 border-emerald-500 space-y-5 my-auto">
+      <div class="flex items-center justify-between border-b-2 border-dashed border-slate-200 pb-4">
+        <div>
+          <span class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">فاتورة ضريبية مبسطة</span>
+          <h3 class="text-2xl font-black mt-1">مراجعة الفاتورة والدفع</h3>
+        </div>
+        <div class="text-left text-xs font-bold text-slate-500 space-y-1">
+          <div>التاريخ: <span id="invModalDate" class="text-slate-900 font-black">—</span></div>
+          <div>الوقت: <span id="invModalTime" class="text-slate-900 font-black">—</span></div>
+        </div>
+      </div>
+
+      <!-- بيانات المركبة والمسار داخل الفاتورة -->
+      <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 grid grid-cols-2 gap-2">
+        <div>المركبة: <span id="invModalCar" class="text-slate-900 font-black">—</span></div>
+        <div>المسار: <span id="invModalLane" class="text-emerald-700 font-black">—</span></div>
+        <div class="col-span-2">طريقة الاستلام: <span id="invModalSpot" class="text-slate-900 font-black">—</span></div>
+      </div>
+
+      <!-- قائمة الأصناف والأسعار -->
+      <div>
+        <h4 class="text-xs font-black text-slate-500 mb-2">تفاصيل الأصناف المطلوبة:</h4>
+        <div id="invModalItems" class="space-y-2 max-h-40 overflow-y-auto pr-1 border-b border-slate-200 pb-3"></div>
+        <div class="flex items-center justify-between pt-3 text-lg font-black text-slate-900">
+          <span>الإجمالي النهائي (شامل الضريبة 15%):</span>
+          <span id="invModalTotal" class="text-2xl text-emerald-700 inline-flex items-center gap-1"></span>
+        </div>
+      </div>
+
+      <!-- اختيار طريقة الدفع -->
+      <div class="space-y-2.5">
+        <label class="block text-sm font-black text-slate-800">اختر طريقة الدفع المفضلة:</label>
+        <div class="grid grid-cols-2 gap-2.5">
+          <button type="button" onclick="selectPaymentMethod('مدى (Mada)', this)" class="pay-method-btn focus-ring p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 font-black text-xs sm:text-sm flex items-center justify-between">
+            <span>💳 مدى (Mada)</span>
+            <span class="pay-check text-emerald-700">✓</span>
+          </button>
+
+          <button type="button" onclick="selectPaymentMethod('Apple Pay', this)" class="pay-method-btn focus-ring p-3 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 bg-slate-50 font-bold text-xs sm:text-sm flex items-center justify-between">
+            <span> Apple Pay</span>
+            <span class="pay-check text-slate-400">○</span>
+          </button>
+
+          <button type="button" onclick="selectPaymentMethod('فيزا (Visa)', this)" class="pay-method-btn focus-ring p-3 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 bg-slate-50 font-bold text-xs sm:text-sm flex items-center justify-between">
+            <span>💳 فيزا (Visa)</span>
+            <span class="pay-check text-slate-400">○</span>
+          </button>
+
+          <button type="button" onclick="selectPaymentMethod('نقدي (كاش)', this)" class="pay-method-btn focus-ring p-3 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 bg-slate-50 font-bold text-xs sm:text-sm flex items-center justify-between">
+            <span>💵 نقدي (Cash)</span>
+            <span class="pay-check text-slate-400">○</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- أزرار إتمام الطلب أو التراجع -->
+      <div class="flex gap-3 pt-2">
+        <button type="button" onclick="finalizeOrderWithInvoice()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg transition">
+          ✓ اعتماد الفاتورة وإرسال الطلب للمسار
+        </button>
+        <button type="button" onclick="closeInvoiceModal()" class="px-5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 rounded-2xl text-xs transition">
+          تعديل السلة
+        </button>
+      </div>
+    </div>
+  </div>
   <div id="staffConfirmModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div id="staffConfirmBox" class="bg-slate-900 text-white max-w-md w-full rounded-3xl p-6 shadow-2xl border-2 border-emerald-500 text-center space-y-4">
       <span id="staffConfirmBadge" class="inline-block text-xs font-black px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300">تأكيد العملية</span>
