@@ -1710,7 +1710,7 @@
       renderCart();
     }
 
-    // محرك النطق الذكي المحسّن (HD Multi-Language Voice Engine)
+  // محرك النطق البشري فائق الوضوح (Ultra-Clear Neural TTS Engine)
     let availableVoices = [];
     let currentCloudAudio = null;
 
@@ -1725,7 +1725,29 @@
       window.speechSynthesis.onvoiceschanged = loadHDVoices;
     }
 
-    function getBestVoiceForLang(langCode) {
+    function prepareTextForSpeech(text, lang) {
+      if (!text) return '';
+      let clean = text
+        .replace(/[#*•—\-_]/g, ' ')
+        .replace(/YSR/gi, lang === 'ar' ? 'يُسر ' : 'Y S R ')
+        .replace(/ر\.س/g, 'ريال سعودي')
+        .replace(/SAR/gi, lang === 'ar' ? 'ريال سعودي' : 'S A R')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (lang === 'ar') {
+        clean = clean
+          .replace(/يسر درايف|يُسْر درايف/g, 'يُسْرْ دْرَايْفْ')
+          .replace(/مسار يسر|مسار يُسر/g, 'مَسَارِ يُسْرْ')
+          .replace(/درايف ثرو/g, 'دْرَايْفْ ثْرُو')
+          .replace(/مفعل|مُفعّل/g, 'مُفَعَّلْ')
+          .replace(/ميسر|ميسّر/g, 'مُيَسَّرْ')
+          .replace(/الطلب/g, 'الطَّلَبْ');
+      }
+      return clean;
+    }
+
+    function getBestNeuralVoice(langCode) {
       if (!availableVoices || availableVoices.length === 0) loadHDVoices();
       const shortLang = langCode.split('-')[0].toLowerCase();
 
@@ -1735,7 +1757,25 @@
 
       if (matching.length === 0) return null;
 
-      const hdKeywords = ['natural', 'online', 'neural', 'google', 'hamed', 'zariyah', 'salma', 'siri', 'premium', 'enhanced', 'emel', 'xiaoxiao', 'asad', 'uzma'];
+      if (shortLang === 'ar') {
+        const neuralAr = matching.find(v => {
+          const name = v.name.toLowerCase();
+          return (
+            name.includes('natural') ||
+            name.includes('online') ||
+            name.includes('hamed') ||
+            name.includes('zariyah') ||
+            name.includes('salma') ||
+            name.includes('shakir') ||
+            name.includes('maged') ||
+            name.includes('tarik') ||
+            name.includes('siri')
+          );
+        });
+        return neuralAr || null;
+      }
+
+      const hdKeywords = ['natural', 'online', 'neural', 'google', 'siri', 'premium', 'enhanced', 'emel', 'xiaoxiao', 'asad', 'uzma'];
       for (const keyword of hdKeywords) {
         const found = matching.find(v => v.name.toLowerCase().includes(keyword));
         if (found) return found;
@@ -1744,50 +1784,79 @@
       return matching[0];
     }
 
-    function playCloudFallbackTTS(text, langCode) {
-      try {
-        if (currentCloudAudio) {
-          currentCloudAudio.pause();
-          currentCloudAudio = null;
-        }
-        const shortLang = langCode.split('-')[0];
-        const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${shortLang}&client=tw-ob`;
-        currentCloudAudio = new Audio(url);
-        currentCloudAudio.rate = 1.0;
-        currentCloudAudio.play().catch(() => {});
-      } catch (e) {}
-    }
-
-    function speakText(text) {
-      if (currentView === 'staff' || !ttsEnabled || !text) return;
-
-      const targetLang = voiceLangCodes[currentLang] || 'ar-SA';
+    function playCloudHDVoice(text, langCode) {
+      const shortLang = langCode.split('-')[0].toLowerCase();
 
       if (currentCloudAudio) {
         currentCloudAudio.pause();
         currentCloudAudio = null;
       }
 
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const bestVoice = getBestVoiceForLang(targetLang);
+      const cleanText = text.substring(0, 180);
 
-        if (bestVoice) {
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.voice = bestVoice;
-          utterance.lang = bestVoice.lang;
-          utterance.rate = currentLang === 'ar' || currentLang === 'ur' ? 0.95 : 1.0;
-          utterance.pitch = 1.0;
-          utterance.volume = 1.0;
-          utterance.onerror = () => playCloudFallbackTTS(text, targetLang);
-          window.speechSynthesis.speak(utterance);
+      const streamVoiceMap = {
+        ar: 'Zeina',
+        en: 'Joanna',
+        tr: 'Filiz',
+        zh: 'Zhiyu'
+      };
+
+      const urlsToTry = [];
+      if (streamVoiceMap[shortLang]) {
+        urlsToTry.push(`https://api.streamelements.com/kappa/v2/speech?voice=${streamVoiceMap[shortLang]}&text=${encodeURIComponent(cleanText)}`);
+      }
+      urlsToTry.push(`https://translate.googleapis.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${shortLang}&client=gtx`);
+
+      function tryNextUrl(index) {
+        if (index >= urlsToTry.length) {
+          if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const fallbackUtterance = new SpeechSynthesisUtterance(cleanText);
+            fallbackUtterance.lang = langCode;
+            fallbackUtterance.rate = 0.9;
+            window.speechSynthesis.speak(fallbackUtterance);
+          }
           return;
         }
+
+        currentCloudAudio = new Audio(urlsToTry[index]);
+        currentCloudAudio.playbackRate = 1.0;
+        currentCloudAudio.onerror = () => tryNextUrl(index + 1);
+        currentCloudAudio.play().catch(() => tryNextUrl(index + 1));
       }
 
-      playCloudFallbackTTS(text, targetLang);
+      tryNextUrl(0);
     }
 
+    function speakText(rawText) {
+      if (currentView === 'staff' || !ttsEnabled || !rawText) return;
+
+      const targetLang = voiceLangCodes[currentLang] || 'ar-SA';
+      const preparedText = prepareTextForSpeech(rawText, currentLang);
+
+      if (currentCloudAudio) {
+        currentCloudAudio.pause();
+        currentCloudAudio = null;
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+
+      const neuralVoice = getBestNeuralVoice(targetLang);
+
+      if (neuralVoice) {
+        const utterance = new SpeechSynthesisUtterance(preparedText);
+        utterance.voice = neuralVoice;
+        utterance.lang = neuralVoice.lang;
+        utterance.rate = currentLang === 'ar' || currentLang === 'ur' ? 0.92 : 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        utterance.onerror = () => playCloudHDVoice(preparedText, targetLang);
+        window.speechSynthesis.speak(utterance);
+      } else {
+        playCloudHDVoice(preparedText, targetLang);
+      }
+    }
     function triggerVisualBanner(message) {
       const banner = document.getElementById('visualAlertBanner');
       const textEl = document.getElementById('visualAlertText');
