@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
 
@@ -68,11 +68,17 @@
     <span id="visualAlertText">تم تحديث حالة الطلب!</span>
   </div>
 
+  <!-- الشريط العلوي مع زر التبسيط الأساسي -->
   <div class="bg-slate-900 text-white py-3 px-4 shadow-md sticky top-0 z-40 border-b border-slate-700">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-2">
+      <div class="flex flex-wrap items-center gap-2">
         <span id="accBadgeTitle" class="bg-emerald-500 text-slate-950 font-extrabold px-3 py-1 rounded-full text-sm">شريط الوصول الشامل</span>
-        <button onclick="openLanguageModal()" id="changeLangBtn" class="focus-ring bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1 rounded-lg text-xs font-black transition">
+        <!-- زر التبسيط للعملاء -->
+        <button onclick="toggleSimpleMode()" id="simpleModeBtn" class="focus-ring bg-amber-400 hover:bg-amber-300 text-slate-950 px-4 py-1.5 rounded-xl text-sm font-black transition shadow flex items-center gap-1.5">
+          <span id="simpleModeDot" class="w-2.5 h-2.5 rounded-full bg-slate-950"></span>
+          <span id="simpleModeBtnText">زر التبسيط: متوقف</span>
+        </button>
+        <button onclick="openLanguageModal()" id="changeLangBtn" class="secondary-ui focus-ring bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-black transition">
           تغيير اللغة (Language)
         </button>
       </div>
@@ -81,13 +87,13 @@
           <span id="ttsStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
           <span id="ttsBtnText">القارئ الصوتي: مفعّل</span>
         </button>
-        <button onclick="toggleHighContrast()" id="contrastBtn" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+        <button onclick="toggleHighContrast()" id="contrastBtn" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
           <span>تباين عالٍ</span>
         </button>
-        <button onclick="cycleFontSize()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+        <button onclick="cycleFontSize()" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
           <span id="fontBtnLabel">حجم الخط:</span> <span id="fontScaleLabel">100%</span>
         </button>
-        <button id="visualFlashToggleBtn" onclick="toggleVisualFlashMode()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
+        <button id="visualFlashToggleBtn" onclick="toggleVisualFlashMode()" class="secondary-ui focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
           <span id="flashBtnText">إشعارات ضوئية (للصم)</span>
         </button>
       </div>
@@ -97,13 +103,13 @@
   <header class="bg-gradient-to-l from-emerald-800 via-teal-800 to-slate-900 text-white py-8 px-4 shadow-lg">
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
       <div class="space-y-3 text-center md:text-right max-w-2xl">
-        <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 px-4 py-1.5 rounded-full text-emerald-200 text-sm font-bold">
+        <div class="secondary-ui inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 px-4 py-1.5 rounded-full text-emerald-200 text-sm font-bold">
           <span id="heroBadge">مبادرة المسار الذكي الميسّر لذوي الإعاقة</span>
         </div>
         <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
           <span id="heroMainTitle">يُسْر درايف</span> | <span class="text-emerald-400">Yusr Drive</span>
         </h1>
-        <p id="heroSubTitle" class="text-slate-200 text-lg font-medium leading-relaxed">
+        <p id="heroSubTitle" class="secondary-ui text-slate-200 text-lg font-medium leading-relaxed">
           اطلب من سيارتك باستقلالية تامة؛ بدون الحاجة للتحدث عبر المايكروفون التقليدي أو النزول من المركبة، مع تسليم مخصص لباب سيارتك.
         </p>
       </div>
@@ -124,7 +130,8 @@
 
   <main class="max-w-7xl mx-auto w-full flex-1 p-4 sm:p-6 space-y-8">
     <div id="viewCustomer" class="space-y-8">
-      <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200">
+      <!-- قسم اختيار نمط الإعاقة (يختفي عند تفعيل زر التبسيط لتسهيل الطلب المباشر) -->
+      <section class="secondary-ui bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
           <div>
             <span id="step1Badge" class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 1 من 3</span>
@@ -197,21 +204,28 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-2 space-y-6">
           <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200">
-            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <div>
-                <span id="step2Badge" class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 2 من 3</span>
-                <h2 id="step2Title" class="text-2xl font-black mt-1">قائمة الطلبات الميسّرة</h2>
+            <div class="flex flex-col gap-4 mb-6">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <span id="step2Badge" class="secondary-ui text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 2 من 3</span>
+                  <h2 id="step2Title" class="text-2xl font-black mt-1">منيو مطعم يُسْر المبسط</h2>
+                </div>
               </div>
 
-              <div class="flex flex-wrap gap-2">
-                <button onclick="filterCategory('all')" id="cat-all" class="cat-btn focus-ring px-4 py-2 rounded-xl font-bold text-sm bg-slate-900 text-white">الكل</button>
-                <button onclick="filterCategory('meals')" id="cat-meals" class="cat-btn focus-ring px-4 py-2 rounded-xl font-bold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">الوجبات الساخنة</button>
-                <button onclick="filterCategory('drinks')" id="cat-drinks" class="cat-btn focus-ring px-4 py-2 rounded-xl font-bold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">المشروبات والقهوة</button>
-                <button onclick="filterCategory('pharmacy')" id="cat-pharmacy" class="cat-btn focus-ring px-4 py-2 rounded-xl font-bold text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">ركن الصيدلية السريع</button>
+              <!-- أقسام المنيو الـ 7 المطلوبة (تبقى ظاهرة، وتختفي عند التبسيط الشامل لعرض كل الأصناف مباشرة) -->
+              <div class="secondary-ui flex flex-wrap gap-2 pt-1">
+                <button onclick="filterCategory('all')" id="cat-all" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-900 text-white">الكل</button>
+                <button onclick="filterCategory('offers')" id="cat-offers" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-amber-100 text-amber-900 hover:bg-amber-200">قسم العروض</button>
+                <button onclick="filterCategory('breakfast')" id="cat-breakfast" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">وجبات الفطور</button>
+                <button onclick="filterCategory('lunch')" id="cat-lunch" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">وجبات الغداء</button>
+                <button onclick="filterCategory('dinner')" id="cat-dinner" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">وجبات العشاء</button>
+                <button onclick="filterCategory('fastfood')" id="cat-fastfood" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">الوجبات السريعة</button>
+                <button onclick="filterCategory('desserts')" id="cat-desserts" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">قسم الحلى</button>
+                <button onclick="filterCategory('drinks')" id="cat-drinks" class="cat-btn focus-ring px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm bg-slate-100 text-slate-700 hover:bg-slate-200">قسم المشروبات</button>
               </div>
             </div>
 
-            <div class="mb-6 bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="secondary-ui mb-6 bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <p id="easyPackTitle" class="font-extrabold text-emerald-950">تخصيص التغليف الميسّر (Easy-Open Packaging)</p>
                 <p id="easyPackDesc" class="text-xs text-emerald-800">فتح العبوات مسبقاً أو وضعها في حامل مانع للانسكاب يسهل تناوله بيد واحدة</p>
@@ -228,8 +242,8 @@
 
         <div class="space-y-6">
           <section class="bg-white rounded-3xl p-6 shadow-md border-2 border-slate-200 sticky top-20">
-            <span id="step3Badge" class="text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 3 من 3</span>
-            <h2 id="step3Title" class="text-xl font-black mt-1 mb-4">بيانات المركبة وطريقة التسليم</h2>
+            <span id="step3Badge" class="secondary-ui text-xs font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">الخطوة 3 من 3</span>
+            <h2 id="step3Title" class="text-xl font-black mt-1 mb-4">بيانات المركبة وإتمام الطلب</h2>
 
             <div class="space-y-4">
               <div>
@@ -237,7 +251,8 @@
                 <input id="carDetails" type="text" value="" placeholder="اكتب نوع ولون السيارة ورقم اللوحة هنا..." class="focus-ring w-full px-4 py-3 rounded-xl border-2 border-slate-300 font-bold text-slate-900 bg-slate-50">
               </div>
 
-              <div>
+              <!-- الخيارات الثانوية للتسليم والمسار (تختفي عند تفعيل زر التبسيط) -->
+              <div class="secondary-ui">
                 <label id="spotLabel" class="block text-sm font-bold text-slate-700 mb-2">مكان تسليم الطلب في السيارة:</label>
                 <div class="grid grid-cols-1 gap-2">
                   <button type="button" onclick="selectDeliverySpot('window', this)" class="spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-bold text-sm flex items-center justify-between">
@@ -255,7 +270,7 @@
                 </div>
               </div>
 
-              <div>
+              <div class="secondary-ui">
                 <label id="laneLabel" class="block text-sm font-bold text-slate-700 mb-2">رقم موقف أو مسار الانتظار الذكي:</label>
                 <div class="grid grid-cols-3 gap-2">
                   <button type="button" onclick="selectLane('مسار يُسر 1')" id="lane-1" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-black text-sm">مسار يُسر 1</button>
@@ -269,7 +284,7 @@
               <div>
                 <div class="flex items-center justify-between mb-2">
                   <h3 id="cartHeaderTitle" class="font-extrabold text-slate-800">سلة طلبك الحالية</h3>
-                  <button onclick="clearCart()" id="clearCartBtn" class="text-xs font-bold text-rose-600 hover:underline">إفراغ السلة</button>
+                  <button onclick="clearCart()" id="clearCartBtn" class="secondary-ui text-xs font-bold text-rose-600 hover:underline">إفراغ السلة</button>
                 </div>
                 <div id="cartList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
               </div>
@@ -288,7 +303,7 @@
       </div>
     </div>
 
-    <!-- شاشة المسار للعميل مع شات مباشر مطابق لشاشة الموظف -->
+    <!-- شاشة المسار للعميل مع شات مباشر -->
     <div id="viewTracker" class="hidden space-y-8">
       <div class="bg-white rounded-3xl p-6 sm:p-8 shadow-md border-2 border-slate-200">
         <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
@@ -356,7 +371,6 @@
             </div>
           </div>
 
-          <!-- صندوق الشات المباشر عند العميل (نفس تصميم شات الموظف بالضبط) -->
           <div class="bg-slate-900 rounded-2xl p-5 border-2 border-slate-700 flex flex-col justify-between space-y-4 text-white">
             <div>
               <div class="flex items-center justify-between mb-3">
@@ -436,7 +450,6 @@
               <ul id="staffItemsList" class="space-y-2 text-sm font-bold bg-slate-900 p-4 rounded-xl"></ul>
             </div>
 
-            <!-- تحكم الموظف في تحديث مرحلة الطلب عند العميل -->
             <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-3">
               <span class="text-xs font-extrabold text-emerald-400 block">تحكم الموظف في مرحلة الطلب (ينطق الصوت عند العميل فقط):</span>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -458,7 +471,6 @@
               </div>
             </div>
 
-            <!-- كتابة رسالة مخصصة من الموظف للعميل -->
             <div class="flex gap-2 pt-2">
               <input id="staffChatInput" type="text" onkeydown="if(event.key==='Enter') sendCustomStaffMessage()" placeholder="اكتب رداً مخصصاً للعميل..." class="flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-600 text-xs font-bold text-white focus:outline-none focus:border-amber-400">
               <button onclick="sendCustomStaffMessage()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-3 py-2 rounded-xl text-xs transition">
@@ -466,7 +478,6 @@
               </button>
             </div>
 
-            <!-- ردود الموظف الجاهزة على المحادثة -->
             <div class="space-y-2 pt-3 border-t border-slate-700">
               <span class="text-xs font-extrabold text-emerald-400 block">ردود جاهزة سريعة على محادثة العميل:</span>
               <div class="grid grid-cols-1 gap-1.5">
@@ -509,7 +520,7 @@
     </div>
   </footer>
 
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
   <script>
     function openAdminModal() {
       document.getElementById('adminPinInput').value = '';
