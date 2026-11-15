@@ -2032,28 +2032,64 @@
       renderStaffChatMessages(currentOrd.messages || []);
     }
 
-  function renderOrdersHistory() {
-      const listEl = document.getElementById('ordersHistoryList');
-      const badgeEl = document.getElementById('historyCountBadge');
-      if (!listEl || !badgeEl) return;
+ let currentStaffHistoryTab = 'completed';
 
-      badgeEl.textContent = ordersHistory.length;
+    function switchStaffHistoryTab(tab) {
+      currentStaffHistoryTab = tab;
+      const compSec = document.getElementById('completedOrdersSection');
+      const delSec = document.getElementById('deletedOrdersSection');
+      const compBtn = document.getElementById('tabHistoryCompleted');
+      const delBtn = document.getElementById('tabHistoryDeleted');
 
-      if (ordersHistory.length === 0) {
-        listEl.innerHTML = `<p class="text-xs text-slate-400 font-bold">لا توجد طلبات في السجل حتى الآن...</p>`;
-        return;
+      if (tab === 'completed') {
+        compSec.classList.remove('hidden');
+        delSec.classList.add('hidden');
+        compBtn.className = 'py-2 px-3 rounded-lg font-black text-xs transition bg-emerald-500 text-slate-950 shadow flex items-center justify-center gap-1.5';
+        delBtn.className = 'py-2 px-3 rounded-lg font-black text-xs transition text-slate-300 hover:bg-slate-800 flex items-center justify-center gap-1.5';
+      } else {
+        compSec.classList.add('hidden');
+        delSec.classList.remove('hidden');
+        delBtn.className = 'py-2 px-3 rounded-lg font-black text-xs transition bg-rose-600 text-white shadow flex items-center justify-center gap-1.5';
+        compBtn.className = 'py-2 px-3 rounded-lg font-black text-xs transition text-slate-300 hover:bg-slate-800 flex items-center justify-center gap-1.5';
       }
+    }
 
-      listEl.innerHTML = ordersHistory.map(h => {
-        const isCompleted = h.status === 'completed';
+    function renderOrdersHistory() {
+      const compListEl = document.getElementById('completedOrdersList');
+      const delListEl = document.getElementById('deletedOrdersList');
+      const compBadgeEl = document.getElementById('completedCountBadge');
+      const delBadgeEl = document.getElementById('deletedCountBadge');
+      const searchInput = document.getElementById('staffHistorySearchInput');
+
+      if (!compListEl || !delListEl) return;
+
+      const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+      const allCompleted = ordersHistory.filter(h => h.status === 'completed');
+      const allDeleted = ordersHistory.filter(h => h.status === 'deleted');
+
+      if (compBadgeEl) compBadgeEl.textContent = allCompleted.length;
+      if (delBadgeEl) delBadgeEl.textContent = allDeleted.length;
+
+      const filterByQuery = (list) => list.filter(h => {
+        if (!query) return true;
+        const codeMatch = (h.code || '').toLowerCase().includes(query);
+        const timeMatch = (h.actionTime || '').toLowerCase().includes(query) || (h.orderTime || '').toLowerCase().includes(query);
+        return codeMatch || timeMatch;
+      });
+
+      const filteredCompleted = filterByQuery(allCompleted);
+      const filteredDeleted = filterByQuery(allDeleted);
+
+      const buildHistoryCard = (h, isCompleted) => {
         const statusBadge = isCompleted
-          ? `<span class="bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-[11px] font-black px-2.5 py-0.5 rounded-full">✓ طلب مكتمل</span>`
+          ? `<span class="bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-[11px] font-black px-2.5 py-0.5 rounded-full">✓ فاتورة مكتملة</span>`
           : `<span class="bg-rose-500/20 border border-rose-400 text-rose-300 text-[11px] font-black px-2.5 py-0.5 rounded-full">✕ طلب محذوف</span>`;
 
         const itemsSummary = (h.items || []).map(i => `${i.qty}x ${i.name}`).join(' ، ');
 
         return `
-          <div class="bg-slate-900 p-4 rounded-xl border ${isCompleted ? 'border-emerald-700/60' : 'border-rose-700/60'} space-y-2">
+          <div class="bg-slate-900 p-4 rounded-xl border ${isCompleted ? 'border-emerald-600/60' : 'border-rose-600/60'} space-y-2">
             <div class="flex items-center justify-between">
               <span class="font-black text-base text-white">${h.code}</span>
               ${statusBadge}
@@ -2064,12 +2100,21 @@
             <div class="text-xs text-slate-400">
               الأصناف: ${itemsSummary}
             </div>
-            <div class="text-[11px] text-slate-500 font-bold pt-1 border-t border-slate-800">
-              الوقت: ${h.actionTime}
+            <div class="flex items-center justify-between text-[11px] text-slate-400 font-bold pt-2 border-t border-slate-800">
+              <span>وقت العملية: ${h.actionTime || '—'}</span>
+              ${h.total ? `<span class="text-emerald-400 font-black inline-flex items-center gap-1">${h.total} ${saudiRiyalLogoSVG}</span>` : ''}
             </div>
           </div>
         `;
-      }).join('');
+      };
+
+      compListEl.innerHTML = filteredCompleted.length > 0
+        ? filteredCompleted.map(h => buildHistoryCard(h, true)).join('')
+        : `<p class="col-span-full text-xs text-slate-400 font-bold py-4 text-center">${query ? 'لا توجد فواتير مكتملة تطابق بحثك' : 'لا توجد طلبات مكتملة في السجل حتى الآن...'}</p>`;
+
+      delListEl.innerHTML = filteredDeleted.length > 0
+        ? filteredDeleted.map(h => buildHistoryCard(h, false)).join('')
+        : `<p class="col-span-full text-xs text-slate-400 font-bold py-4 text-center">${query ? 'لا توجد طلبات محذوفة تطابق بحثك' : 'لا توجد طلبات محذوفة في السجل حتى الآن...'}</p>`;
     }
     function clearOrdersHistory() {
       ordersHistory = [];
