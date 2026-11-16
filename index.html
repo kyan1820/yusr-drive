@@ -341,10 +341,20 @@
       </div>
 
       <div class="flex gap-3 pt-2">
-        <button type="button" id="invConfirmBtnText" onclick="finalizeOrderWithInvoice()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg transition">
+      <!-- شريط المؤقت التنازلي التلقائي (لمدة دقيقتين) -->
+      <div id="checkoutTimerBox" class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 text-center space-y-1.5">
+        <div class="text-xs font-black text-amber-900 flex items-center justify-center gap-1.5">
+          <span>⏳ سيتم اعتماد الطلب تلقائياً خلال:</span>
+          <span id="checkoutCountdownDisplay" class="text-base font-black text-rose-600 bg-white px-2 py-0.5 rounded-lg border border-amber-200" dir="ltr">02:00</span>
+        </div>
+        <p class="text-[11px] text-amber-800 font-bold">يمكنك تأكيد الطلب فوراً أو الضغط على تعديل السلة لتغيير الأصناف.</p>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button type="button" id="invConfirmBtnText" onclick="finalizeOrderWithInvoice()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg transition cursor-pointer">
           ✓ اعتماد الفاتورة وإرسال الطلب للمسار
         </button>
-        <button type="button" id="invCancelBtnText" onclick="closeInvoiceModal()" class="px-5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 rounded-2xl text-xs transition">
+        <button type="button" id="invCancelBtnText" onclick="closeInvoiceModalAndEditCart()" class="px-5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 rounded-2xl text-xs transition cursor-pointer">
           تعديل السلة
         </button>
       </div>
