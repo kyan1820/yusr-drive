@@ -3084,7 +3084,39 @@
       stopInvoiceCountdown(); // إيقاف العداد عند الضغط على زر تعديل السلة
       document.getElementById('invoiceCheckoutModal').classList.add('hidden');
     }
+let invoiceTimerInterval = null;
+    let invoiceSecondsLeft = 120; // 120 ثانية = دقيقتان
 
+    function startInvoiceCountdown() {
+      clearInterval(invoiceTimerInterval);
+      invoiceSecondsLeft = 120;
+      updateInvoiceCountdownUI();
+
+      invoiceTimerInterval = setInterval(() => {
+        invoiceSecondsLeft--;
+        updateInvoiceCountdownUI();
+        if (invoiceSecondsLeft <= 0) {
+          clearInterval(invoiceTimerInterval);
+          const modal = document.getElementById('invoiceCheckoutModal');
+          if (modal && !modal.classList.contains('hidden')) {
+            finalizeOrderWithInvoice();
+            triggerVisualBanner('تم اعتماد الطلب تلقائياً بعد مرور دقيقتين');
+          }
+        }
+      }, 1000);
+    }
+
+    function updateInvoiceCountdownUI() {
+      const display = document.getElementById('invoiceCountdownDisplay');
+      if (!display) return;
+      const mins = Math.floor(invoiceSecondsLeft / 60).toString().padStart(2, '0');
+      const secs = (invoiceSecondsLeft % 60).toString().padStart(2, '0');
+      display.textContent = `${mins}:${secs}`;
+    }
+
+    function stopInvoiceCountdown() {
+      clearInterval(invoiceTimerInterval);
+    }
     const invoiceTranslations = {
       ar: {
         locale: 'ar-SA',
