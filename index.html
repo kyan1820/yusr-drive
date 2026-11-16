@@ -273,11 +273,11 @@
           </button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <button type="button" onclick="selectDisabilityMode('mobility')" id="mode-mobility" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-emerald-600 bg-emerald-50/70 transition flex flex-col justify-between gap-3">
+       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <button type="button" onclick="selectDisabilityMode('mobility')" id="mode-mobility" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
-                <span class="text-xs font-extrabold bg-emerald-600 text-white px-2.5 py-1 rounded-full">✓</span>
+                <span class="mode-check-icon text-xs font-bold text-slate-400">○</span>
                 <span class="text-sm font-black text-emerald-800">1</span>
               </div>
               <h3 id="modeMobilityTitle" class="text-xl font-extrabold mt-2">إعاقة حركية</h3>
@@ -288,18 +288,18 @@
           <button type="button" onclick="selectDisabilityMode('hearing')" id="mode-hearing" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-400">○</span>
+                <span class="mode-check-icon text-xs font-bold text-slate-400">○</span>
                 <span class="text-sm font-black text-teal-800">2</span>
               </div>
               <h3 id="modeHearingTitle" class="text-xl font-extrabold mt-2">صم وضعاف سمع / نطق</h3>
-              <p id="modeHearingDesc" class="text-sm text-slate-600 mt-1">إلغاء التخاطب الصوتي تماماً، واستبداله بشاشة تفاعلية وتنبيهات ضوئية.</p>
+              <p id="modeHearingDesc" class="text-sm text-slate-600 mt-1">إلغاء التخاطب الصوتي تماماً، واستبداله بشاشة تفاعلية وتنبيهات نصية واضحة.</p>
             </div>
           </button>
 
           <button type="button" onclick="selectDisabilityMode('visual')" id="mode-visual" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-400">○</span>
+                <span class="mode-check-icon text-xs font-bold text-slate-400">○</span>
                 <span class="text-sm font-black text-amber-800">3</span>
               </div>
               <h3 id="modeVisualTitle" class="text-xl font-extrabold mt-2">مكفوفون وضعاف بصر</h3>
@@ -310,7 +310,7 @@
           <button type="button" onclick="selectDisabilityMode('cognitive')" id="mode-cognitive" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-400">○</span>
+                <span class="mode-check-icon text-xs font-bold text-slate-400">○</span>
                 <span class="text-sm font-black text-purple-800">4</span>
               </div>
               <h3 id="modeCognitiveTitle" class="text-xl font-extrabold mt-2">واجهة مبسطة وهادئة</h3>
