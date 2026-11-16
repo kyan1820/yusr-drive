@@ -1689,58 +1689,130 @@
     }
 
   // محرك نطق بشري محسن وسلس بدون تكسير (يدعم اللغات الخمس)
-    let availableVoices = [];
+  // محرك نطق رجالي محسن مع تشكيل تلقائي لمنع التكسير نهائياً
+    let unifiedAudioPlayer = null;
+    let audioChannelUnlocked = false;
+    let cachedVoicesList = [];
+
     if ('speechSynthesis' in window) {
-      const loadVoices = () => { availableVoices = window.speechSynthesis.getVoices(); };
-      loadVoices();
-      window.speechSynthesis.onvoiceschanged = loadVoices;
+      const refreshVoices = () => {
+        cachedVoicesList = window.speechSynthesis.getVoices();
+      };
+      refreshVoices();
+      window.speechSynthesis.onvoiceschanged = refreshVoices;
     }
 
+    function getUnifiedAudioPlayer() {
+      if (!unifiedAudioPlayer) {
+        unifiedAudioPlayer = document.createElement('audio');
+        unifiedAudioPlayer.id = 'yusrUnifiedCloudPlayer';
+        unifiedAudioPlayer.setAttribute('playsinline', 'true');
+        unifiedAudioPlayer.setAttribute('webkit-playsinline', 'true');
+        unifiedAudioPlayer.setAttribute('referrerpolicy', 'no-referrer');
+        unifiedAudioPlayer.style.display = 'none';
+        document.body.appendChild(unifiedAudioPlayer);
+      }
+      return unifiedAudioPlayer;
+    }
+
+    function unlockDeviceAudioChannel() {
+      if (audioChannelUnlocked) return;
+      audioChannelUnlocked = true;
+      try {
+        const player = getUnifiedAudioPlayer();
+        player.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+        player.play().then(() => player.pause()).catch(() => {});
+
+        if ('speechSynthesis' in window) {
+          cachedVoicesList = window.speechSynthesis.getVoices();
+          const silentUtterance = new SpeechSynthesisUtterance('');
+          silentUtterance.volume = 0;
+          window.speechSynthesis.speak(silentUtterance);
+        }
+      } catch (e) {}
+    }
+
+    document.addEventListener('click', unlockDeviceAudioChannel, { once: true });
+    document.addEventListener('touchstart', unlockDeviceAudioChannel, { once: true });
+
+    // تحسين النطق وإضافة التشكيل التلقائي للكلمات العربية لمنع التكسير والتقطيع
     function prepareTextForSpeech(text, lang) {
       if (!text) return '';
-      return text
-        .replace(/[#*•—\-_✓✕💳💵]/g, ' ')
-        .replace(/YSR/gi, lang === 'ar' ? 'يُسر ' : 'Y S R ')
-        .replace(/ر\.س/g, 'ريال سعودي')
-        .replace(/SAR/gi, lang === 'ar' ? 'ريال سعودي' : 'S A R')
-        .replace(/%/g, lang === 'ar' ? ' بالمئة ' : ' percent ')
+      let clean = text
+        .replace(/[#*•—\-_✓✕💳💵()]/g, ' ، ')
+        .replace(/YSR/gi, lang === 'ar' ? ' يُسْر رقم ' : ' Y S R ')
+        .replace(/ر\.س/g, ' رِيَال سُعُودِي ')
+        .replace(/SAR/gi, lang === 'ar' ? ' رِيَال سُعُودِي ' : ' S A R ')
+        .replace(/%/g, lang === 'ar' ? ' بِالمِئَة ' : ' percent ');
+
+      if (lang === 'ar') {
+        const arabicPhoneticFixes = [
+          [/أهلاً بك/g, 'أَهْلاً بِكَ'],
+          [/يسر درايف/g, 'يُسْر دْرَايْف'],
+          [/يُسر درايف/g, 'يُسْر دْرَايْف'],
+          [/مطعم/g, 'مَطْعَمِ'],
+          [/اختر وجبتك المفضلة/g, 'اخْتَرْ وَجْبَتَكَ المُفَضَّلَة'],
+          [/من الأقسام أمامك/g, 'مِنَ الأَقْسَامِ أَمَامَكَ'],
+          [/المرحلة الأولى/g, 'المَرْحَلَةُ الأُولَى ،'],
+          [/المرحلة الثانية/g, 'المَرْحَلَةُ الثَّانِيَة ،'],
+          [/المرحلة الثالثة/g, 'المَرْحَلَةُ الثَّالِثَة ،'],
+          [/المرحلة الرابعة/g, 'المَرْحَلَةُ الرَّابِعَة ،'],
+          [/تم استلام طلبك/g, 'تَمَّ اسْتِلامُ طَلَبِكَ'],
+          [/وتكييف المسار الذكي/g, 'وَتَكْيِيفُ المَسَارِ الذَّكِيّ'],
+          [/جاري تجهيز طلبك/g, 'جَارِي تَجْهِيزُ طَلَبِكَ'],
+          [/بتغليف ميسر سهل الفتح/g, 'بِتَغْلِيفٍ مُيَسَّرٍ سَهْلِ الفَتْح'],
+          [/الموظف في طريقه/g, 'المُوَظَّفُ فِي طَرِيقِهِ'],
+          [/لباب سيارتك الآن/g, 'لِبَابِ سَيَّارَتِكَ الآنَ'],
+          [/لتسليم الطلب/g, 'لِتَسْلِيمِ الطَّلَب'],
+          [/فاتورة الطلب جاهزة/g, 'فَاتُورَةُ الطَّلَبِ جَاهِزَة ،'],
+          [/الإجمالي/g, 'الإِجْمَالِي'],
+          [/ريال سعودي/g, 'رِيَال سُعُودِي ،'],
+          [/اختر طريقة الدفع/g, 'اخْتَرْ طَرِيقَةَ الدَّفْعِ'],
+          [/ثم اعتمد الطلب/g, 'ثُمَّ اعْتَمِدِ الطَّلَب'],
+          [/تم اعتماد الفاتورة/g, 'تَمَّ اعْتِمَادُ الفَاتُورَةِ'],
+          [/بنجاح/g, 'بِنَجَاحٍ'],
+          [/مدى/g, 'مَدَى'],
+          [/نقدي/g, 'نَقْدِي']
+        ];
+        arabicPhoneticFixes.forEach(([regex, replacement]) => {
+          clean = clean.replace(regex, replacement);
+        });
+      }
+
+      return clean
+        .replace(/،\s*،/g, '،')
         .replace(/\s+/g, ' ')
         .trim()
-        .substring(0, 180);
+        .substring(0, 185);
     }
 
-    function speakWithEnhancedNaturalVoice(cleanText, fullLang) {
-      if (!('speechSynthesis' in window)) return;
-      try {
-        window.speechSynthesis.cancel();
-        if (availableVoices.length === 0) {
-          availableVoices = window.speechSynthesis.getVoices();
-        }
+    function getBestMaleVoice(shortLang) {
+      if (!('speechSynthesis' in window)) return null;
+      if (cachedVoicesList.length === 0) {
+        cachedVoicesList = window.speechSynthesis.getVoices();
+      }
 
-        const shortLang = fullLang.split('-')[0].toLowerCase();
-        const langVoices = availableVoices.filter(v =>
-          v.lang.toLowerCase().replace('_', '-').startsWith(shortLang)
-        );
+      const langVoices = cachedVoicesList.filter(v =>
+        v.lang.toLowerCase().replace('_', '-').startsWith(shortLang)
+      );
+      if (langVoices.length === 0) return null;
 
-        const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.lang = fullLang;
+      const femaleNames = /Zariyah|Salma|Laila|Fatima|Amira|Noura|Hoda|Zeina|Mariam|Zira|Hazel|Susan|Aria|Jenny|Sonia|ava|Samantha|Victoria|Karen|Filiz|Emel|Uzma|Xiaoxiao|Xiaoyi|Huihui|Yaoyao|Female|여|女/i;
+      const maleNames = /Hamed|Shakir|Naayf|Maged|Tarik|Omar|Ali|Hamdan|Bassel|Mehdi|Nizar|Guy|Andrew|Brian|Christopher|Eric|Roger|Steffan|David|Mark|Daniel|Alex|Ahmet|Asad|Yunxi|Yunjian|Yunyang|Kangkang|Male|남|男/i;
 
-        if (langVoices.length > 0) {
-          const neuralVoice =
-            langVoices.find(v => v.name.includes('Natural') || v.name.includes('Online')) ||
-            langVoices.find(v => v.name.includes('Google')) ||
-            langVoices.find(v => /Hamed|Zariyah|Salma|Shakira|Tarik|Maged|Laila|Aria|Jenny|Filiz|Emel|Asad|Uzma|Xiaoxiao|Yunxi/i.test(v.name)) ||
-            langVoices[0];
+      const nonFemaleVoices = langVoices.filter(v => !femaleNames.test(v.name));
 
-          utterance.voice = neuralVoice;
-        }
+      const naturalMale = nonFemaleVoices.find(v =>
+        (v.name.includes('Natural') || v.name.includes('Online')) && maleNames.test(v.name)
+      );
+      if (naturalMale) return naturalMale;
 
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;
+      const explicitMale = nonFemaleVoices.find(v => maleNames.test(v.name));
+      if (explicitMale) return explicitMale;
 
-        window.speechSynthesis.speak(utterance);
-      } catch (e) {}
+      if (nonFemaleVoices.length > 0) return nonFemaleVoices[0];
+
+      return langVoices[0];
     }
 
     function speakText(rawText) {
@@ -1751,50 +1823,45 @@
       const cleanText = prepareTextForSpeech(rawText, shortLang);
       if (!cleanText) return;
 
-      if (currentCloudAudio) {
-        try {
-          currentCloudAudio.pause();
-          currentCloudAudio.src = '';
-        } catch (e) {}
-        currentCloudAudio = null;
-      }
+      const player = getUnifiedAudioPlayer();
+      try { player.pause(); } catch (e) {}
+
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch (e) {}
       }
 
-      const hasNeuralLocal = availableVoices.some(v =>
-        v.lang.toLowerCase().replace('_', '-').startsWith(shortLang) &&
-        (v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Google'))
-      );
+      const maleVoice = getBestMaleVoice(shortLang);
 
-      if (hasNeuralLocal) {
-        speakWithEnhancedNaturalVoice(cleanText, fullLang);
-        return;
+      if (maleVoice && 'speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.resume();
+          const utterance = new SpeechSynthesisUtterance(cleanText);
+          utterance.voice = maleVoice;
+          utterance.lang = maleVoice.lang || fullLang;
+          utterance.rate = shortLang === 'ar' ? 0.94 : 0.96;
+          utterance.pitch = 0.92;
+          utterance.volume = 1.0;
+          window.speechSynthesis.speak(utterance);
+          return;
+        } catch (e) {}
       }
 
-      const googleTtsUrl = `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(cleanText)}&tl=${shortLang}&client=tw-ob`;
-      const safeProxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(googleTtsUrl)}`;
+      const encodedText = encodeURIComponent(cleanText);
+      const fallbackSources = [
+        `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&ttsspeed=0.85&q=${encodedText}`,
+        `https://corsproxy.io/?${encodeURIComponent(`https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&ttsspeed=0.85&q=${encodedText}`)}`
+      ];
 
-      try {
-        const audio = new Audio(safeProxyUrl);
-        audio.preload = 'auto';
-        currentCloudAudio = audio;
-
-        let fallbackTriggered = false;
-        const triggerFallback = () => {
-          if (fallbackTriggered) return;
-          fallbackTriggered = true;
-          speakWithEnhancedNaturalVoice(cleanText, fullLang);
-        };
-
-        audio.onerror = triggerFallback;
-        const playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(triggerFallback);
-        }
-      } catch (err) {
-        speakWithEnhancedNaturalVoice(cleanText, fullLang);
+      let idx = 0;
+      function playFallback() {
+        if (idx >= fallbackSources.length) return;
+        player.src = fallbackSources[idx++];
+        player.playbackRate = 0.94;
+        player.onerror = playFallback;
+        const p = player.play();
+        if (p !== undefined) p.catch(playFallback);
       }
+      playFallback();
     }
     function renderCustomerMyOrders() {
       const badge = document.getElementById('myOrdersCountBadge');
