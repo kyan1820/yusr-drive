@@ -2640,21 +2640,31 @@
       }
     }
 
-    function selectDisabilityMode(mode) {
+   function selectDisabilityMode(mode) {
       selectedMode = mode;
       const modes = ['mobility', 'hearing', 'visual', 'cognitive'];
       modes.forEach(m => {
         const card = document.getElementById('mode-' + m);
+        if (!card) return;
+        const icon = card.querySelector('.mode-check-icon');
+
         if (m === mode) {
           card.className = 'mode-card focus-ring text-right p-5 rounded-2xl border-2 border-emerald-600 bg-emerald-50/80 transition flex flex-col justify-between gap-3 shadow-sm';
+          if (icon) {
+            icon.textContent = '✓';
+            icon.className = 'mode-check-icon text-xs font-extrabold bg-emerald-600 text-white px-2.5 py-1 rounded-full';
+          }
         } else {
           card.className = 'mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3';
+          if (icon) {
+            icon.textContent = '○';
+            icon.className = 'mode-check-icon text-xs font-bold text-slate-400';
+          }
         }
       });
 
-      if (mode === 'hearing' && !visualFlashMode) toggleVisualFlashMode();
+      // تفعيل الصوت فقط عند اختيار مكفوفين إذا كان مغلقاً، وإلغاء التفعيل التلقائي للإشعارات الضوئية وزر التبسيط
       if (mode === 'visual' && !ttsEnabled) toggleTTS();
-      if (mode === 'cognitive' && !simpleMode) toggleSimpleMode();
     }
 
     function filterCategory(cat) {
