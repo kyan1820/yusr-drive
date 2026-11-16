@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=19">
+  <link rel="stylesheet" href="style.css?v=20">
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
@@ -19,7 +19,7 @@
       pointer-events: none;
       transition: opacity 0.5s ease-in-out;
     }
-    /* تنسيق الوضع الداكن الشامل والمحسّن */
+    /* تنسيق الوضع الداكن الشامل والمحسّن للمنيو والعناصر */
     body.dark-theme {
       background-color: #020617 !important;
       color: #f8fafc !important;
@@ -55,6 +55,19 @@
       color: #f8fafc !important;
       border-color: #334155 !important;
     }
+    /* ضبط ظهور بطاقات المنيو ونصوصها بدقة في الوضع الداكن */
+    body.dark-theme #menuGrid > div {
+      background-color: #0f172a !important;
+      border-color: #334155 !important;
+      color: #f8fafc !important;
+    }
+    body.dark-theme #menuGrid h3 {
+      color: #ffffff !important;
+    }
+    body.dark-theme #menuGrid p {
+      color: #94a3b8 !important;
+    }
+
     /* وضوح عالي لخيارات مكان التسليم والمسار في الوضع الداكن */
     body.dark-theme .spot-btn {
       background-color: #0f172a !important;
@@ -902,7 +915,7 @@
             </div>
 
             <div class="space-y-2 pt-3 border-t border-slate-700">
-              <span class="text-xs font-slate-400 block">إشعارات حالة التسليم السريعة:</span>
+              <span class="text-xs text-slate-400 block">إشعارات حالة التسليم السريعة:</span>
               <button type="button" onclick="triggerCustomerAlert('الموظف في طريقه إليك الآن ومعه الطلب')" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition">
                 إشعار العميل: الموظف قادم لسيارتك
               </button>
@@ -967,7 +980,7 @@
   </footer>
 
   <script>
-    console.log("Yusr Drive System v19 Spot & Lane DarkMode Fix Initialized - Developer: Kayan Adel Abbas");
+    console.log("Yusr Drive System v20 Final Polish Initialized - Developer: Kayan Adel Abbas");
 
     let currentLang = 'ar';
     let ttsEnabled = true;
@@ -988,7 +1001,7 @@
     let currentTutStepIndex = 0;
     let activeHighlightedElement = null;
 
-    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v19';
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v20';
     let lastEventStamp = 0;
     const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
 
@@ -1389,7 +1402,7 @@
       { id: 401, category: 'dinner', price: 36, name: 'وجبة مشويات مشكلة (عشاء فاخر)', nameEn: 'Mixed Grill Dinner Box', nameTr: 'Karışık Izgara Akşam Yemeği Kutusu', nameUr: 'مکس گرل ڈنر باکس (باربی کیو)', nameZh: '豪华什锦炭烤晚餐盒', desc: 'كباب لحم وأوصال دجاج مشوية مقطعة وجاهزة للتناول مع خبز طري وحمص', descEn: 'Pre-sliced beef & chicken kebab with soft bread and hummus', descTr: 'Yumuşak ekmek ve humus ile önceden dilimlenmiş et ve tavuk kebap', descUr: 'پہلے سے کٹے ہوئے بیف اور چکن کباب مع نرم روٹی اور حمص', descZh: '预切牛肉与鸡肉烤串，配松软薄饼与鹰嘴豆泥', badge: 'وجبات العشاء', badgeEn: 'Dinner' },
       { id: 402, category: 'dinner', price: 27, name: 'باستا الدجاج بالصلصة البيضاء', nameEn: 'Creamy Chicken Pasta Box', nameTr: 'Kremalı Tavuklu Makarna Kutusu', nameUr: 'کریمی وائٹ سوس چکن پاستا', nameZh: '奶油白汁鸡肉意面盒', desc: 'مكرونة بينا بصلصة الكريمة وقطع الدجاج المشوي في علبة عميقة سهلة الاستخدام', descEn: 'Penne pasta with creamy sauce and grilled chicken in a deep bowl', descTr: 'Derin kasede krema soslu ve ızgara tavuklu penne makarna', descUr: 'گہرے باؤل میں کریمی سوس اور گرلڈ چکن کے ساتھ پینے پاستا', descZh: '奶油烤鸡斜管面，深盒包装方便叉取', badge: 'عشاء إيطالي', badgeEn: 'Creamy Pasta' },
       { id: 403, category: 'dinner', price: 25, name: 'صينية شاورما عربي مقطعة', nameEn: 'Sliced Arabic Shawarma Platter', nameTr: 'Dilimlenmiş Arap Şavurma Tabağı', nameUr: 'عربی شاورما پلیٹر (کٹا ہوا)', nameZh: '预切阿拉伯沙威玛拼盘', desc: 'قطع شاورما جاهزة للأكل بالشوكة مع البطاطس والثوم في بوكس مقسم', descEn: 'Bite-sized shawarma pieces with fries and garlic sauce', descTr: 'Bölmeli kutuda çatalla yemeye hazır lokmalık şavurma, patates ve sos', descUr: 'کانٹے سے کھانے کے لیے تیار شاورما کے چھوٹے ٹکڑے مع فرائز اور تھوم', descZh: '一口大小沙威玛肉卷块，配薯条与蒜香酱分格盒装', badge: 'مقطعة جاهزة', badgeEn: 'Bite-Sized' },
-      { id: 404, category: 'dinner', price: 23, name: 'سلطة سيزر بالدجاج المشوي (عشاء خفيف)', nameEn: 'Grilled Chicken Caesar Salad', nameTr: 'Izgara Tavuklu Sezar Salata', nameUr: 'گرلڈ چکن سیزر سلاد (ہلکا عشائیہ)', nameZh: '烤鸡凯撒沙拉轻食盒', desc: 'خس طازج وقطع دجاج مشوي مع خبز محمص وصوص سيزر مخلوط وجاهز', descEn: 'Fresh lettuce and warm grilled chicken strips with mixed dressing', descTr: 'Taze marul, sıcak ızgara tavuk dilimleri ve hazır karıştırılmış sos', descUr: 'تازہ سلاد پتے، گرم گرلڈ چکن کے ٹکڑے اور مکسڈ سیزر ڈریسنگ', descZh: '新鲜生菜配温热烤鸡柳与调好凯撒酱，开盒即食', badge: 'عشاء خفيف', badgeEn: 'Light Dinner' },
+      { id: 404, category: 'dinner', price: 23, name: 'سلطة سيزر بالدجاج المشوي (عشاء خفيف)', nameEn: 'Grilled Chicken Caesar Salad', nameTr: 'Izgara Tavuklu Sezar Salata', nameUr: 'گرلڈ چکن سلاد', nameZh: '烤鸡凯撒沙拉轻食盒', desc: 'خس طازج وقطع دجاج مشوي مع خبز محمص وصوص سيزر مخلوط وجاهز', descEn: 'Fresh lettuce and warm grilled chicken strips with mixed dressing', descTr: 'Taze marul, sıcak ızgara tavuk dilimleri ve hazır karıştırılmış sos', descUr: 'تازہ سلاد پتے، گرم گرلڈ چکن کے ٹکڑے اور مکسڈ سیزر ڈریسنگ', descZh: '新鲜生菜配温热烤鸡柳与调好凯撒酱，开盒即食', badge: 'عشاء خفيف', badgeEn: 'Light Dinner' },
       { id: 501, category: 'fastfood', price: 24, name: 'وجبة برجر دجاج كريسبي أو مشوي', nameEn: 'Crispy / Grilled Chicken Burger Meal', nameTr: 'Çıtır veya Izgara Tavuk Burger Menü', nameUr: 'کرسپی یا گرلڈ چکن برگر میل', nameZh: '香脆/炭烤鸡腿堡套餐', desc: 'برجر مقسوم لنصفين في غلاف يفتح بيد واحدة مع حامل بطاطس للسيارة', descEn: 'Burger cut in half with single-hand wrap and car fry holder', descTr: 'Tek elle açılan pakette ikiye bölünmüş burger ve araç patates tutucusu', descUr: 'ایک ہاتھ سے کھلنے والی پیکنگ میں دو حصوں میں کٹا برگر مع کار فرائز ہولڈر', descZh: '汉堡预先切半配单手易开包装及车载薯条杯', badge: 'الوجبات السريعة', badgeEn: 'Fast Food' },
       { id: 502, category: 'fastfood', price: 28, name: 'وجبة دبل برجر لحم أنجوس', nameEn: 'Double Angus Beef Burger Meal', nameTr: 'Duble Angus Et Burger Menü', nameUr: 'ڈبل اینگس بیف برگر میل', nameZh: '双层安格斯牛肉堡套餐', desc: 'شريحتا لحم أنجوس بالجبن في خبز طري مغلف بإحكام لمنع تساقط الصوص', descEn: 'Double angus beef with cheese in a spill-proof wrap with fries', descTr: 'Sos akıtmayan özel sargılı yumuşak ekmekte çift katlı angus burger', descUr: 'سوس گرنے سے محفوظ پیکنگ میں ڈبل اینگس بیف چیز برگر مع فرائز', descZh: '双层安格斯芝士牛肉堡，防漏酱汁包裹配薯条', badge: 'الأكثر مبيعاً', badgeEn: 'Best Seller' },
       { id: 503, category: 'fastfood', price: 20, name: 'بوكس مسحب دجاج (ناجتس 8 قطع)', nameEn: 'Boneless Chicken Strips Box (8 Pcs)', nameTr: 'Kemiksiz Çıtır Tavuk Parçaları (8 Adet)', nameUr: 'بون لیس چکن اسٹرپس باکس (8 ٹکڑے)', nameZh: '无骨香脆鸡柳盒（8块装）', desc: 'قطع دجاج مسحب مقرمشة سهلة الأكل باليد مباشرة مع البطاطس والصوص', descEn: 'Easy finger-food chicken strips with fries and dipping sauce', descTr: 'Patates kızartması ve sos ile elle kolayca yenebilen çıtır tavuk', descUr: 'ہاتھ سے باآسانی کھانے کے لیے کرسپی چکن کے ٹکڑے مع فرائز اور سوس', descZh: '方便直接手拿享用的无骨脆鸡柳，配薯条与蘸酱', badge: 'سهل الأكل باليد', badgeEn: 'Finger Food' },
@@ -3047,7 +3060,7 @@
         spotMap: {
           'تسليم عبر نافذة السائق بحامل ممتد': '通过加长托盘递送至驾驶座车窗',
           'وضع الطلب على المقعد المجاور للسائق': '放置在副驾驶座位上',
-          'وضع الطلب في الشนطة الخلفية للسيارة': '放置在车辆后备箱内'
+          'وضع الطلب في الشنطة الخلفية للسيارة': '放置在车辆后备箱内'
         },
         laneMap: {
           'مسار يُسر 1': '易速车道 1',
