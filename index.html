@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=16">
+  <link rel="stylesheet" href="style.css?v=17">
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
@@ -19,13 +19,45 @@
       pointer-events: none;
       transition: opacity 0.5s ease-in-out;
     }
-    /* تمييز الزر المشروح وإبراز السهم التوجيهي فوق كل الطبقات */
+    /* تنسيق الوضع الداكن العام */
+    body.dark-theme {
+      background-color: #020617 !important;
+      color: #f8fafc !important;
+    }
+    body.dark-theme .bg-white {
+      background-color: #0f172a !important;
+      color: #f8fafc !important;
+      border-color: #334155 !important;
+    }
+    body.dark-theme .bg-slate-50 {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+    body.dark-theme .border-slate-200, body.dark-theme .border-slate-300 {
+      border-color: #334155 !important;
+    }
+    body.dark-theme .text-slate-900, body.dark-theme .text-slate-800, body.dark-theme .text-slate-700, body.dark-theme .text-slate-600 {
+      color: #e2e8f0 !important;
+    }
+    body.dark-theme input {
+      background-color: #1e293b !important;
+      color: #ffffff !important;
+      border-color: #475569 !important;
+    }
+
+    /* رفع الشريط العلوي مؤقتاً عند شرح أزراره ليظهر الزر المحدد بلونه الأصلي الساطع وباقي الأزرار معتمة */
+    .tutorial-parent-elevated {
+      z-index: 61 !important;
+      background-color: rgba(2, 6, 23, 0.92) !important;
+    }
     .tutorial-highlight-target {
       position: relative !important;
       z-index: 62 !important;
-      box-shadow: 0 0 0 4px #ffffff, 0 0 0 8px #ef4444, 0 12px 30px rgba(0, 0, 0, 0.5) !important;
+      filter: none !important;
+      opacity: 1 !important;
+      box-shadow: 0 0 0 4px #ffffff, 0 0 0 8px #ef4444, 0 15px 40px rgba(0, 0, 0, 0.8) !important;
       border-radius: 14px !important;
-      transition: box-shadow 0.25s ease-in-out;
+      transition: all 0.25s ease-in-out;
     }
     @keyframes pointerBounce {
       0%, 100% { transform: translateY(0); }
@@ -118,7 +150,6 @@
     <div class="bg-white text-slate-900 max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-emerald-500 text-center space-y-5 my-auto">
       <div class="flex items-center justify-between">
         <span id="tutPromptBadge" class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">دليل الواجهة والوصول الشامل</span>
-        <!-- زر القارئ الصوتي في نافذة التخيير -->
         <button type="button" onclick="toggleTutorialVoice()" class="tut-tts-btn focus-ring bg-slate-900 hover:bg-slate-800 text-white px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer">
           <span class="tut-tts-dot w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
           <span class="tut-tts-label">القارئ الصوتي: مفعّل</span>
@@ -132,7 +163,7 @@
       <div class="space-y-2">
         <h3 id="tutPromptTitle" class="text-2xl font-black text-slate-900">هل ترغب في شرح سريع للواجهة؟</h3>
         <p id="tutPromptDesc" class="text-sm text-slate-600 font-bold leading-relaxed">
-          سنؤشر لك بسهم على كل زر ونشرحه لك خطوة بخطوة (زر التبسيط، القارئ الصوتي، التباين العالي، حجم الخط، وخطوات الطلب).
+          سنؤشر لك بسهم على كل زر ونشرحه لك بجانبه (زر التبسيط، القارئ الصوتي، التباين العالي، حجم الخط، وخطوات الطلب).
         </p>
       </div>
 
@@ -148,15 +179,13 @@
   </div>
 
   <!-- 4. طبقة الشرح التفاعلي الموجه بالسهم بجانب كل زر -->
-  <div id="tutorialOverlayLayer" class="hidden fixed inset-0 z-[60] bg-slate-950/65 transition-opacity duration-200">
-    <!-- السهم الأحمر التوجيهي الذي يشير مباشرة إلى الزر المحدد -->
+  <div id="tutorialOverlayLayer" class="hidden fixed inset-0 z-[60] bg-slate-950/75 transition-opacity duration-200">
     <div id="tutorialPointerArrow" class="fixed z-[63] pointer-events-none flex flex-col items-center animate-pointer-arrow" style="top: 60px; left: 50%;">
       <svg class="w-11 h-11 drop-shadow-[0_4px_10px_rgba(0,0,0,0.75)]" viewBox="0 0 48 48" fill="none">
         <path d="M24 6L8 24H18V42H30V24H40L24 6Z" fill="#ef4444" stroke="#ffffff" stroke-width="3.5" stroke-linejoin="round"/>
       </svg>
     </div>
 
-    <!-- بطاقة الشرح العائمة بجانب الزر المحدد -->
     <div id="tutorialFloatingCard" class="fixed z-[63] bg-white text-slate-900 w-[92vw] max-w-md rounded-3xl p-5 sm:p-6 shadow-2xl border-4 border-amber-400 space-y-4 transition-all duration-300" style="top: 120px; left: 50%; transform: translateX(-50%);">
       <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
         <span id="tutStepCounter" class="bg-amber-100 text-amber-950 text-xs font-black px-3 py-1 rounded-full">
@@ -164,7 +193,6 @@
         </span>
 
         <div class="flex items-center gap-2">
-          <!-- زر التحكم بالقارئ الصوتي أثناء الشرح -->
           <button type="button" onclick="toggleTutorialVoice()" class="tut-tts-btn focus-ring bg-slate-900 hover:bg-slate-800 text-white px-2.5 py-1.5 rounded-xl text-[11px] font-black flex items-center gap-1.5 transition cursor-pointer">
             <span class="tut-tts-dot w-2 h-2 rounded-full bg-emerald-400"></span>
             <span class="tut-tts-label">القارئ الصوتي: مفعّل</span>
@@ -340,8 +368,8 @@
     <span id="visualAlertText">تم تحديث حالة الطلب!</span>
   </div>
 
-  <!-- الشريط العلوي -->
-  <div class="bg-slate-900 text-white py-3 px-4 shadow-md sticky top-0 z-40 border-b border-slate-700">
+  <!-- الشريط العلوي (مع زر الوضع الداكن/النهاري وزر شرح الواجهة) -->
+  <div id="topAccessibilityBar" class="bg-slate-900 text-white py-3 px-4 shadow-md sticky top-0 z-40 border-b border-slate-700">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
       <div class="flex flex-wrap items-center gap-2">
         <span id="accBadgeTitle" class="secondary-ui bg-emerald-500 text-slate-950 font-extrabold px-3 py-1 rounded-full text-sm">شريط الوصول الشامل</span>
@@ -352,8 +380,18 @@
         <button type="button" onclick="openLanguageModal()" id="changeLangBtn" class="focus-ring bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg text-xs font-black transition">
           تغيير اللغة (Language)
         </button>
+        <!-- زر إعادة فتح شرح الواجهة -->
+        <button type="button" onclick="restartInterfaceTutorial()" id="reopenTutorialBtn" class="focus-ring bg-sky-500 hover:bg-sky-400 text-slate-950 px-3 py-1.5 rounded-lg text-xs font-black transition flex items-center gap-1 cursor-pointer">
+          <span>؟</span>
+          <span id="reopenTutorialBtnText">شرح الواجهة</span>
+        </button>
       </div>
       <div class="flex flex-wrap items-center gap-2">
+        <!-- زر الوضع الداكن / النهاري للعميل -->
+        <button type="button" onclick="toggleDarkMode()" id="darkModeToggleBtn" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-xs font-black flex items-center gap-1.5 transition cursor-pointer">
+          <span id="darkModeIcon">🌙</span>
+          <span id="darkModeBtnText">الوضع الداكن</span>
+        </button>
         <button type="button" id="ttsToggleBtn" onclick="toggleTTS()" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-1.5 transition">
           <span id="ttsStatusDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
           <span id="ttsBtnText">القارئ الصوتي: مفعّل</span>
@@ -719,6 +757,11 @@
             <h2 class="text-2xl sm:text-3xl font-black mt-2">لوحة استقبال طلبات "يُسْر درايف"</h2>
           </div>
           <div class="flex items-center gap-3">
+            <!-- زر الوضع الداكن / النهاري للموظف -->
+            <button type="button" onclick="toggleDarkMode()" id="darkModeToggleBtnStaff" class="focus-ring bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 transition cursor-pointer">
+              <span id="darkModeIconStaff">🌙</span>
+              <span id="darkModeBtnTextStaff">الوضع الداكن</span>
+            </button>
             <span class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400 text-emerald-300 px-4 py-2 rounded-xl text-sm font-bold">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
               الطلبات النشطة بالانتظار: <span id="activeOrdersCountBadge" class="font-black text-white">0</span>
@@ -892,12 +935,13 @@
   </footer>
 
   <script>
-    console.log("Yusr Drive System v16 Pointer Spotlight Tour Initialized - Developer: Kayan Adel Abbas");
+    console.log("Yusr Drive System v17 DarkMode & Spotlight Tour Initialized - Developer: Kayan Adel Abbas");
 
     let currentLang = 'ar';
     let ttsEnabled = true;
     let visualFlashMode = false;
     let simpleMode = false;
+    let isDarkMode = false;
     let fontScaleIndex = 0;
     const fontScales = [1, 1.15, 1.3];
 
@@ -912,7 +956,7 @@
     let currentTutStepIndex = 0;
     let activeHighlightedElement = null;
 
-    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v16';
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v17';
     let lastEventStamp = 0;
     const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
 
@@ -961,6 +1005,14 @@
           if (latestActive) myCustomerOrderCode = latestActive.code;
         }
       } catch (e) {}
+
+      try {
+        const savedTheme = localStorage.getItem('yusr_dark_mode_active');
+        if (savedTheme === 'true') {
+          isDarkMode = true;
+          document.body.classList.add('dark-theme');
+        }
+      } catch (e) {}
     }
 
     function saveAllOrderStates() {
@@ -968,10 +1020,37 @@
         localStorage.setItem('yusr_active_orders_v12', JSON.stringify(activeOrders));
         localStorage.setItem('yusr_orders_history_v12', JSON.stringify(ordersHistory));
         localStorage.setItem('yusr_my_customer_orders_v12', JSON.stringify(myCustomerOrders));
+        localStorage.setItem('yusr_dark_mode_active', isDarkMode ? 'true' : 'false');
       } catch (e) {}
     }
 
     loadPersistedData();
+
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      document.body.classList.toggle('dark-theme', isDarkMode);
+      saveAllOrderStates();
+      updateThemeButtonsUI();
+      triggerVisualBanner(isDarkMode ? 'تم تفعيل الوضع الداكن (Dark Mode)' : 'تم تفعيل الوضع النهاري (Light Mode)');
+      speakText(isDarkMode ? 'الوضع الداكن مفعّل' : 'الوضع النهاري مفعّل');
+    }
+
+    function updateThemeButtonsUI() {
+      const iconStr = isDarkMode ? '☀️' : '🌙';
+      const textAr = isDarkMode ? 'الوضع النهاري' : 'الوضع الداكن';
+      const textEn = isDarkMode ? 'Light Mode' : 'Dark Mode';
+      const label = currentLang === 'en' ? textEn : textAr;
+
+      const btn1 = document.getElementById('darkModeIcon');
+      const btn2 = document.getElementById('darkModeBtnText');
+      if (btn1) btn1.textContent = iconStr;
+      if (btn2) btn2.textContent = label;
+
+      const btn3 = document.getElementById('darkModeIconStaff');
+      const btn4 = document.getElementById('darkModeBtnTextStaff');
+      if (btn3) btn3.textContent = iconStr;
+      if (btn4) btn4.textContent = label;
+    }
 
     const saudiRiyalLogoSVG = `
       <svg class="inline-block w-5 h-5 fill-current shrink-0" viewBox="0 0 100 100" aria-label="ريال سعودي">
@@ -993,7 +1072,6 @@
       zh: 'zh-CN'
     };
 
-    // قاموس الشرح الموجه بالسهم بجميع اللغات الخمس (مع استبدال سكب بـ تخطي)
     const tutorialTranslations = {
       ar: {
         promptBadge: 'دليل الواجهة والوصول الشامل',
@@ -1007,54 +1085,14 @@
         finishBtn: '✓ فهمت، ابدأ الطلب الآن',
         stepCounter: (curr, total) => `الخطوة ${curr} من ${total}`,
         steps: [
-          {
-            targetId: 'simpleModeBtn',
-            tag: 'أدوات الوصول الشامل',
-            title: '1. زر التبسيط (إخفاء الأزرار الثانوية)',
-            body: 'هذا الزر المشار إليه بالسهم يقوم بإخفاء جميع الأزرار والتفاصيل الثانوية، لتبقى أمامك الأزرار الأساسية للطلب فقط بدون أي تشتيت.'
-          },
-          {
-            targetId: 'ttsToggleBtn',
-            tag: 'أدوات الوصول الشامل',
-            title: '2. زر القارئ الصوتي',
-            body: 'هذا الزر المشار إليه بالسهم يتيح لك تشغيل أو إيقاف القراءة الصوتية للأصناف، الأسعار، وتنبيهات وصول الطلب.'
-          },
-          {
-            targetId: 'contrastBtn',
-            tag: 'أدوات الوصول الشامل',
-            title: '3. زر التباين العالي',
-            body: 'هذا الزر المشار إليه بالسهم يحول ألوان الشاشة إلى وضع التباين العالي الواضح جداً لتسهيل القراءة لضعاف البصر أو تحت أشعة الشمس.'
-          },
-          {
-            targetId: 'fontSizeCycleBtn',
-            tag: 'أدوات الوصول الشامل',
-            title: '4. زر حجم الخط',
-            body: 'هذا الزر المشار إليه بالسهم يقوم بتكبير حجم النصوص والأزرار على ثلاث درجات (100% عادي، 115% متوسط، أو 130% كبير جداً).'
-          },
-          {
-            targetId: 'step1SectionBox',
-            tag: 'خطوات الطلب في الواجهة',
-            title: '5. الخطوة 1: اختيار نمط الخدمة وتكييف المسار',
-            body: 'هنا تختار النمط المناسب لاحتياجك (إعاقة حركية، صم وضعاف سمع، مكفوفون، أو واجهة هادئة) ليقوم الموظف بتكييف التسليم لسيارتك.'
-          },
-          {
-            targetId: 'step2SectionBox',
-            tag: 'خطوات الطلب في الواجهة',
-            title: '6. الخطوة 2: منيو الطعام والتغليف الميسّر',
-            body: 'هنا تتصفح أقسام المنيو السبعة، وتفعّل التغليف الميسّر سهل الفتح مجاناً، وتضيف وجباتك المفضلة للسلة.'
-          },
-          {
-            targetId: 'step3SectionBox',
-            tag: 'خطوات الطلب في الواجهة',
-            title: '7. الخطوة 3: بيانات المركبة ومكان التسليم',
-            body: 'في هذه الخانة تكتب نوع ولون سيارتك، وتحدد مكان استلام الطلب (نافذة السائق، المقعد المجاور، أو الشنطة الخلفية) ورقم المسار.'
-          },
-          {
-            targetId: 'submitOrderBtnBox',
-            tag: 'الفاتورة والدفع',
-            title: '8. زر تأكيد الطلب والفاتورة',
-            body: 'عند الضغط على هذا الزر ستظهر لك الفاتورة الضريبية لاختيار طريقة الدفع (مدى، Apple Pay، فيزا، أو نقدي) وإرسال الطلب للمسار.'
-          }
+          { targetId: 'simpleModeBtn', tag: 'أدوات الوصول الشامل', title: '1. زر التبسيط (إخفاء الأزرار الثانوية)', body: 'هذا الزر المشار إليه بالسهم يقوم بإخفاء جميع الأزرار والتفاصيل الثانوية، لتبقى أمامك الأزرار الأساسية للطلب فقط بدون أي تشتيت.' },
+          { targetId: 'ttsToggleBtn', tag: 'أدوات الوصول الشامل', title: '2. زر القارئ الصوتي', body: 'هذا الزر المشار إليه بالسهم يتيح لك تشغيل أو إيقاف القراءة الصوتية للأصناف، الأسعار، وتنبيهات وصول الطلب.' },
+          { targetId: 'contrastBtn', tag: 'أدوات الوصول الشامل', title: '3. زر التباين العالي', body: 'هذا الزر المشار إليه بالسهم يحول ألوان الشاشة إلى وضع التباين العالي الواضح جداً لتسهيل القراءة لضعاف البصر أو تحت أشعة الشمس.' },
+          { targetId: 'fontSizeCycleBtn', tag: 'أدوات الوصول الشامل', title: '4. زر حجم الخط', body: 'هذا الزر المشار إليه بالسهم يقوم بتكبير حجم النصوص والأزرار على ثلاث درجات (100% عادي، 115% متوسط، أو 130% كبير جداً).' },
+          { targetId: 'step1SectionBox', tag: 'خطوات الطلب في الواجهة', title: '5. الخطوة 1: اختيار نمط الخدمة وتكييف المسار', body: 'هنا تختار النمط المناسب لاحتياجك (إعاقة حركية، صم وضعاف سمع، مكفوفون، أو واجهة هادئة) ليقوم الموظف بتكييف التسليم لسيارتك.' },
+          { targetId: 'step2SectionBox', tag: 'خطوات الطلب في الواجهة', title: '6. الخطوة 2: منيو الطعام والتغليف الميسّر', body: 'هنا تتصفح أقسام المنيو السبعة، وتفعّل التغليف الميسّر سهل الفتح مجاناً، وتضيف وجباتك المفضلة للسلة.' },
+          { targetId: 'step3SectionBox', tag: 'خطوات الطلب في الواجهة', title: '7. الخطوة 3: بيانات المركبة ومكان التسليم', body: 'في هذه الخانة تكتب نوع ولون سيارتك، وتحدد مكان استلام الطلب (نافذة السائق، المقعد المجاور، أو الشنطة الخلفية) ورقم المسار.' },
+          { targetId: 'submitOrderBtnBox', tag: 'الفاتورة والدفع', title: '8. زر تأكيد الطلب والفاتورة', body: 'عند الضغط على هذا الزر ستظهر لك الفاتورة الضريبية لاختيار طريقة الدفع (مدى، Apple Pay، فيزا، أو نقدي) وإرسال الطلب للمسار.' }
         ]
       },
       en: {
@@ -1069,54 +1107,14 @@
         finishBtn: '✓ Got it, Start Ordering',
         stepCounter: (curr, total) => `Step ${curr} of ${total}`,
         steps: [
-          {
-            targetId: 'simpleModeBtn',
-            tag: 'Accessibility Controls',
-            title: '1. Simplify Button (Hide Secondary Buttons)',
-            body: 'The button pointed to by the arrow hides all secondary buttons and extra text so only essential ordering buttons remain.'
-          },
-          {
-            targetId: 'ttsToggleBtn',
-            tag: 'Accessibility Controls',
-            title: '2. Voice Reader Button',
-            body: 'The button pointed to by the arrow turns automated audio narration ON or OFF for items, prices, and delivery updates.'
-          },
-          {
-            targetId: 'contrastBtn',
-            tag: 'Accessibility Controls',
-            title: '3. High Contrast Button',
-            body: 'The button pointed to by the arrow switches the screen into a sharp, high-contrast color mode for better visibility.'
-          },
-          {
-            targetId: 'fontSizeCycleBtn',
-            tag: 'Accessibility Controls',
-            title: '4. Font Size Button',
-            body: 'The button pointed to by the arrow enlarges text and buttons in three levels (100%, 115%, or 130%).'
-          },
-          {
-            targetId: 'step1SectionBox',
-            tag: 'Ordering Steps',
-            title: '5. Step 1: Select Service & Accessibility Mode',
-            body: 'Choose the mode tailored to your needs so our staff adapts car delivery to your vehicle.'
-          },
-          {
-            targetId: 'step2SectionBox',
-            tag: 'Ordering Steps',
-            title: '6. Step 2: Menu & Easy-Open Packaging',
-            body: 'Browse all 7 food categories, keep free Easy-Open Packaging enabled, and add meals to your cart.'
-          },
-          {
-            targetId: 'step3SectionBox',
-            tag: 'Ordering Steps',
-            title: '7. Step 3: Vehicle Info & Delivery Spot',
-            body: 'Enter your car details, choose where to receive the order in your car, and select your smart lane.'
-          },
-          {
-            targetId: 'submitOrderBtnBox',
-            tag: 'Invoice & Payment',
-            title: '8. Confirm Order & Invoice Button',
-            body: 'Tap this button to review your tax invoice, choose payment (Mada, Apple Pay, Visa, or Cash), and send your order.'
-          }
+          { targetId: 'simpleModeBtn', tag: 'Accessibility Controls', title: '1. Simplify Button (Hide Secondary Buttons)', body: 'The button pointed to by the arrow hides all secondary buttons and extra text so only essential ordering buttons remain.' },
+          { targetId: 'ttsToggleBtn', tag: 'Accessibility Controls', title: '2. Voice Reader Button', body: 'The button pointed to by the arrow turns automated audio narration ON or OFF for items, prices, and delivery updates.' },
+          { targetId: 'contrastBtn', tag: 'Accessibility Controls', title: '3. High Contrast Button', body: 'The button pointed to by the arrow switches the screen into a sharp, high-contrast color mode for better visibility.' },
+          { targetId: 'fontSizeCycleBtn', tag: 'Accessibility Controls', title: '4. Font Size Button', body: 'The button pointed to by the arrow enlarges text and buttons in three levels (100%, 115%, or 130%).' },
+          { targetId: 'step1SectionBox', tag: 'Ordering Steps', title: '5. Step 1: Select Service & Accessibility Mode', body: 'Choose the mode tailored to your needs so our staff adapts car delivery to your vehicle.' },
+          { targetId: 'step2SectionBox', tag: 'Ordering Steps', title: '6. Step 2: Menu & Easy-Open Packaging', body: 'Browse all 7 food categories, keep free Easy-Open Packaging enabled, and add meals to your cart.' },
+          { targetId: 'step3SectionBox', tag: 'Ordering Steps', title: '7. Step 3: Vehicle Info & Delivery Spot', body: 'Enter your car details, choose where to receive the order in your car, and select your smart lane.' },
+          { targetId: 'submitOrderBtnBox', tag: 'Invoice & Payment', title: '8. Confirm Order & Invoice Button', body: 'Tap this button to review your tax invoice, choose payment (Mada, Apple Pay, Visa, or Cash), and send your order.' }
         ]
       },
       tr: {
@@ -1625,7 +1623,7 @@
     function prepareTextForSpeech(text, lang) {
       if (!text) return '';
       return text
-        .replace(/[#*•—\-_✓✕💳💵()؟]/g, ' ')
+        .replace(/[#*•—\-_✓✕💳💵()؟🌙☀️]/g, ' ')
         .replace(/YSR/gi, lang === 'ar' ? 'يُسر رقم ' : 'Y S R ')
         .replace(/ر\.س/g, 'ريال سعودي')
         .replace(/SAR/gi, lang === 'ar' ? 'ريال سعودي' : 'S A R')
@@ -1729,7 +1727,6 @@
       playNextCloudStream();
     }
 
-    // مزامنة زر القارئ الصوتي داخل نافذة التخيير ونافذة الشرح مع الشريط العلوي
     function syncTutorialVoiceButtons() {
       const t = translations[currentLang] || translations.ar;
       document.querySelectorAll('.tut-tts-label').forEach(el => {
@@ -1756,7 +1753,12 @@
       }
     }
 
-    // دوال الشرح التفاعلي الموجه بالسهم بجانب كل زر
+    function restartInterfaceTutorial() {
+      currentTutStepIndex = 0;
+      document.getElementById('tutorialOverlayLayer').classList.remove('hidden');
+      renderTutorialStep();
+    }
+
     function openTutorialPromptModal() {
       const tutT = tutorialTranslations[currentLang] || tutorialTranslations.ar;
       document.getElementById('tutPromptBadge').textContent = tutT.promptBadge;
@@ -1781,6 +1783,8 @@
         activeHighlightedElement.classList.remove('tutorial-highlight-target');
         activeHighlightedElement = null;
       }
+      const topBar = document.getElementById('topAccessibilityBar');
+      if (topBar) topBar.classList.remove('tutorial-parent-elevated');
     }
 
     function positionSpotlightAndCard(targetId) {
@@ -1788,12 +1792,16 @@
       const targetEl = document.getElementById(targetId);
       const arrowEl = document.getElementById('tutorialPointerArrow');
       const cardEl = document.getElementById('tutorialFloatingCard');
+      const topBar = document.getElementById('topAccessibilityBar');
 
       if (!targetEl || !arrowEl || !cardEl) return;
 
-      // التأكد من ظهور العنصر إذا كان مخفياً بسبب وضع التبسيط
       if (targetEl.offsetParent === null && simpleMode) {
         toggleSimpleMode();
+      }
+
+      if (topBar && topBar.contains(targetEl)) {
+        topBar.classList.add('tutorial-parent-elevated');
       }
 
       targetEl.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
@@ -1805,14 +1813,12 @@
         const winW = window.innerWidth;
         const winH = window.innerHeight;
 
-        // وضع السهم تحت الزر مباشرة ويشير للأعلى نحوه
         const arrowX = Math.min(Math.max(rect.left + rect.width / 2 - 22, 16), winW - 60);
         const arrowY = Math.min(rect.bottom + 6, winH - 180);
 
         arrowEl.style.left = `${arrowX}px`;
         arrowEl.style.top = `${arrowY}px`;
 
-        // وضع بطاقة الشرح بجانب/أسفل السهم بحيث لا تغطي الزر أبداً
         const cardW = Math.min(448, winW * 0.92);
         let cardLeft = rect.left + rect.width / 2 - cardW / 2;
         cardLeft = Math.max(12, Math.min(cardLeft, winW - cardW - 12));
@@ -1820,7 +1826,6 @@
         let cardTop = arrowY + 46;
         const estimatedCardH = cardEl.offsetHeight || 270;
 
-        // إذا كان الزر في أسفل الشاشة (مثل زر تأكيد الطلب)، نضع البطاقة فوقه والسهم يشير للأسفل
         if (cardTop + estimatedCardH > winH - 12) {
           cardTop = Math.max(16, rect.top - estimatedCardH - 54);
           arrowEl.style.top = `${Math.max(10, rect.top - 48)}px`;
@@ -2688,6 +2693,11 @@
       document.getElementById('simpleModeBtnText').textContent = simpleMode ? t.simpleOn : t.simpleOff;
       document.getElementById('inlineSimpleBtn').textContent = t.inlineSimpleBtn;
       document.getElementById('changeLangBtn').textContent = t.changeLangBtn;
+
+      const tutBtnLabels = { ar: 'شرح الواجهة', en: 'UI Guide', tr: 'Arayüz Rehberi', ur: 'رہنمائی', zh: '界面指南' };
+      const reopenEl = document.getElementById('reopenTutorialBtnText');
+      if (reopenEl) reopenEl.textContent = tutBtnLabels[lang] || tutBtnLabels.ar;
+
       document.getElementById('ttsBtnText').textContent = ttsEnabled ? t.ttsActive : t.ttsMuted;
       document.getElementById('contrastBtn').textContent = t.contrastBtn;
       document.getElementById('fontBtnLabel').textContent = t.fontBtnLabel;
@@ -2752,6 +2762,7 @@
       document.getElementById('currencyLabel').innerHTML = saudiRiyalLogoSVG;
       document.getElementById('submitOrderBtnText').textContent = t.submitOrderBtnText;
 
+      updateThemeButtonsUI();
       syncTutorialVoiceButtons();
       renderMenu();
       renderCart();
@@ -3483,6 +3494,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       try {
+        updateThemeButtonsUI();
         const currEl = document.getElementById('currencyLabel');
         if (currEl) currEl.innerHTML = saudiRiyalLogoSVG;
 
