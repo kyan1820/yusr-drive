@@ -3342,6 +3342,11 @@ let invoiceTimerInterval = null;
 
       document.getElementById('invModalTotal').innerHTML = `<span>${totalAmount}</span> ${saudiRiyalLogoSVG}`;
       document.getElementById('invoiceCheckoutModal').classList.remove('hidden');
+     document.getElementById('invoiceCheckoutModal').classList.remove('hidden');
+      
+    startInvoiceCountdown(); // أضف هذا السطر هنا
+      
+    speakText(invT.speechReady(totalAmount));
       speakText(invT.speechReady(totalAmount));
     }
     function finalizeOrderWithInvoice() {
