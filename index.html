@@ -3557,7 +3557,40 @@
           document.getElementById('tabCustomer').classList.remove('hidden');
         }
       } catch (e) {}
-    });
+       });
+    let checkoutTimerInterval = null;
+    let checkoutSecondsRemaining = 120; // دقيقتان
+
+    function startCheckoutCountdown() {
+      clearInterval(checkoutTimerInterval);
+      checkoutSecondsRemaining = 120;
+      updateCheckoutTimerDisplay();
+
+      checkoutTimerInterval = setInterval(() => {
+        checkoutSecondsRemaining--;
+        updateCheckoutTimerDisplay();
+
+        if (checkoutSecondsRemaining <= 0) {
+          clearInterval(checkoutTimerInterval);
+          finalizeOrderWithInvoice();
+          triggerVisualBanner('انتهى الوقت المحدد؛ تم اعتماد طلبك وإرساله تلقائياً للمسار الذكي.');
+        }
+      }, 1000);
+    }
+
+    function updateCheckoutTimerDisplay() {
+      const displayEl = document.getElementById('checkoutCountdownDisplay');
+      if (!displayEl) return;
+      const mins = Math.floor(checkoutSecondsRemaining / 60);
+      const secs = checkoutSecondsRemaining % 60;
+      displayEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function closeInvoiceModalAndEditCart() {
+      clearInterval(checkoutTimerInterval);
+      closeInvoiceModal();
+      speakText('تم العودة للسلة، يمكنك تعديل الأصناف بحرية');
+    }
   </script>
 </body>
 </html>
