@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=13">
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
@@ -23,7 +23,7 @@
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
 
-  <!-- 1. شاشة الكلمة الترحيبية الافتتاحية (تختفي تلقائياً بعد ثانيتين أو عند الضغط عليها) -->
+  <!-- 1. شاشة الكلمة الترحيبية الافتتاحية -->
   <div id="introSplash" onclick="dismissSplashAndShowLanguages()" class="fixed inset-0 z-[60] bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white flex items-center justify-center p-6 text-center cursor-pointer">
     <div class="max-w-lg w-full space-y-5 animate-pulse">
       <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-5 py-2 rounded-full text-sm font-black">
@@ -87,7 +87,7 @@
         <button type="button" onclick="startAppWithLanguage('sign')" class="focus-ring p-4 rounded-2xl border-2 border-slate-200 hover:border-amber-500 bg-slate-50 hover:bg-amber-50 transition flex flex-col items-center justify-center gap-1.5 cursor-pointer">
           <span class="text-[11px] font-extrabold bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full">للصم / Deaf</span>
           <span class="text-lg font-black text-slate-900">بصري / إشارة</span>
-          <span class="text-[11px] text-slate-600 font-bold">تنبيهات ضوئية بدون صوت</span>
+          <span class="text-[11px] text-slate-600 font-bold">تنبيهات نصية بدون صوت</span>
         </button>
       </div>
 
@@ -273,7 +273,8 @@
           </button>
         </div>
 
-       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- البطاقات الأربع بدون تحديد مسبق (تظهر علامة الصح فقط عند الاختيار) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <button type="button" onclick="selectDisabilityMode('mobility')" id="mode-mobility" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
               <div class="flex items-center justify-between">
@@ -554,7 +555,6 @@
           </div>
         </div>
 
-        <!-- محرك البحث برقم الفاتورة أو الوقت للعميل -->
         <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 flex flex-col sm:flex-row items-center gap-3">
           <input id="customerOrderSearchInput" type="text" oninput="renderCustomerMyOrders()" placeholder="ابحث برقم الفاتورة (مثل: #YSR-105 أو 105) أو الوقت (مثل: 10:30)..." class="focus-ring w-full px-4 py-3 rounded-xl border-2 border-slate-300 font-bold text-sm text-slate-900 bg-white">
           <button type="button" onclick="document.getElementById('customerOrderSearchInput').value=''; renderCustomerMyOrders();" class="shrink-0 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black px-4 py-3 rounded-xl text-xs transition">
@@ -582,7 +582,6 @@
           </div>
         </div>
 
-        <!-- شريط طابور الطلبات النشطة -->
         <div class="bg-slate-800/90 p-4 rounded-2xl border border-slate-700 space-y-2">
           <div class="flex items-center justify-between">
             <span class="text-xs font-extrabold text-slate-300">طابور الطلبات النشطة حالياً (اضغط على رقم الطلب للتبديل والتحكم به):</span>
@@ -620,7 +619,7 @@
                 <span id="staffLaneInfo" class="font-extrabold text-amber-400">—</span>
               </div>
               <div>
-                <span class="text-xs text-slate-400 block">طريقة التسليم المطلوبة:</span>
+                <span class="text-xs text-slate-400 block">طريقة التسليم والدفع:</span>
                 <span id="staffSpotInfo" class="font-extrabold text-emerald-300">—</span>
               </div>
             </div>
@@ -749,7 +748,7 @@
   </footer>
 
   <script>
-    console.log("Yusr Drive System v12 Complete & Verified Initialized - Developer: Kayan Adel Abbas");
+    console.log("Yusr Drive System v13 Pure Audio & Complete Features Initialized - Developer: Kayan Adel Abbas");
 
     let currentLang = 'ar';
     let ttsEnabled = true;
@@ -767,7 +766,7 @@
     let currentView = 'customer';
     let currentStaffHistoryTab = 'completed';
 
-    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v12';
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v13';
     let lastEventStamp = 0;
     const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
 
@@ -795,7 +794,6 @@
       }
     }
 
-    // مؤقت فوري ومضمون لإخفاء شاشة الترحيب بعد ثانيتين وإظهار اللغات
     setTimeout(dismissSplashAndShowLanguages, 2000);
 
     function loadPersistedData() {
@@ -908,7 +906,7 @@
         modeMobilityTitle: 'إعاقة حركية',
         modeMobilityDesc: 'توصيل الطلب حتى نافذة السائق أو المقعد الخلفي دون الحاجة لمد اليد أو النزول.',
         modeHearingTitle: 'صم وضعاف سمع / نطق',
-        modeHearingDesc: 'إلغاء التخاطب الصوتي تماماً، واستبداله بشاشة تفاعلية وتنبيهات ضوئية.',
+        modeHearingDesc: 'إلغاء التخاطب الصوتي تماماً، واستبداله بشاشة تفاعلية وتنبيهات نصية واضحة.',
         modeVisualTitle: 'مكفوفون وضعاف بصر',
         modeVisualDesc: 'قراءة صوتية تلقائية للأصناف والأسعار، وأزرار ضخمة عالية التباين.',
         modeCognitiveTitle: 'واجهة مبسطة وهادئة',
@@ -1030,7 +1028,7 @@
         modeMobilityTitle: 'Hareket Kısıtlılığı',
         modeMobilityDesc: 'Uzanmaya gerek kalmadan sürücü camına veya arka koltuğa uzatmalı tepsi ile teslimat.',
         modeHearingTitle: 'İşitme / Konuşma Engelli',
-        modeHearingDesc: 'Mikrofon olmadan %100 görsel ekran iletişimi ve ışıklı uyarılar.',
+        modeHearingDesc: 'Mikrofon olmadan %100 görsel ekran iletişimi ve yazılı uyarılar.',
         modeVisualTitle: 'Görme Engelli / Az Gören',
         modeVisualDesc: 'Ürünler ve fiyatlar için otomatik sesli okuma ve yüksek kontrastlı düğmeler.',
         modeCognitiveTitle: 'Sakin ve Basit Arayüz',
@@ -1091,7 +1089,7 @@
         modeMobilityTitle: 'جسمانی / حرکی معذوری',
         modeMobilityDesc: 'ہاتھ بڑھائے بغیر ڈرائیور کی کھڑکی یا پچھلی سیٹ تک ٹرے کے ذریعے کھانے کی ترسیل۔',
         modeHearingTitle: 'سماعت یا گویائی کی کمی',
-        modeHearingDesc: 'مائیکروفون کے بغیر 100% بصری اسکرین رابطہ اور لائٹ الرٹس۔',
+        modeHearingDesc: 'مائیکروفون کے بغیر 100% بصری اسکرین رابطہ اور تحریری الرٹس۔',
         modeVisualTitle: 'نابینا اور کمزور نظر افراد',
         modeVisualDesc: 'کھانوں اور قیمتوں کی خودکار صوتی پڑھائی اور بڑے واضح بٹن۔',
         modeCognitiveTitle: 'پرسکون اور سادہ انٹرفیس',
@@ -1152,7 +1150,7 @@
         modeMobilityTitle: '行动不便模式',
         modeMobilityDesc: '使用加长托盘直接递送至驾驶座车窗或后座，无需伸手或下车。',
         modeHearingTitle: '听障 / 言语障碍模式',
-        modeHearingDesc: '100% 屏幕视觉交互与闪光提示，完全无需使用麦克风。',
+        modeHearingDesc: '100% 屏幕视觉与文字交互，完全无需使用麦克风。',
         modeVisualTitle: '视障 / 低视力模式',
         modeVisualDesc: '自动语音播报餐点与价格，配备超大高对比度按钮。',
         modeCognitiveTitle: '安静极简界面',
@@ -1670,13 +1668,12 @@
     ];
 
     let cart = [];
-    let currentCloudAudio = null;
 
     function getItemTitle(item) {
       if (currentLang === 'en') return item.nameEn || item.name;
       if (currentLang === 'tr') return item.nameTr || item.nameEn;
       if (currentLang === 'ur') return item.nameUr || item.name;
-      if (currentLang === 'zh') return item.nameZh || item.nameEn;
+      if (currentLang === 'zh') return item.nameZh || item.descEn;
       return item.name;
     }
 
@@ -1688,8 +1685,7 @@
       return item.desc;
     }
 
-  // محرك نطق بشري محسن وسلس بدون تكسير (يدعم اللغات الخمس)
-  // محرك نطق رجالي محسن مع تشكيل تلقائي لمنع التكسير نهائياً
+    // محرك صوت نقي وطبيعي 100% بدون أي تشويه أو تبطيء للموجة الصوتية
     let unifiedAudioPlayer = null;
     let audioChannelUnlocked = false;
     let cachedVoicesList = [];
@@ -1735,58 +1731,21 @@
     document.addEventListener('click', unlockDeviceAudioChannel, { once: true });
     document.addEventListener('touchstart', unlockDeviceAudioChannel, { once: true });
 
-    // تحسين النطق وإضافة التشكيل التلقائي للكلمات العربية لمنع التكسير والتقطيع
     function prepareTextForSpeech(text, lang) {
       if (!text) return '';
-      let clean = text
-        .replace(/[#*•—\-_✓✕💳💵()]/g, ' ، ')
-        .replace(/YSR/gi, lang === 'ar' ? ' يُسْر رقم ' : ' Y S R ')
-        .replace(/ر\.س/g, ' رِيَال سُعُودِي ')
-        .replace(/SAR/gi, lang === 'ar' ? ' رِيَال سُعُودِي ' : ' S A R ')
-        .replace(/%/g, lang === 'ar' ? ' بِالمِئَة ' : ' percent ');
-
-      if (lang === 'ar') {
-        const arabicPhoneticFixes = [
-          [/أهلاً بك/g, 'أَهْلاً بِكَ'],
-          [/يسر درايف/g, 'يُسْر دْرَايْف'],
-          [/يُسر درايف/g, 'يُسْر دْرَايْف'],
-          [/مطعم/g, 'مَطْعَمِ'],
-          [/اختر وجبتك المفضلة/g, 'اخْتَرْ وَجْبَتَكَ المُفَضَّلَة'],
-          [/من الأقسام أمامك/g, 'مِنَ الأَقْسَامِ أَمَامَكَ'],
-          [/المرحلة الأولى/g, 'المَرْحَلَةُ الأُولَى ،'],
-          [/المرحلة الثانية/g, 'المَرْحَلَةُ الثَّانِيَة ،'],
-          [/المرحلة الثالثة/g, 'المَرْحَلَةُ الثَّالِثَة ،'],
-          [/المرحلة الرابعة/g, 'المَرْحَلَةُ الرَّابِعَة ،'],
-          [/تم استلام طلبك/g, 'تَمَّ اسْتِلامُ طَلَبِكَ'],
-          [/وتكييف المسار الذكي/g, 'وَتَكْيِيفُ المَسَارِ الذَّكِيّ'],
-          [/جاري تجهيز طلبك/g, 'جَارِي تَجْهِيزُ طَلَبِكَ'],
-          [/بتغليف ميسر سهل الفتح/g, 'بِتَغْلِيفٍ مُيَسَّرٍ سَهْلِ الفَتْح'],
-          [/الموظف في طريقه/g, 'المُوَظَّفُ فِي طَرِيقِهِ'],
-          [/لباب سيارتك الآن/g, 'لِبَابِ سَيَّارَتِكَ الآنَ'],
-          [/لتسليم الطلب/g, 'لِتَسْلِيمِ الطَّلَب'],
-          [/فاتورة الطلب جاهزة/g, 'فَاتُورَةُ الطَّلَبِ جَاهِزَة ،'],
-          [/الإجمالي/g, 'الإِجْمَالِي'],
-          [/ريال سعودي/g, 'رِيَال سُعُودِي ،'],
-          [/اختر طريقة الدفع/g, 'اخْتَرْ طَرِيقَةَ الدَّفْعِ'],
-          [/ثم اعتمد الطلب/g, 'ثُمَّ اعْتَمِدِ الطَّلَب'],
-          [/تم اعتماد الفاتورة/g, 'تَمَّ اعْتِمَادُ الفَاتُورَةِ'],
-          [/بنجاح/g, 'بِنَجَاحٍ'],
-          [/مدى/g, 'مَدَى'],
-          [/نقدي/g, 'نَقْدِي']
-        ];
-        arabicPhoneticFixes.forEach(([regex, replacement]) => {
-          clean = clean.replace(regex, replacement);
-        });
-      }
-
-      return clean
-        .replace(/،\s*،/g, '،')
+      return text
+        .replace(/[#*•—\-_✓✕💳💵()]/g, ' ')
+        .replace(/YSR/gi, lang === 'ar' ? 'يُسر رقم ' : 'Y S R ')
+        .replace(/ر\.س/g, 'ريال سعودي')
+        .replace(/SAR/gi, lang === 'ar' ? 'ريال سعودي' : 'S A R')
+        .replace(/%/g, lang === 'ar' ? ' بالمئة ' : ' percent ')
         .replace(/\s+/g, ' ')
         .trim()
-        .substring(0, 185);
+        .substring(0, 180);
     }
 
-    function getBestMaleVoice(shortLang) {
+    // اختيار الصوت العصبي الطبيعي فقط (Natural / Online / Siri / Google) واستبعاد أصوات الديسكتوب القديمة المكسرة
+    function getBestHighQualityVoice(shortLang) {
       if (!('speechSynthesis' in window)) return null;
       if (cachedVoicesList.length === 0) {
         cachedVoicesList = window.speechSynthesis.getVoices();
@@ -1797,22 +1756,26 @@
       );
       if (langVoices.length === 0) return null;
 
-      const femaleNames = /Zariyah|Salma|Laila|Fatima|Amira|Noura|Hoda|Zeina|Mariam|Zira|Hazel|Susan|Aria|Jenny|Sonia|ava|Samantha|Victoria|Karen|Filiz|Emel|Uzma|Xiaoxiao|Xiaoyi|Huihui|Yaoyao|Female|여|女/i;
-      const maleNames = /Hamed|Shakir|Naayf|Maged|Tarik|Omar|Ali|Hamdan|Bassel|Mehdi|Nizar|Guy|Andrew|Brian|Christopher|Eric|Roger|Steffan|David|Mark|Daniel|Alex|Ahmet|Asad|Yunxi|Yunjian|Yunyang|Kangkang|Male|남|男/i;
+      const maleNames = /Hamed|Shakir|Maged|Tarik|Omar|Guy|Andrew|Brian|Christopher|Ahmet|Asad|Yunxi|Yunjian/i;
 
-      const nonFemaleVoices = langVoices.filter(v => !femaleNames.test(v.name));
-
-      const naturalMale = nonFemaleVoices.find(v =>
-        (v.name.includes('Natural') || v.name.includes('Online')) && maleNames.test(v.name)
+      // 1. أولوية لصوت رجالي عصبي طبيعي (مثل Microsoft Hamed Online Natural في Edge أو Maged في أبل)
+      const neuralMale = langVoices.find(v =>
+        (v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Siri') || v.name.includes('Premium')) &&
+        maleNames.test(v.name)
       );
-      if (naturalMale) return naturalMale;
+      if (neuralMale) return neuralMale;
 
-      const explicitMale = nonFemaleVoices.find(v => maleNames.test(v.name));
-      if (explicitMale) return explicitMale;
+      // 2. أي صوت عصبي طبيعي عالي الجودة (Natural / Online / Google) بدون تكسير
+      const anyNeural = langVoices.find(v =>
+        v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Google')
+      );
+      if (anyNeural) return anyNeural;
 
-      if (nonFemaleVoices.length > 0) return nonFemaleVoices[0];
+      // 3. في أجهزة الآيفون والماك (Maged / Tarik)
+      const appleMale = langVoices.find(v => /Maged|Tarik/i.test(v.name));
+      if (appleMale) return appleMale;
 
-      return langVoices[0];
+      return null;
     }
 
     function speakText(rawText) {
@@ -1830,39 +1793,58 @@
         try { window.speechSynthesis.cancel(); } catch (e) {}
       }
 
-      const maleVoice = getBestMaleVoice(shortLang);
-
-      if (maleVoice && 'speechSynthesis' in window) {
+      // إذا توفر صوت عصبي عالي الجودة في المتصفح نستخدمه بسرعة وطبقة طبيعية 1.0 بدون أي تشويه
+      const hqVoice = getBestHighQualityVoice(shortLang);
+      if (hqVoice && 'speechSynthesis' in window) {
         try {
           window.speechSynthesis.resume();
           const utterance = new SpeechSynthesisUtterance(cleanText);
-          utterance.voice = maleVoice;
-          utterance.lang = maleVoice.lang || fullLang;
-          utterance.rate = shortLang === 'ar' ? 0.94 : 0.96;
-          utterance.pitch = 0.92;
+          utterance.voice = hqVoice;
+          utterance.lang = hqVoice.lang || fullLang;
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
           utterance.volume = 1.0;
           window.speechSynthesis.speak(utterance);
           return;
         } catch (e) {}
       }
 
+      // إذا كان المتصفح لا يملك صوتاً عصبياً (مثل كروم العادي على ويندوز أو جوال بدون حزمة صوت)، نشغل الصوت السحابي الموحد بسرعة طبيعية 1.0
       const encodedText = encodeURIComponent(cleanText);
-      const fallbackSources = [
-        `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&ttsspeed=0.85&q=${encodedText}`,
-        `https://corsproxy.io/?${encodeURIComponent(`https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&ttsspeed=0.85&q=${encodedText}`)}`
+      const cloudStreams = [
+        `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&q=${encodedText}`,
+        `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=${shortLang}&client=tw-ob`,
+        `https://corsproxy.io/?${encodeURIComponent(`https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&q=${encodedText}`)}`
       ];
 
-      let idx = 0;
-      function playFallback() {
-        if (idx >= fallbackSources.length) return;
-        player.src = fallbackSources[idx++];
-        player.playbackRate = 0.94;
-        player.onerror = playFallback;
+      let streamIdx = 0;
+      function playNextCloudStream() {
+        if (streamIdx >= cloudStreams.length) {
+          // آخر حل احتياطي إذا انقطع الإنترنت
+          if ('speechSynthesis' in window) {
+            try {
+              const u = new SpeechSynthesisUtterance(cleanText);
+              u.lang = fullLang;
+              u.rate = 1.0;
+              u.pitch = 1.0;
+              window.speechSynthesis.speak(u);
+            } catch (err) {}
+          }
+          return;
+        }
+
+        player.src = cloudStreams[streamIdx++];
+        player.playbackRate = 1.0;
+        player.onerror = playNextCloudStream;
         const p = player.play();
-        if (p !== undefined) p.catch(playFallback);
+        if (p !== undefined) {
+          p.catch(playNextCloudStream);
+        }
       }
-      playFallback();
+
+      playNextCloudStream();
     }
+
     function renderCustomerMyOrders() {
       const badge = document.getElementById('myOrdersCountBadge');
       const container = document.getElementById('customerMyOrdersList');
@@ -2593,6 +2575,7 @@
     }
 
     function startAppWithLanguage(langSelection) {
+      unlockDeviceAudioChannel();
       const modal = document.getElementById('welcomeModal');
       if (modal) modal.classList.add('hidden');
 
@@ -2719,7 +2702,7 @@
         speakText(t.ttsActive);
       } else {
         if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-        if (currentCloudAudio) currentCloudAudio.pause();
+        if (unifiedAudioPlayer) unifiedAudioPlayer.pause();
         btn.innerHTML = `<span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span><span id="ttsBtnText">${t.ttsMuted}</span>`;
       }
     }
@@ -2748,7 +2731,8 @@
       }
     }
 
-   function selectDisabilityMode(mode) {
+    // تحديث علامة الصح على البطاقة المختارة فقط بدون تفعيل إجباري للإشعارات الضوئية أو زر التبسيط
+    function selectDisabilityMode(mode) {
       selectedMode = mode;
       const modes = ['mobility', 'hearing', 'visual', 'cognitive'];
       modes.forEach(m => {
@@ -2771,7 +2755,6 @@
         }
       });
 
-      // تفعيل الصوت فقط عند اختيار مكفوفين إذا كان مغلقاً، وإلغاء التفعيل التلقائي للإشعارات الضوئية وزر التبسيط
       if (mode === 'visual' && !ttsEnabled) toggleTTS();
     }
 
