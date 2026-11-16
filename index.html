@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=17">
+  <link rel="stylesheet" href="style.css?v=18">
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
@@ -19,7 +19,7 @@
       pointer-events: none;
       transition: opacity 0.5s ease-in-out;
     }
-    /* تنسيق الوضع الداكن العام */
+    /* تنسيق الوضع الداكن المحسّن والشامل */
     body.dark-theme {
       background-color: #020617 !important;
       color: #f8fafc !important;
@@ -29,20 +29,31 @@
       color: #f8fafc !important;
       border-color: #334155 !important;
     }
-    body.dark-theme .bg-slate-50 {
+    body.dark-theme .bg-slate-50, body.dark-theme .bg-slate-100, body.dark-theme .bg-slate-200 {
       background-color: #1e293b !important;
       color: #f8fafc !important;
-    }
-    body.dark-theme .border-slate-200, body.dark-theme .border-slate-300 {
       border-color: #334155 !important;
     }
-    body.dark-theme .text-slate-900, body.dark-theme .text-slate-800, body.dark-theme .text-slate-700, body.dark-theme .text-slate-600 {
-      color: #e2e8f0 !important;
+    body.dark-theme .border-slate-200, body.dark-theme .border-slate-300, body.dark-theme .border-slate-400 {
+      border-color: #334155 !important;
+    }
+    body.dark-theme .text-slate-900, body.dark-theme .text-slate-800, body.dark-theme .text-slate-700, body.dark-theme .text-slate-600, body.dark-theme .text-slate-500 {
+      color: #cbd5e1 !important;
     }
     body.dark-theme input {
       background-color: #1e293b !important;
       color: #ffffff !important;
       border-color: #475569 !important;
+    }
+    body.dark-theme .cat-btn:not(.bg-emerald-600) {
+      background-color: #1e293b !important;
+      color: #e2e8f0 !important;
+      border: 1px solid #334155 !important;
+    }
+    body.dark-theme .mode-card, body.dark-theme .spot-btn, body.dark-theme .lane-btn {
+      background-color: #0f172a !important;
+      color: #f8fafc !important;
+      border-color: #334155 !important;
     }
 
     /* رفع الشريط العلوي مؤقتاً عند شرح أزراره ليظهر الزر المحدد بلونه الأصلي الساطع وباقي الأزرار معتمة */
@@ -145,7 +156,7 @@
     </div>
   </div>
 
-  <!-- 3. لوحة التخيير لشرح الواجهة (تظهر بوجه العميل مباشرة بعد اختيار اللغة مع زر القارئ الصوتي وزر تخطي) -->
+  <!-- 3. لوحة التخيير لشرح الواجهة -->
   <div id="tutorialPromptModal" class="hidden fixed inset-0 z-[64] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white text-slate-900 max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-emerald-500 text-center space-y-5 my-auto">
       <div class="flex items-center justify-between">
@@ -178,7 +189,7 @@
     </div>
   </div>
 
-  <!-- 4. طبقة الشرح التفاعلي الموجه بالسهم بجانب كل زر -->
+  <!-- 4. طبقة الشرح التفاعلي الموجه بالسهم -->
   <div id="tutorialOverlayLayer" class="hidden fixed inset-0 z-[60] bg-slate-950/75 transition-opacity duration-200">
     <div id="tutorialPointerArrow" class="fixed z-[63] pointer-events-none flex flex-col items-center animate-pointer-arrow" style="top: 60px; left: 50%;">
       <svg class="w-11 h-11 drop-shadow-[0_4px_10px_rgba(0,0,0,0.75)]" viewBox="0 0 48 48" fill="none">
@@ -935,7 +946,7 @@
   </footer>
 
   <script>
-    console.log("Yusr Drive System v17 DarkMode & Spotlight Tour Initialized - Developer: Kayan Adel Abbas");
+    console.log("Yusr Drive System v18 Full Optimized Initialized - Developer: Kayan Adel Abbas");
 
     let currentLang = 'ar';
     let ttsEnabled = true;
@@ -956,7 +967,7 @@
     let currentTutStepIndex = 0;
     let activeHighlightedElement = null;
 
-    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v17';
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v18';
     let lastEventStamp = 0;
     const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
 
