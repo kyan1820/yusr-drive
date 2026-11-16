@@ -3249,7 +3249,7 @@
       }
     };
 
-   function submitAccessibleOrder() {
+   function submitAccessibleOrder() { startCheckoutCountdown();
       const t = translations[currentLang] || translations.ar;
       const invT = invoiceTranslations[currentLang] || invoiceTranslations.ar;
 
@@ -3314,7 +3314,7 @@
       speakText(invT.speechReady(totalAmount));
     }
     function finalizeOrderWithInvoice() {
-      closeInvoiceModal();
+    clearInterval(checkoutTimerInterval);  closeInvoiceModal();
 
       const now = new Date();
       const orderDate = now.toLocaleDateString('ar-SA', { year: 'numeric', month: '2-digit', day: '2-digit' });
