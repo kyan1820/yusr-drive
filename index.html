@@ -3350,6 +3350,11 @@ let invoiceTimerInterval = null;
       speakText(invT.speechReady(totalAmount));
     }
     function finalizeOrderWithInvoice() {
+      stopInvoiceCountdown(); // أضف هذا السطر هنا
+      closeInvoiceModal();
+      
+      const now = new Date();
+      // ... باقي الكود الموجود لديك ...
       closeInvoiceModal();
 
       const now = new Date();
