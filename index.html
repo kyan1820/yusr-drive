@@ -97,7 +97,70 @@
       <p class="text-xs text-slate-400 font-bold">يمكنك تغيير اللغة في أي وقت من الشريط العلوي للموقع</p>
     </div>
   </div>
+<!-- نافذة التخيير: هل ترغب في شرح سريع للواجهة؟ -->
+  <div id="tutorialPromptModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white text-slate-900 max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-emerald-500 text-center space-y-5 my-auto">
+      <div class="w-16 h-16 mx-auto bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-3xl font-black shadow-inner">
+        ؟
+      </div>
+      <div class="space-y-2">
+        <span id="tutPromptBadge" class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">دليل الاستخدام السريع</span>
+        <h3 id="tutPromptTitle" class="text-2xl font-black text-slate-900">هل تحتاج إلى شرح مبسط للواجهة؟</h3>
+        <p id="tutPromptDesc" class="text-sm text-slate-600 font-bold leading-relaxed">
+          سنوضح لك في 4 خطوات سريعة كيفية اختيار نمط الخدمة، الطلب من المنيو، الدفع، ومتابعة وصول طلبك لسيارتك.
+        </p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 pt-2">
+        <button type="button" id="tutAcceptBtn" onclick="acceptInterfaceTutorial()" class="focus-ring flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-4 rounded-2xl text-sm shadow-lg transition cursor-pointer">
+          ✓ نعم، أريد الشرح
+        </button>
+        <button type="button" id="tutDeclineBtn" onclick="declineInterfaceTutorial()" class="focus-ring flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 px-4 rounded-2xl text-sm transition cursor-pointer">
+          ✕ لا، تخطي والبدء فوراً
+        </button>
+      </div>
+    </div>
+  </div>
 
+  <!-- نافذة عرض خطوات الشرح التفاعلية (مع زر التالي) -->
+  <div id="tutorialStepsModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white text-slate-900 max-w-lg w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-amber-400 space-y-6 my-auto">
+      <!-- شريط التقدم العلوي للخطوات -->
+      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+        <span id="tutStepCounter" class="bg-amber-100 text-amber-900 text-xs font-black px-3.5 py-1.5 rounded-full">
+          الخطوة 1 من 4
+        </span>
+        <button type="button" id="tutSkipTopBtn" onclick="closeTutorialSteps()" class="text-xs font-bold text-slate-400 hover:text-rose-600 transition">
+          إغلاق الشرح ✕
+        </button>
+      </div>
+
+      <!-- محتوى الخطوة الحالية -->
+      <div class="space-y-4 text-center py-2">
+        <div id="tutStepNumberCircle" class="w-16 h-16 mx-auto rounded-2xl bg-emerald-600 text-white text-2xl font-black flex items-center justify-center shadow-lg">
+          1
+        </div>
+        <h3 id="tutStepHeading" class="text-2xl font-black text-slate-900">
+          الخطوة 1: اختيار نمط الخدمة وتكييف المسار
+        </h3>
+        <p id="tutStepBody" class="text-sm sm:text-base text-slate-600 font-bold leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          اختر النمط المناسب لك (إعاقة حركية، صم وضعاف سمع، مكفوفون، أو واجهة مبسطة) ليقوم النظام والموظف بتكييف طريقة التواصل والتسليم لسيارتك.
+        </p>
+      </div>
+
+      <!-- مؤشر النقاط للخطوات -->
+      <div id="tutDotsContainer" class="flex items-center justify-center gap-2"></div>
+
+      <!-- أزرار التنقل: السابق + التالي / إنهاء -->
+      <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-200">
+        <button type="button" id="tutPrevBtn" onclick="prevTutorialStep()" class="hidden focus-ring px-5 py-3.5 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-black text-sm transition cursor-pointer">
+          السابق
+        </button>
+        <button type="button" id="tutNextBtn" onclick="nextTutorialStep()" class="focus-ring flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-6 rounded-2xl text-base shadow-lg transition cursor-pointer">
+          التالي ←
+        </button>
+      </div>
+    </div>
+  </div>
   <!-- 3. نافذة الفاتورة الضريبية واختيار طريقة الدفع (مخفية افتراضياً وتفتح عند تأكيد الطلب مترجمة بجميع اللغات) -->
   <div id="invoiceCheckoutModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white text-slate-900 max-w-lg w-full rounded-3xl p-6 sm:p-7 shadow-2xl border-4 border-emerald-500 space-y-5 my-auto">
