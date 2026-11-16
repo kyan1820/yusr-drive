@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="author" content="Kayan Adel Abbas">
   <meta name="copyright" content="Yusr Drive - 2026">
-  <meta name="description" content="منصة يُسْر درايف - مسار الطلبات الخارجية الذكي المخصص لذوي الإحتياجات الخاصة">
+  <meta name="description" content="منصة يُسْر درايف - مسار الطلبات الخارجية الذكي المخصص لذوي الإعاقة">
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=13">
+  <link rel="stylesheet" href="style.css?v=14">
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
@@ -29,7 +29,7 @@
       <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-5 py-2 rounded-full text-sm font-black">
         <span>Yusr Drive | منصة يُسْر درايف</span>
       </div>
-     <h1 class="text-4xl sm:text-5xl font-black leading-tight text-white">
+      <h1 class="text-4xl sm:text-5xl font-black leading-tight text-white">
         أهلاً بك في يُسْر درايف
       </h1>
       <p class="text-2xl sm:text-3xl font-extrabold text-emerald-200 tracking-wide" dir="ltr">
@@ -98,8 +98,7 @@
     </div>
   </div>
 
-  <!-- نافذة الفاتورة الضريبية واختيار طريقة الدفع (مدى / Apple Pay / فيزا / نقدي) -->
-<!-- نافذة الفاتورة الضريبية واختيار طريقة الدفع (مترجمة بجميع اللغات الخمس) -->
+  <!-- 3. نافذة الفاتورة الضريبية واختيار طريقة الدفع (مخفية افتراضياً وتفتح عند تأكيد الطلب مترجمة بجميع اللغات) -->
   <div id="invoiceCheckoutModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white text-slate-900 max-w-lg w-full rounded-3xl p-6 sm:p-7 shadow-2xl border-4 border-emerald-500 space-y-5 my-auto">
       <div class="flex items-center justify-between border-b-2 border-dashed border-slate-200 pb-4">
@@ -200,97 +199,6 @@
     </div>
   </div>
 
-      <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 grid grid-cols-2 gap-2">
-        <div>المركبة: <span id="invModalCar" class="text-slate-900 font-black">—</span></div>
-        <div>المسار: <span id="invModalLane" class="text-emerald-700 font-black">—</span></div>
-        <div class="col-span-2">طريقة الاستلام: <span id="invModalSpot" class="text-slate-900 font-black">—</span></div>
-      </div>
-
-      <div>
-        <h4 class="text-xs font-black text-slate-500 mb-2">تفاصيل الأصناف المطلوبة:</h4>
-        <div id="invModalItems" class="space-y-2 max-h-40 overflow-y-auto pr-1 border-b border-slate-200 pb-3"></div>
-        <div class="flex items-center justify-between pt-3 text-lg font-black text-slate-900">
-          <span>الإجمالي النهائي (شامل الضريبة 15%):</span>
-          <span id="invModalTotal" class="text-2xl text-emerald-700 inline-flex items-center gap-1"></span>
-        </div>
-      </div>
-
-      <div class="space-y-2.5">
-        <label class="block text-sm font-black text-slate-800">اختر طريقة الدفع المفضلة:</label>
-       <div class="grid grid-cols-2 gap-2.5">
-        <!-- 1. شعار مدى الرسمي المطابق تماماً -->
-          <button type="button" onclick="selectPaymentMethod('مدى (Mada)', this)" class="pay-method-btn focus-ring p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 font-black text-xs sm:text-sm flex items-center justify-between gap-2">
-            <span class="flex items-center gap-2">
-              <span class="bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 inline-flex items-center justify-center shrink-0">
-                <svg class="h-6 w-auto" viewBox="0 0 135 54" aria-label="مدى mada">
-                  <!-- المستطيل الأزرق العلوي -->
-                  <rect x="2" y="4" width="46" height="19" fill="#009FE3"/>
-                  <!-- المستطيل الأخضر السفلي -->
-                  <rect x="2" y="31" width="46" height="19" fill="#7AB800"/>
-                  <!-- كلمة مدى في الأعلى -->
-                  <text x="94" y="22" font-family="sans-serif" font-weight="900" font-size="24" fill="#000000" text-anchor="middle">مدى</text>
-                  <!-- كلمة mada في الأسفل -->
-                  <text x="94" y="49" font-family="Arial, sans-serif" font-weight="900" font-size="23" letter-spacing="-0.5" fill="#000000" text-anchor="middle">mada</text>
-                </svg>
-              </span>
-              <span>مدى</span>
-            </span>
-            <span class="pay-check text-emerald-700 font-black">✓</span>
-          </button>
-
-          <!-- 2. شعار Apple Pay الرسمي -->
-          <button type="button" onclick="selectPaymentMethod('Apple Pay', this)" class="pay-method-btn focus-ring p-3 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 bg-slate-50 font-bold text-xs sm:text-sm flex items-center justify-between gap-2">
-            <span class="flex items-center gap-2">
-              <span class="bg-white px-2.5 py-1 rounded-lg border border-slate-200 inline-flex items-center gap-1 shrink-0 text-slate-950">
-                <svg class="w-3.5 h-4 fill-current" viewBox="0 0 170 170" aria-hidden="true">
-                  <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.13-1.9-14.34-6.08-3.69-3.03-7.61-7.82-11.77-14.37-5.14-7.96-9.36-17.16-12.66-27.59-3.31-10.43-4.96-20.23-4.96-29.41 0-10.87 2.72-19.91 8.16-27.13 5.44-7.22 12.42-10.97 20.94-11.26 4.13 0 9.01 1.24 14.64 3.72 5.62 2.48 9.25 3.76 10.87 3.84 1.23 0 5.3-1.5 12.21-4.51 6.91-3.01 12.74-4.29 17.5-3.84 13.06 1.05 22.87 6.19 29.42 15.42-11.69 7.09-17.43 16.98-17.21 29.66.22 9.89 3.89 18.12 11.01 24.69 4.92 4.62 10.67 7.66 17.24 9.12-1.39 4.34-2.99 8.59-4.79 12.74zM119.22 31.9c0 7.77-2.84 15.03-8.51 21.77-6.85 8.01-15.13 12.63-24.11 11.89-.15-.97-.23-2.01-.23-3.13 0-7.46 3.25-15.44 9.02-21.98 2.88-3.31 6.55-6.06 11.01-8.26 4.46-2.19 8.68-3.4 12.66-3.63.11 1.15.16 2.27.16 3.34z"/>
-                </svg>
-                <span class="font-bold text-xs leading-none tracking-tight">Pay</span>
-              </span>
-              <span>Apple Pay</span>
-            </span>
-            <span class="pay-check text-slate-400">○</span>
-          </button>
-
-          <!-- 3. شعار فيزا VISA الرسمي -->
-          <button type="button" onclick="selectPaymentMethod('فيزا (Visa)', this)" class="pay-method-btn focus-ring p-3 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 bg-slate-50 font-bold text-xs sm:text-sm flex items-center justify-between gap-2">
-            <span class="flex items-center gap-2">
-              <span class="bg-white px-2.5 py-1 rounded-lg border border-slate-200 inline-flex items-center shrink-0">
-                <span class="font-black italic text-xs tracking-tighter leading-none" style="color: #1434CB;">VISA</span>
-              </span>
-              <span>فيزا</span>
-            </span>
-            <span class="pay-check text-slate-400">○</span>
-          </button>
-
-          <!-- 4. أيقونة النقدي (كاش) -->
-          <button type="button" onclick="selectPaymentMethod('نقدي (كاش)', this)" class="pay-method-btn focus-ring p-3 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 bg-slate-50 font-bold text-xs sm:text-sm flex items-center justify-between gap-2">
-            <span class="flex items-center gap-2">
-              <span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded-lg border border-emerald-200 inline-flex items-center shrink-0">
-                <svg class="w-5 h-3.5 fill-current" viewBox="0 0 24 16" aria-hidden="true">
-                  <rect x="0.5" y="0.5" width="23" height="15" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                  <circle cx="12" cy="8" r="3"/>
-                  <path d="M4 4h1M19 12h1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
-              </span>
-              <span>نقدي (كاش)</span>
-            </span>
-            <span class="pay-check text-slate-400">○</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="flex gap-3 pt-2">
-        <button type="button" onclick="finalizeOrderWithInvoice()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg transition">
-          ✓ اعتماد الفاتورة وإرسال الطلب للمسار
-        </button>
-        <button type="button" onclick="closeInvoiceModal()" class="px-5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 rounded-2xl text-xs transition">
-          تعديل السلة
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- نافذة دخول المشرف السرية -->
   <div id="adminPinModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-slate-900 text-white max-w-sm w-full rounded-3xl p-6 shadow-2xl border-2 border-emerald-500 text-center space-y-4">
@@ -361,7 +269,7 @@
     <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
       <div class="space-y-2 text-center md:text-right max-w-2xl">
         <div class="secondary-ui inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 px-4 py-1.5 rounded-full text-emerald-200 text-sm font-bold">
-          <span id="heroBadge">مبادرة المسار الذكي الميسّر لذوي الإحتياجات الخاصة</span>
+          <span id="heroBadge">مبادرة المسار الذكي الميسّر لذوي الإعاقة</span>
         </div>
         <h1 class="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
           <span id="heroMainTitle">يُسْر درايف</span> | <span class="text-emerald-400">Yusr Drive</span>
@@ -404,7 +312,6 @@
           </button>
         </div>
 
-        <!-- البطاقات الأربع بدون تحديد مسبق (تظهر علامة الصح فقط عند الاختيار) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <button type="button" onclick="selectDisabilityMode('mobility')" id="mode-mobility" class="mode-card focus-ring text-right p-5 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 transition flex flex-col justify-between gap-3">
             <div>
@@ -524,9 +431,9 @@
               <div class="secondary-ui">
                 <label id="laneLabel" class="block text-sm font-bold text-slate-700 mb-2">رقم موقف أو مسار الانتظار الذكي:</label>
                 <div class="grid grid-cols-3 gap-2">
-                  <button type="button" onclick="selectLane(1)" id="lane-1" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-black text-sm">موقف يُسر 1</button>
-                  <button type="button" onclick="selectLane(2)" id="lane-2" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm">موقف يُسر 2</button>
-                  <button type="button" onclick="selectLane(3)" id="lane-3" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm">موقف يُسر 3 A</button>
+                  <button type="button" onclick="selectLane(1)" id="lane-1" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-black text-sm">مسار يُسر 1</button>
+                  <button type="button" onclick="selectLane(2)" id="lane-2" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm">مسار يُسر 2</button>
+                  <button type="button" onclick="selectLane(3)" id="lane-3" class="lane-btn focus-ring py-2.5 rounded-xl border-2 border-slate-200 font-bold text-sm">موقف خاص A</button>
                 </div>
               </div>
 
@@ -825,7 +732,7 @@
           </div>
         </div>
 
-        <!-- قسم سجل الطلبات للموظف (مفصول إلى المكتملة والمحذوفة + محرك بحث برقم الفاتورة والوقت) -->
+        <!-- قسم سجل الطلبات للموظف -->
         <div class="bg-slate-800 rounded-2xl p-6 border border-slate-700 space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700 pb-4">
             <div>
@@ -879,7 +786,7 @@
   </footer>
 
   <script>
-    console.log("Yusr Drive System v13 Pure Audio & Complete Features Initialized - Developer: Kayan Adel Abbas");
+    console.log("Yusr Drive System v14 Complete Fixed Initialized - Developer: Kayan Adel Abbas");
 
     let currentLang = 'ar';
     let ttsEnabled = true;
@@ -897,7 +804,7 @@
     let currentView = 'customer';
     let currentStaffHistoryTab = 'completed';
 
-    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v13';
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v14';
     let lastEventStamp = 0;
     const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
 
@@ -1024,7 +931,7 @@
         contrastBtn: 'تباين عالٍ',
         fontBtnLabel: 'حجم الخط:',
         flashBtnText: 'إشعارات ضوئية (للصم)',
-        heroBadge: 'مبادرة المسار الذكي الميسّر لذوي الإحتياجات الخاصة',
+        heroBadge: 'مبادرة المسار الذكي الميسّر لذوي الإعاقة',
         heroMainTitle: 'يُسْر درايف',
         heroSubTitle: 'اطلب من سيارتك باستقلالية تامة؛ بدون الحاجة للتحدث عبر المايكروفون التقليدي أو النزول من المركبة، مع تسليم مخصص لباب سيارتك.',
         tabCustomer: 'واجهة العميل (الطلب)',
@@ -1804,7 +1711,7 @@
       if (currentLang === 'en') return item.nameEn || item.name;
       if (currentLang === 'tr') return item.nameTr || item.nameEn;
       if (currentLang === 'ur') return item.nameUr || item.name;
-      if (currentLang === 'zh') return item.nameZh || item.descEn;
+      if (currentLang === 'zh') return item.nameZh || item.nameEn;
       return item.name;
     }
 
@@ -1816,7 +1723,7 @@
       return item.desc;
     }
 
-    // محرك صوت نقي وطبيعي 100% بدون أي تشويه أو تبطيء للموجة الصوتية
+    // محرك صوت نقي وطبيعي 100%
     let unifiedAudioPlayer = null;
     let audioChannelUnlocked = false;
     let cachedVoicesList = [];
@@ -1875,7 +1782,6 @@
         .substring(0, 180);
     }
 
-    // اختيار الصوت العصبي الطبيعي فقط (Natural / Online / Siri / Google) واستبعاد أصوات الديسكتوب القديمة المكسرة
     function getBestHighQualityVoice(shortLang) {
       if (!('speechSynthesis' in window)) return null;
       if (cachedVoicesList.length === 0) {
@@ -1889,20 +1795,17 @@
 
       const maleNames = /Hamed|Shakir|Maged|Tarik|Omar|Guy|Andrew|Brian|Christopher|Ahmet|Asad|Yunxi|Yunjian/i;
 
-      // 1. أولوية لصوت رجالي عصبي طبيعي (مثل Microsoft Hamed Online Natural في Edge أو Maged في أبل)
       const neuralMale = langVoices.find(v =>
         (v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Siri') || v.name.includes('Premium')) &&
         maleNames.test(v.name)
       );
       if (neuralMale) return neuralMale;
 
-      // 2. أي صوت عصبي طبيعي عالي الجودة (Natural / Online / Google) بدون تكسير
       const anyNeural = langVoices.find(v =>
         v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Google')
       );
       if (anyNeural) return anyNeural;
 
-      // 3. في أجهزة الآيفون والماك (Maged / Tarik)
       const appleMale = langVoices.find(v => /Maged|Tarik/i.test(v.name));
       if (appleMale) return appleMale;
 
@@ -1924,7 +1827,6 @@
         try { window.speechSynthesis.cancel(); } catch (e) {}
       }
 
-      // إذا توفر صوت عصبي عالي الجودة في المتصفح نستخدمه بسرعة وطبقة طبيعية 1.0 بدون أي تشويه
       const hqVoice = getBestHighQualityVoice(shortLang);
       if (hqVoice && 'speechSynthesis' in window) {
         try {
@@ -1940,7 +1842,6 @@
         } catch (e) {}
       }
 
-      // إذا كان المتصفح لا يملك صوتاً عصبياً (مثل كروم العادي على ويندوز أو جوال بدون حزمة صوت)، نشغل الصوت السحابي الموحد بسرعة طبيعية 1.0
       const encodedText = encodeURIComponent(cleanText);
       const cloudStreams = [
         `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&q=${encodedText}`,
@@ -1951,7 +1852,6 @@
       let streamIdx = 0;
       function playNextCloudStream() {
         if (streamIdx >= cloudStreams.length) {
-          // آخر حل احتياطي إذا انقطع الإنترنت
           if ('speechSynthesis' in window) {
             try {
               const u = new SpeechSynthesisUtterance(cleanText);
@@ -2785,8 +2685,8 @@
       document.getElementById('laneLabel').textContent = t.laneLabel;
 
       const laneTranslations = {
-        ar: ['موقف يُسر 1', 'موقف يُسر 2', 'موقف يُسر 3 '],
-        en: ['Yusr park 1', 'Yusr park 2', 'Yusr park 3'],
+        ar: ['مسار يُسر 1', 'مسار يُسر 2', 'موقف خاص A'],
+        en: ['Yusr Lane 1', 'Yusr Lane 2', 'VIP Spot A'],
         tr: ['Yusr Hat 1', 'Yusr Hat 2', 'Özel Park A'],
         ur: ['یُسر لین 1', 'یُسر لین 2', 'خصوصی پارکنگ A'],
         zh: ['易速车道 1', '易速车道 2', '专属车位 A']
@@ -2862,7 +2762,6 @@
       }
     }
 
-    // تحديث علامة الصح على البطاقة المختارة فقط بدون تفعيل إجباري للإشعارات الضوئية أو زر التبسيط
     function selectDisabilityMode(mode) {
       selectedMode = mode;
       const modes = ['mobility', 'hearing', 'visual', 'cognitive'];
@@ -3063,7 +2962,7 @@
     function selectPaymentMethod(methodName, btnEl) {
       selectedPaymentMethod = methodName;
       document.querySelectorAll('.pay-method-btn').forEach(btn => {
-        btn.className = 'pay-method-btn focus-ring p-3 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 bg-slate-50 font-bold text-xs sm:text-sm flex items-center justify-between';
+        btn.className = 'pay-method-btn focus-ring p-3 rounded-2xl border-2 border-slate-200 hover:border-emerald-500 bg-slate-50 font-bold text-xs sm:text-sm flex items-center justify-between gap-2';
         const chk = btn.querySelector('.pay-check');
         if (chk) {
           chk.textContent = '○';
@@ -3071,11 +2970,11 @@
         }
       });
 
-      btnEl.className = 'pay-method-btn focus-ring p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 font-black text-xs sm:text-sm flex items-center justify-between';
+      btnEl.className = 'pay-method-btn focus-ring p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 font-black text-xs sm:text-sm flex items-center justify-between gap-2';
       const activeChk = btnEl.querySelector('.pay-check');
       if (activeChk) {
         activeChk.textContent = '✓';
-        activeChk.className = 'pay-check text-emerald-700';
+        activeChk.className = 'pay-check text-emerald-700 font-black';
       }
       speakText(methodName);
     }
@@ -3084,34 +2983,219 @@
       document.getElementById('invoiceCheckoutModal').classList.add('hidden');
     }
 
+    const invoiceTranslations = {
+      ar: {
+        locale: 'ar-SA',
+        badge: 'فاتورة ضريبية مبسطة',
+        title: 'مراجعة الفاتورة والدفع',
+        date: 'التاريخ:',
+        time: 'الوقت:',
+        car: 'المركبة:',
+        lane: 'المسار:',
+        spot: 'طريقة الاستلام:',
+        itemsTitle: 'تفاصيل الأصناف المطلوبة:',
+        total: 'الإجمالي النهائي (شامل الضريبة 15%):',
+        payMethod: 'اختر طريقة الدفع المفضلة:',
+        mada: 'مدى',
+        visa: 'فيزا',
+        cash: 'نقدي (كاش)',
+        confirmBtn: '✓ اعتماد الفاتورة وإرسال الطلب للمسار',
+        cancelBtn: 'تعديل السلة',
+        defaultCar: 'سيارة العميل (بدون لوحة مدخلة)',
+        easyNote: 'تغليف ميسّر سهل الفتح',
+        normalNote: 'تغليف عادي',
+        spotMap: {
+          'تسليم عبر نافذة السائق بحامل ممتد': 'تسليم عبر نافذة السائق بحامل ممتد',
+          'وضع الطلب على المقعد المجاور للسائق': 'وضع الطلب على المقعد المجاور للسائق',
+          'وضع الطلب في الشنطة الخلفية للسيارة': 'وضع الطلب في الشنطة الخلفية للسيارة'
+        },
+        laneMap: {
+          'مسار يُسر 1': 'مسار يُسر 1',
+          'مسار يُسر 2': 'مسار يُسر 2',
+          'موقف خاص A': 'موقف خاص A'
+        },
+        speechReady: (tot) => `فاتورة الطلب جاهزة، الإجمالي ${tot} ريال سعودي، اختر طريقة الدفع ثم اعتمد الطلب`
+      },
+      en: {
+        locale: 'en-US',
+        badge: 'Simplified Tax Invoice',
+        title: 'Invoice Review & Payment',
+        date: 'Date:',
+        time: 'Time:',
+        car: 'Vehicle:',
+        lane: 'Lane:',
+        spot: 'Delivery Spot:',
+        itemsTitle: 'Order Items Details:',
+        total: 'Final Total (Incl. 15% VAT):',
+        payMethod: 'Select Preferred Payment Method:',
+        mada: 'Mada',
+        visa: 'Visa',
+        cash: 'Cash',
+        confirmBtn: '✓ Confirm Invoice & Send Order',
+        cancelBtn: 'Edit Cart',
+        defaultCar: 'Customer Vehicle (No Plate Entered)',
+        easyNote: 'Easy-Open Accessible Packaging',
+        normalNote: 'Standard Packaging',
+        spotMap: {
+          'تسليم عبر نافذة السائق بحامل ممتد': 'Driver window via extended tray',
+          'وضع الطلب على المقعد المجاور للسائق': 'Place on front passenger seat',
+          'وضع الطلب في الشنطة الخلفية للسيارة': 'Place inside the rear trunk'
+        },
+        laneMap: {
+          'مسار يُسر 1': 'Yusr Lane 1',
+          'مسار يُسر 2': 'Yusr Lane 2',
+          'موقف خاص A': 'VIP Spot A'
+        },
+        speechReady: (tot) => `Your invoice is ready. Total is ${tot} Saudi Riyals. Select payment method and confirm.`
+      },
+      tr: {
+        locale: 'tr-TR',
+        badge: 'Basitleştirilmiş Vergi Faturası',
+        title: 'Fatura İnceleme ve Ödeme',
+        date: 'Tarih:',
+        time: 'Saat:',
+        car: 'Araç:',
+        lane: 'Hat:',
+        spot: 'Teslimat Yeri:',
+        itemsTitle: 'Sipariş Edilen Ürünler:',
+        total: 'Genel Toplam (%15 KDV Dahil):',
+        payMethod: 'Tercih Edilen Ödeme Yöntemini Seçin:',
+        mada: 'Mada',
+        visa: 'Visa',
+        cash: 'Nakit',
+        confirmBtn: '✓ Faturayı Onayla ve Siparişi Gönder',
+        cancelBtn: 'Sepeti Düzenle',
+        defaultCar: 'Müşteri Aracı (Plaka Girilmedi)',
+        easyNote: 'Kolay Açılır Erişilebilir Paketleme',
+        normalNote: 'Standart Paketleme',
+        spotMap: {
+          'تسليم عبر نافذة السائق بحامل ممتد': 'Uzatmalı tepsi ile sürücü camından teslimat',
+          'وضع الطلب على المقعد المجاور للسائق': 'Ön yolcu koltuğuna bırakılsın',
+          'وضع الطلب في الشنطة الخلفية للسيارة': 'Arka bagaja bırakılsın'
+        },
+        laneMap: {
+          'مسار يُسر 1': 'Yusr Hat 1',
+          'مسار يُسر 2': 'Yusr Hat 2',
+          'موقف خاص A': 'Özel Park A'
+        },
+        speechReady: (tot) => `Faturanız hazır, toplam ${tot} Suudi Riyali. Ödeme yöntemini seçip onaylayın.`
+      },
+      ur: {
+        locale: 'ur-PK',
+        badge: 'سادہ ٹیکس انوائس (بل)',
+        title: 'انوائس کا جائزہ اور ادائیگی',
+        date: 'تاریخ:',
+        time: 'وقت:',
+        car: 'گاڑی:',
+        lane: 'لین:',
+        spot: 'ترسیل کی جگہ:',
+        itemsTitle: 'آرڈر کی گئی اشیاء کی تفصیل:',
+        total: 'کل رقم (بشمول 15% ٹیکس):',
+        payMethod: 'ادائیگی کا پسندیدہ طریقہ منتخب کریں:',
+        mada: 'مدی (Mada)',
+        visa: 'ویزا (Visa)',
+        cash: 'نقد (Cash)',
+        confirmBtn: '✓ بل کی تصدیق کریں اور آرڈر بھیجیں',
+        cancelBtn: 'ٹوکری میں ترمیم',
+        defaultCar: 'کسٹمر کی گاڑی (نمبر پلیٹ درج نہیں)',
+        easyNote: 'آسان کھلنے والی پیکنگ',
+        normalNote: 'عام پیکنگ',
+        spotMap: {
+          'تسليم عبر نافذة السائق بحامل ممتد': 'ڈرائیور کی کھڑکی سے ایکسٹینڈڈ ٹرے کے ذریعے',
+          'وضع الطلب على المقعد المجاور للسائق': 'فرنٹ پیسنجر سیٹ پر رکھیں',
+          'وضع الطلب في الشنطة الخلفية للسيارة': 'گاڑی کی پچھلی ڈگی میں رکھیں'
+        },
+        laneMap: {
+          'مسار يُسر 1': 'یُسر لین 1',
+          'مسار يُسر 2': 'یُسر لین 2',
+          'موقف خاص A': 'خصوصی پارکنگ A'
+        },
+        speechReady: (tot) => `آپ کا بل تیار ہے، کل رقم ${tot} سعودی ریال ہے۔ ادائیگی کا طریقہ منتخب کریں۔`
+      },
+      zh: {
+        locale: 'zh-CN',
+        badge: '电子税务发票',
+        title: '账单核对与支付',
+        date: '日期：',
+        time: '时间：',
+        car: '车辆：',
+        lane: '车道：',
+        spot: '递送位置：',
+        itemsTitle: '餐点明细：',
+        total: '最终总计（含 15% 税）：',
+        payMethod: '选择支付方式：',
+        mada: 'Mada 支付',
+        visa: 'Visa 卡',
+        cash: '现金支付',
+        confirmBtn: '✓ 确认账单并发送订单',
+        cancelBtn: '修改购物车',
+        defaultCar: '顾客车辆（未输入车牌）',
+        easyNote: '无障碍易开包装',
+        normalNote: '标准包装',
+        spotMap: {
+          'تسليم عبر نافذة السائق بحامل ممتد': '通过加长托盘递送至驾驶座车窗',
+          'وضع الطلب على المقعد المجاور للسائق': '放置在副驾驶座位上',
+          'وضع الطلب في الشنطة الخلفية للسيارة': '放置在车辆后备箱内'
+        },
+        laneMap: {
+          'مسار يُسر 1': '易速车道 1',
+          'مسار يُسر 2': '易速车道 2',
+          'موقف خاص A': '专属车位 A'
+        },
+        speechReady: (tot) => `您的账单已准备好，总计 ${tot} 沙特里亚尔，请选择支付方式并确认。`
+      }
+    };
+
     function submitAccessibleOrder() {
       const t = translations[currentLang] || translations.ar;
+      const invT = invoiceTranslations[currentLang] || invoiceTranslations.ar;
+
       if (cart.length === 0) {
         speakText(t.emptyCartText);
         triggerVisualBanner(t.emptyCartText);
         return;
       }
 
+      document.getElementById('invBadgeLabel').textContent = invT.badge;
+      document.getElementById('invTitleLabel').textContent = invT.title;
+      document.getElementById('invDateLabel').textContent = invT.date;
+      document.getElementById('invTimeLabel').textContent = invT.time;
+      document.getElementById('invCarLabel').textContent = invT.car;
+      document.getElementById('invLaneLabel').textContent = invT.lane;
+      document.getElementById('invSpotLabel').textContent = invT.spot;
+      document.getElementById('invItemsTitleLabel').textContent = invT.itemsTitle;
+      document.getElementById('invTotalLabel').textContent = invT.total;
+      document.getElementById('invPayMethodLabel').textContent = invT.payMethod;
+      document.getElementById('payMadaText').textContent = invT.mada;
+      document.getElementById('payVisaText').textContent = invT.visa;
+      document.getElementById('payCashText').textContent = invT.cash;
+      document.getElementById('invConfirmBtnText').textContent = invT.confirmBtn;
+      document.getElementById('invCancelBtnText').textContent = invT.cancelBtn;
+
       const now = new Date();
-      const dateStr = now.toLocaleDateString('ar-SA', { year: 'numeric', month: '2-digit', day: '2-digit' });
-      const timeStr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
-      const carInput = document.getElementById('carDetails').value.trim() || 'سيارة العميل (بدون لوحة مدخلة)';
+      const dateStr = now.toLocaleDateString(invT.locale, { year: 'numeric', month: '2-digit', day: '2-digit' });
+      const timeStr = now.toLocaleTimeString(invT.locale, { hour: '2-digit', minute: '2-digit' });
+      const carInput = document.getElementById('carDetails').value.trim() || invT.defaultCar;
       const totalAmount = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
 
       document.getElementById('invModalDate').textContent = dateStr;
       document.getElementById('invModalTime').textContent = timeStr;
       document.getElementById('invModalCar').textContent = carInput;
-      document.getElementById('invModalLane').textContent = selectedLane;
-      document.getElementById('invModalSpot').textContent = selectedSpot;
+      document.getElementById('invModalLane').textContent = invT.laneMap[selectedLane] || selectedLane;
+      document.getElementById('invModalSpot').textContent = invT.spotMap[selectedSpot] || selectedSpot;
+
+      const easyPackEl = document.getElementById('easyPackToggle');
+      const isEasyPack = easyPackEl ? easyPackEl.checked : true;
 
       const itemsContainer = document.getElementById('invModalItems');
       itemsContainer.innerHTML = cart.map(item => {
         const title = item.itemObj ? getItemTitle(item.itemObj) : item.name;
+        const localizedNote = isEasyPack ? invT.easyNote : invT.normalNote;
         return `
           <div class="flex items-center justify-between text-xs bg-slate-50 p-2.5 rounded-xl border border-slate-200">
             <div>
               <span class="font-black text-slate-900">${item.qty}x ${title}</span>
-              <span class="block text-[10px] text-emerald-700 font-bold">${item.note}</span>
+              <span class="block text-[10px] text-emerald-700 font-bold">${localizedNote}</span>
             </div>
             <span class="font-black text-slate-900 inline-flex items-center gap-1">${item.price * item.qty} ${saudiRiyalLogoSVG}</span>
           </div>
@@ -3120,7 +3204,7 @@
 
       document.getElementById('invModalTotal').innerHTML = `<span>${totalAmount}</span> ${saudiRiyalLogoSVG}`;
       document.getElementById('invoiceCheckoutModal').classList.remove('hidden');
-      speakText(`فاتورة الطلب جاهزة، الإجمالي ${totalAmount} ريال سعودي، اختر طريقة الدفع ثم اعتمد الطلب`);
+      speakText(invT.speechReady(totalAmount));
     }
 
     function finalizeOrderWithInvoice() {
