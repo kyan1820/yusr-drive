@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
@@ -97,61 +97,65 @@
       <p class="text-xs text-slate-400 font-bold">يمكنك تغيير اللغة في أي وقت من الشريط العلوي للموقع</p>
     </div>
   </div>
-<!-- نافذة التخيير: هل ترغب في شرح سريع للواجهة؟ -->
+
+  <!-- 3. لوحة التخيير لشرح الواجهة (تظهر بوجه العميل مباشرة بعد اختيار اللغة) -->
   <div id="tutorialPromptModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white text-slate-900 max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-emerald-500 text-center space-y-5 my-auto">
       <div class="w-16 h-16 mx-auto bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-3xl font-black shadow-inner">
         ؟
       </div>
       <div class="space-y-2">
-        <span id="tutPromptBadge" class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">دليل الاستخدام السريع</span>
-        <h3 id="tutPromptTitle" class="text-2xl font-black text-slate-900">هل تحتاج إلى شرح مبسط للواجهة؟</h3>
+        <span id="tutPromptBadge" class="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">دليل الواجهة والوصول الشامل</span>
+        <h3 id="tutPromptTitle" class="text-2xl font-black text-slate-900">هل ترغب في شرح سريع للواجهة؟</h3>
         <p id="tutPromptDesc" class="text-sm text-slate-600 font-bold leading-relaxed">
-          سنوضح لك في 4 خطوات سريعة كيفية اختيار نمط الخدمة، الطلب من المنيو، الدفع، ومتابعة وصول طلبك لسيارتك.
+          سنشرح لك بالتسلسل أزرار الوصول الشامل (التبسيط، القارئ الصوتي، التباين العالي، حجم الخط) وجميع خطوات الطلب والدفع.
         </p>
       </div>
       <div class="flex flex-col sm:flex-row gap-3 pt-2">
-        <button type="button" id="tutAcceptBtn" onclick="acceptInterfaceTutorial()" class="focus-ring flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-4 rounded-2xl text-sm shadow-lg transition cursor-pointer">
-          ✓ نعم، أريد الشرح
+        <button type="button" id="tutAcceptBtn" onclick="acceptInterfaceTutorial()" class="focus-ring flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-4 rounded-2xl text-base shadow-lg transition cursor-pointer">
+          ✓ قبول (ابدأ الشرح)
         </button>
-        <button type="button" id="tutDeclineBtn" onclick="declineInterfaceTutorial()" class="focus-ring flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 px-4 rounded-2xl text-sm transition cursor-pointer">
-          ✕ لا، تخطي والبدء فوراً
+        <button type="button" id="tutDeclineBtn" onclick="declineInterfaceTutorial()" class="focus-ring flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 px-4 rounded-2xl text-base transition cursor-pointer">
+          سكب (تخطي)
         </button>
       </div>
     </div>
   </div>
 
-  <!-- نافذة عرض خطوات الشرح التفاعلية (مع زر التالي) -->
+  <!-- 4. شاشة عرض خطوات الشرح المنظمة (8 خطوات شاملة مع زر التالي والسابق) -->
   <div id="tutorialStepsModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white text-slate-900 max-w-lg w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-amber-400 space-y-6 my-auto">
-      <!-- شريط التقدم العلوي للخطوات -->
-      <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-        <span id="tutStepCounter" class="bg-amber-100 text-amber-900 text-xs font-black px-3.5 py-1.5 rounded-full">
-          الخطوة 1 من 4
+    <div class="bg-white text-slate-900 max-w-lg w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-amber-400 space-y-5 my-auto">
+      <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+        <span id="tutStepCounter" class="bg-amber-100 text-amber-950 text-xs font-black px-3.5 py-1.5 rounded-full">
+          الخطوة 1 من 8
         </span>
-        <button type="button" id="tutSkipTopBtn" onclick="closeTutorialSteps()" class="text-xs font-bold text-slate-400 hover:text-rose-600 transition">
-          إغلاق الشرح ✕
+        <button type="button" id="tutSkipTopBtn" onclick="closeTutorialSteps()" class="text-xs font-black text-slate-500 hover:text-rose-600 transition">
+          سكب الشرح ✕
         </button>
       </div>
 
-      <!-- محتوى الخطوة الحالية -->
       <div class="space-y-4 text-center py-2">
-        <div id="tutStepNumberCircle" class="w-16 h-16 mx-auto rounded-2xl bg-emerald-600 text-white text-2xl font-black flex items-center justify-center shadow-lg">
-          1
+        <div class="flex items-center justify-center gap-2">
+          <span id="tutStepNumberCircle" class="w-12 h-12 rounded-2xl bg-emerald-600 text-white text-xl font-black flex items-center justify-center shadow">
+            1
+          </span>
+          <span id="tutStepCategoryTag" class="bg-slate-100 text-slate-800 border border-slate-300 px-3 py-1 rounded-xl text-xs font-black">
+            أدوات الوصول الشامل
+          </span>
         </div>
+
         <h3 id="tutStepHeading" class="text-2xl font-black text-slate-900">
-          الخطوة 1: اختيار نمط الخدمة وتكييف المسار
+          زر التبسيط (إخفاء الأزرار الثانوية)
         </h3>
-        <p id="tutStepBody" class="text-sm sm:text-base text-slate-600 font-bold leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-200">
-          اختر النمط المناسب لك (إعاقة حركية، صم وضعاف سمع، مكفوفون، أو واجهة مبسطة) ليقوم النظام والموظف بتكييف طريقة التواصل والتسليم لسيارتك.
+
+        <p id="tutStepBody" class="text-sm sm:text-base text-slate-700 font-bold leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-200">
+          عند الضغط على «زر التبسيط» في الشريط العلوي، يتم إخفاء جميع الأزرار الثانوية والوصف الإضافي لتبقى أمامك الأزرار الأساسية للطلب فقط بدون أي تشتيت.
         </p>
       </div>
 
-      <!-- مؤشر النقاط للخطوات -->
-      <div id="tutDotsContainer" class="flex items-center justify-center gap-2"></div>
+      <div id="tutDotsContainer" class="flex items-center justify-center gap-1.5"></div>
 
-      <!-- أزرار التنقل: السابق + التالي / إنهاء -->
-      <div class="flex items-center justify-between gap-3 pt-2 border-t border-slate-200">
+      <div class="flex items-center justify-between gap-3 pt-3 border-t border-slate-200">
         <button type="button" id="tutPrevBtn" onclick="prevTutorialStep()" class="hidden focus-ring px-5 py-3.5 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-black text-sm transition cursor-pointer">
           السابق
         </button>
@@ -161,7 +165,8 @@
       </div>
     </div>
   </div>
-  <!-- 3. نافذة الفاتورة الضريبية واختيار طريقة الدفع (مخفية افتراضياً وتفتح عند تأكيد الطلب مترجمة بجميع اللغات) -->
+
+  <!-- 5. نافذة الفاتورة الضريبية واختيار طريقة الدفع (مترجمة بجميع اللغات) -->
   <div id="invoiceCheckoutModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white text-slate-900 max-w-lg w-full rounded-3xl p-6 sm:p-7 shadow-2xl border-4 border-emerald-500 space-y-5 my-auto">
       <div class="flex items-center justify-between border-b-2 border-dashed border-slate-200 pb-4">
@@ -849,7 +854,7 @@
   </footer>
 
   <script>
-    console.log("Yusr Drive System v14 Complete Fixed Initialized - Developer: Kayan Adel Abbas");
+    console.log("Yusr Drive System v15 Full Interactive Tutorial Initialized - Developer: Kayan Adel Abbas");
 
     let currentLang = 'ar';
     let ttsEnabled = true;
@@ -866,8 +871,9 @@
     let currentCategory = 'offers';
     let currentView = 'customer';
     let currentStaffHistoryTab = 'completed';
+    let currentTutStepIndex = 0;
 
-    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v14';
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v15';
     let lastEventStamp = 0;
     const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
 
@@ -946,6 +952,280 @@
       tr: 'tr-TR',
       ur: 'ur-PK',
       zh: 'zh-CN'
+    };
+
+    // قاموس شروحات الواجهة وأزرار الوصول الشامل بجميع اللغات الخمس
+    const tutorialTranslations = {
+      ar: {
+        promptBadge: 'دليل الواجهة والوصول الشامل',
+        promptTitle: 'هل ترغب في شرح سريع للواجهة؟',
+        promptDesc: 'سنشرح لك بالتسلسل أزرار الوصول الشامل (التبسيط، القارئ الصوتي، التباين العالي، حجم الخط) وجميع خطوات الطلب والدفع.',
+        acceptBtn: '✓ قبول (ابدأ الشرح)',
+        declineBtn: 'سكب (تخطي)',
+        skipTop: 'سكب الشرح ✕',
+        prevBtn: 'السابق',
+        nextBtn: 'التالي ←',
+        finishBtn: '✓ فهمت، ابدأ الطلب الآن',
+        stepCounter: (curr, total) => `الخطوة ${curr} من ${total}`,
+        steps: [
+          {
+            tag: 'أدوات الوصول الشامل',
+            title: '1. شرح زر التبسيط (إخفاء الأزرار الثانوية)',
+            body: 'يوجد في الشريط العلوي باللون الأصفر؛ عند الضغط عليه يقوم بإخفاء جميع الأزرار والتفاصيل الثانوية، لتبقى أمامك الأزرار الأساسية للطلب فقط بدون أي تشتيت.'
+          },
+          {
+            tag: 'أدوات الوصول الشامل',
+            title: '2. شرح زر القارئ الصوتي',
+            body: 'يتيح لك تشغيل أو إيقاف القراءة الصوتية التلقائية للأصناف، الأسعار، وتنبيهات وصول الطلب، لمساعدة المكفوفين وضعاف البصر ومن يفضلون التوجيه الصوتي.'
+          },
+          {
+            tag: 'أدوات الوصول الشامل',
+            title: '3. شرح زر التباين العالي',
+            body: 'يقوم بتغيير ألوان الشاشة إلى وضع التباين العالي الواضح جداً، مما يسهل قراءة النصوص والأزرار لضعاف البصر أو تحت أشعة الشمس القوية داخل السيارة.'
+          },
+          {
+            tag: 'أدوات الوصول الشامل',
+            title: '4. شرح زر حجم الخط',
+            body: 'اضغط عليه لتكبير حجم النصوص والأزرار في الموقع على ثلاث درجات (100% عادي، 115% متوسط، أو 130% كبير جداً) لتسهيل القراءة والضغط.'
+          },
+          {
+            tag: 'خطوات الطلب في الواجهة',
+            title: '5. الخطوة 1: اختيار نمط الخدمة وتكييف المسار',
+            body: 'اختر النمط المناسب لاحتياجك (إعاقة حركية، صم وضعاف سمع، مكفوفون، أو واجهة هادئة) ليظهر إشعار خاص عند الموظف ويكيّف طريقة التسليم لسيارتك.'
+          },
+          {
+            tag: 'خطوات الطلب في الواجهة',
+            title: '6. الخطوة 2: منيو الطعام والتغليف الميسّر',
+            body: 'تصفح الأقسام السبعة (العروض، الفطور، الغداء، العشاء، الوجبات السريعة، الحلى، المشروبات) وفعل خيار «التغليف الميسّر سهل الفتح» مجاناً، ثم أضف وجباتك للسلة.'
+          },
+          {
+            tag: 'خطوات الطلب في الواجهة',
+            title: '7. الخطوة 3: بيانات المركبة ومكان التسليم',
+            body: 'أدخل نوع ولون سيارتك ورقم اللوحة، وحدد مكان استلام الطلب (عبر نافذة السائق بحامل ممتد، المقعد المجاور، أو الشنطة الخلفية) ورقم المسار الذكي.'
+          },
+          {
+            tag: 'الفاتورة والمتابعة المباشرة',
+            title: '8. مراجعة الفاتورة والدفع ومتابعة المسار',
+            body: 'اضغط «تأكيد الطلب» لمراجعة فاتورتك الضريبية واختيار طريقة الدفع (مدى، Apple Pay، فيزا، أو نقدي)، ثم تابع نسبة إنجاز طلبك وتواصل مع الموظف بدون تحدث.'
+          }
+        ]
+      },
+      en: {
+        promptBadge: 'Interface & Accessibility Guide',
+        promptTitle: 'Would you like a quick tour of the interface?',
+        promptDesc: 'We will explain the accessibility controls (Simplify, Voice Reader, High Contrast, Font Size) and all ordering & payment steps.',
+        acceptBtn: '✓ Accept (Start Guide)',
+        declineBtn: 'Skip',
+        skipTop: 'Skip Guide ✕',
+        prevBtn: 'Previous',
+        nextBtn: 'Next →',
+        finishBtn: '✓ Got it, Start Ordering',
+        stepCounter: (curr, total) => `Step ${curr} of ${total}`,
+        steps: [
+          {
+            tag: 'Accessibility Controls',
+            title: '1. Simplify Button (Hide Secondary Buttons)',
+            body: 'Located in the top bar; tapping it hides all secondary buttons and extra text so only essential ordering buttons remain visible without distractions.'
+          },
+          {
+            tag: 'Accessibility Controls',
+            title: '2. Voice Reader Button',
+            body: 'Turns automated audio narration ON or OFF for menu items, prices, and live delivery alerts to assist blind, low-vision, and audio-guided users.'
+          },
+          {
+            tag: 'Accessibility Controls',
+            title: '3. High Contrast Button',
+            body: 'Switches the screen into a sharp, high-contrast color mode to make text and buttons easier to read for low vision or under bright sunlight.'
+          },
+          {
+            tag: 'Accessibility Controls',
+            title: '4. Font Size Button',
+            body: 'Tap it to enlarge text and buttons across the app in three levels (100% Normal, 115% Medium, or 130% Extra Large) for comfortable reading.'
+          },
+          {
+            tag: 'Ordering Steps',
+            title: '5. Step 1: Select Service & Accessibility Mode',
+            body: 'Choose the mode tailored to your needs (Mobility, Deaf/Hard of Hearing, Blind/Low Vision, or Calm Simple UI) so staff adapts car delivery accordingly.'
+          },
+          {
+            tag: 'Ordering Steps',
+            title: '6. Step 2: Menu & Easy-Open Packaging',
+            body: 'Browse all 7 food categories, keep free Easy-Open Packaging enabled if desired, and tap "+ Add to Cart" on your favorite meals.'
+          },
+          {
+            tag: 'Ordering Steps',
+            title: '7. Step 3: Vehicle Info & Delivery Spot',
+            body: 'Enter your car model, color, and plate, choose where to place the order (Driver window tray, passenger seat, or trunk), and pick your smart lane.'
+          },
+          {
+            tag: 'Invoice & Live Tracking',
+            title: '8. Invoice Payment & Live Drive-Thru Tracker',
+            body: 'Tap "Confirm Order" to review your invoice and pay via Mada, Apple Pay, Visa, or Cash, then track order progress live and chat without speaking.'
+          }
+        ]
+      },
+      tr: {
+        promptBadge: 'Arayüz ve Erişilebilirlik Rehberi',
+        promptTitle: 'Arayüz için hızlı bir açıklama ister misiniz?',
+        promptDesc: 'Erişilebilirlik düğmelerini (Basit Mod, Sesli Okuyucu, Yüksek Kontrast, Yazı Boyutu) ve tüm sipariş adımlarını sırayla açıklayacağız.',
+        acceptBtn: '✓ Kabul Et (Rehberi Başlat)',
+        declineBtn: 'Geç (Skip)',
+        skipTop: 'Rehberi Geç ✕',
+        prevBtn: 'Önceki',
+        nextBtn: 'Sonraki →',
+        finishBtn: '✓ Anladım, Siparişe Başla',
+        stepCounter: (curr, total) => `Adım ${curr} / ${total}`,
+        steps: [
+          {
+            tag: 'Erişilebilirlik Araçları',
+            title: '1. Basit Mod Düğmesi',
+            body: 'Üst çubuktaki sarı düğmeye bastığınızda ikincil düğmeler gizlenir ve ekranda yalnızca temel sipariş düğmeleri kalır.'
+          },
+          {
+            tag: 'Erişilebilirlik Araçları',
+            title: '2. Sesli Okuyucu Düğmesi',
+            body: 'Ürünlerin, fiyatların ve teslimat bildirimlerinin otomatik sesli okumasını açıp kapatmanızı sağlar.'
+          },
+          {
+            tag: 'Erişilebilirlik Araçları',
+            title: '3. Yüksek Kontrast Düğmesi',
+            body: 'Ekran renklerini yüksek kontrastlı hale getirerek az gören kullanıcılar ve güneş ışığı altında okumayı kolaylaştırır.'
+          },
+          {
+            tag: 'Erişilebilirlik Araçları',
+            title: '4. Yazı Boyutu Düğmesi',
+            body: 'Yazıları ve düğmeleri %100, %115 ve %130 olmak üzere üç kademede büyütmenizi sağlar.'
+          },
+          {
+            tag: 'Sipariş Adımları',
+            title: '5. Adım 1: Hizmet Modunu Seçin',
+            body: 'Size uygun erişilebilirlik modunu seçin; personelimiz teslimatı aracınıza göre uyarlayacaktır.'
+          },
+          {
+            tag: 'Sipariş Adımları',
+            title: '6. Adım 2: Menü ve Kolay Paketleme',
+            body: 'Kategorilerden dilediğiniz yemeği seçin, ücretsiz Kolay Açılır Paketlemeyi etkinleştirin ve sepete ekleyin.'
+          },
+          {
+            tag: 'Sipariş Adımları',
+            title: '7. Adım 3: Araç Bilgisi ve Teslimat Yeri',
+            body: 'Araç modelinizi ve plakanızı girin, teslimat noktasını ve akıllı bekleme hattını seçin.'
+          },
+          {
+            tag: 'Fatura ve Canlı Takip',
+            title: '8. Fatura Ödeme ve Canlı Takip',
+            body: 'Siparişi onaylayıp ödeme yöntemini (Mada, Apple Pay, Visa, Nakit) seçin ve teslimatı canlı takip edin.'
+          }
+        ]
+      },
+      ur: {
+        promptBadge: 'انٹرفیس اور رسائی کی رہنمائی',
+        promptTitle: 'کیا آپ کو انٹرفیس کی مختصر وضاحت درکار ہے؟',
+        promptDesc: 'ہم آپ کو ترتیب وار رسائی کے بٹنوں (سادہ موڈ، صوتی قاری، ہائی کنٹراسٹ، خط کا سائز) اور آرڈر کے تمام مراحل کی وضاحت کریں گے۔',
+        acceptBtn: '✓ قبول کریں (وضاحت شروع کریں)',
+        declineBtn: 'سکپ (چھوڑ دیں)',
+        skipTop: 'سکپ کریں ✕',
+        prevBtn: 'پچھلا',
+        nextBtn: 'اگلا ←',
+        finishBtn: '✓ سمجھ گیا، آرڈر شروع کریں',
+        stepCounter: (curr, total) => `مرحلہ ${curr} از ${total}`,
+        steps: [
+          {
+            tag: 'رسائی کے ٹولز',
+            title: '1. سادہ موڈ بٹن کی وضاحت',
+            body: 'اوپر موجود پیلے بٹن کو دبانے سے غیر ضروری بٹن چھپ جاتے ہیں اور اسکرین پر صرف بنیادی آرڈر بٹن باقی رہتے ہیں۔'
+          },
+          {
+            tag: 'رسائی کے ٹولز',
+            title: '2. صوتی قاری بٹن کی وضاحت',
+            body: 'اس بٹن سے کھانوں، قیمتوں اور آرڈر کی آمد کے صوتی پیغامات کو آن یا آف کیا جا سکتا ہے۔'
+          },
+          {
+            tag: 'رسائی کے ٹولز',
+            title: '3. ہائی کنٹراسٹ بٹن کی وضاحت',
+            body: 'یہ اسکرین کے رنگوں کو انتہائی واضح بنا دیتا ہے تاکہ کمزور نظر افراد یا تیز دھوپ میں پڑھنا آسان ہو۔'
+          },
+          {
+            tag: 'رسائی کے ٹولز',
+            title: '4. خط کا سائز بٹن کی وضاحت',
+            body: 'اسے دبا کر آپ تحریر اور بٹنوں کا سائز 100%، 115% یا 130% تک بڑا کر سکتے ہیں۔'
+          },
+          {
+            tag: 'آرڈر کے مراحل',
+            title: '5. مرحلہ 1: خدمت کا انداز منتخب کریں',
+            body: 'اپنی ضرورت کے مطابق سروس موڈ منتخب کریں تاکہ عملہ آپ کی گاڑی تک خصوصی ترسیل کا انتظام کرے۔'
+          },
+          {
+            tag: 'آرڈر کے مراحل',
+            title: '6. مرحلہ 2: مینو اور آسان پیکنگ',
+            body: 'اپنی پسندیدہ کیٹیگری سے کھانا منتخب کریں، مفت آسان پیکنگ فعال کریں اور ٹوکری میں شامل کریں۔'
+          },
+          {
+            tag: 'آرڈر کے مراحل',
+            title: '7. مرحلہ 3: گاڑی کی تفصیلات اور ترسیل کی جگہ',
+            body: 'گاڑی کا ماڈل اور نمبر پلیٹ درج کریں اور آرڈر وصول کرنے کی جگہ اور سمارٹ لین منتخب کریں۔'
+          },
+          {
+            tag: 'بل اور لائیو ٹریکنگ',
+            title: '8. بل کی ادائیگی اور لائیو ٹریکنگ',
+            body: 'آرڈر کی تصدیق کر کے ادائیگی کا طریقہ (مدی، ایپل پے، ویزا یا نقد) منتخب کریں اور آرڈر کو لائیو ٹریک کریں۔'
+          }
+        ]
+      },
+      zh: {
+        promptBadge: '界面与无障碍功能指南',
+        promptTitle: '您需要快速了解界面功能吗？',
+        promptDesc: '我们将依次为您介绍无障碍工具栏（极简模式、语音朗读、高对比度、字体大小）以及完整的点餐和支付步骤。',
+        acceptBtn: '✓ 接受（开始介绍）',
+        declineBtn: '跳过 (Skip)',
+        skipTop: '跳过介绍 ✕',
+        prevBtn: '上一步',
+        nextBtn: '下一步 →',
+        finishBtn: '✓ 明白了，开始点餐',
+        stepCounter: (curr, total) => `第 ${curr} 步（共 ${total} 步）`,
+        steps: [
+          {
+            tag: '无障碍辅助工具',
+            title: '1. 极简模式按钮说明',
+            body: '点击顶部栏的黄色“极简模式”按钮，可隐藏所有次要按钮和多余文字，仅保留核心点餐功能，减少视觉干扰。'
+          },
+          {
+            tag: '无障碍辅助工具',
+            title: '2. 语音朗读按钮说明',
+            body: '用于开启或关闭餐点名称、价格及送餐进度的自动语音播报，方便视障人士及偏好语音引导的用户使用。'
+          },
+          {
+            tag: '无障碍辅助工具',
+            title: '3. 高对比度按钮说明',
+            body: '将屏幕切换为高对比度显示模式，使文字和按钮边缘更加清晰，适合低视力用户或在强光下使用。'
+          },
+          {
+            tag: '无障碍辅助工具',
+            title: '4. 字体大小按钮说明',
+            body: '点击可在 100%（标准）、115%（中等）和 130%（超大）三个级别之间切换文字与按钮大小。'
+          },
+          {
+            tag: '点餐步骤',
+            title: '5. 第 1 步：选择无障碍服务模式',
+            body: '选择最适合您的服务模式（行动不便、听障、视障或安静极简界面），工作人员将为您定制专属送餐方式。'
+          },
+          {
+            tag: '点餐步骤',
+            title: '6. 第 2 步：浏览菜单与易开包装',
+            body: '浏览 7 大美食分类，可免费勾选“无障碍易开包装”，然后点击“+ 加入购物车”。'
+          },
+          {
+            tag: '点餐步骤',
+            title: '7. 第 3 步：填写车辆信息与递送位置',
+            body: '输入您的车型、颜色和车牌号，选择车内递送位置（驾驶座车窗托盘、副驾驶座或后备箱）及智能车道。'
+          },
+          {
+            tag: '账单与实时追踪',
+            title: '8. 核对账单支付与实时追踪',
+            body: '点击“确认下单”查看税务账单并选择支付方式（Mada、Apple Pay、Visa 或现金），随后即可实时追踪送餐进度。'
+          }
+        ]
+      }
     };
 
     const stepMessages = {
@@ -1290,482 +1570,34 @@
     };
 
     const yusrMenu = [
-      {
-        id: 101,
-        category: 'offers',
-        price: 29,
-        name: 'عرض التوفير الفردي المتكامل',
-        nameEn: 'Complete Solo Saver Offer',
-        nameTr: 'Tam Tek Kişilik Tasarruf Menüsü',
-        nameUr: 'مکمل سنگل سیور آفر بکس',
-        nameZh: '超值单人全享套餐',
-        desc: 'ساندوتش دجاج مشوي + بطاطس + مشروب بارد + حلى صغير في بوكس ميسّر للسيارة',
-        descEn: 'Grilled chicken sandwich + fries + cold drink + mini dessert in a car box',
-        descTr: 'Izgara tavuk sandviç + patates + soğuk içecek + mini tatlı araç kutusunda',
-        descUr: 'گرلڈ چکن سینڈوچ + فرائز + کولڈ ڈرنک + منی سویٹ کار فرینڈلی باکس میں',
-        descZh: '烤鸡三明治 + 薯条 + 冷饮 + 迷你甜点（车载易取盒装）',
-        badge: 'عرض التوفير',
-        badgeEn: 'Special Offer'
-      },
-      {
-        id: 102,
-        category: 'offers',
-        price: 49,
-        name: 'عرض الوجبتين (للأصدقاء)',
-        nameEn: 'Duo Meal Box Offer',
-        nameTr: 'İkili Arkadaş Menü Paketi',
-        nameUr: 'دو افراد کے لیے ڈوئل میل آفر',
-        nameZh: '双人好友欢享套餐',
-        desc: 'وجبتان برجر أو راب مع مشروبين وبطاطس عائلية بتغليف سهل الفتح',
-        descEn: '2 burger/wrap meals with 2 drinks and family fries in easy-open packs',
-        descTr: 'Kolay açılır pakette 2 burger/dürüm, 2 içecek ve aile boyu patates',
-        descUr: 'آسان پیکنگ میں 2 برگر یا ریپ، 2 مشروبات اور فیملی فرائز',
-        descZh: '2份汉堡/卷饼 + 2杯饮品 + 家庭装薯条（易开包装）',
-        badge: 'خصم 25%',
-        badgeEn: '25% OFF'
-      },
-      {
-        id: 103,
-        category: 'offers',
-        price: 79,
-        name: 'بوكس الجمعات العائلي الميسّر',
-        nameEn: 'Family Gathering Box Offer',
-        nameTr: 'Aile Boyu Avantaj Kutusu',
-        nameUr: 'فیملی گیدرنگ باکس آفر',
-        nameZh: '家庭欢聚无障碍分享盒',
-        desc: '4 ساندوتشات متنوعة + بطاطس حجم عائلي + 4 مشروبات في صينية منظمة للسيارة',
-        descEn: '4 assorted sandwiches + family fries + 4 drinks in an organized tray',
-        descTr: 'Araç tepsisinde 4 karışık sandviç + aile boyu patates + 4 içecek',
-        descUr: '4 مختلف سینڈوچز + فیملی فرائز + 4 مشروبات منظم کار ٹرے میں',
-        descZh: '4份精选三明治 + 家庭薯条 + 4杯饮品（配车载托盘）',
-        badge: 'عرض عائلي',
-        badgeEn: 'Family Deal'
-      },
-      {
-        id: 104,
-        category: 'offers',
-        price: 22,
-        name: 'عرض الطالب السريع (غداء + مشروب)',
-        nameEn: 'Student Express Combo Offer',
-        nameTr: 'Öğrenci Hızlı Menü Kampanyası',
-        nameUr: 'اسٹوڈنٹ ایکسپریس کومبو آفر',
-        nameZh: '学生快捷特惠套餐',
-        desc: 'راب كريسبي أو شاورما + بطاطس + مشروب غازي بغطاء مانع للانسكاب',
-        descEn: 'Crispy or shawarma wrap + fries + soft drink with safety lid',
-        descTr: 'Çıtır tavuk veya şavurma dürüm + patates + dökülmez kapaklı içecek',
-        descUr: 'کرسپی یا شاورما ریپ + فرائز + محفوظ ڈھکن والی کولڈ ڈرنک',
-        descZh: '香脆鸡肉卷 + 薯条 + 防洒盖软饮',
-        badge: 'سعر خاص',
-        badgeEn: 'Student Offer'
-      },
-      {
-        id: 201,
-        category: 'breakfast',
-        price: 22,
-        name: 'بوكس فطور الصباح العربي',
-        nameEn: 'Arabic Morning Breakfast Box',
-        nameTr: 'Arap Sabah Kahvaltı Kutusu',
-        nameUr: 'عربی صبح کا ناشتہ باکس',
-        nameZh: '阿拉伯风味早安餐盒',
-        desc: 'فطيرة جبن وعسل + ساندوتش بيض بالجبن + كوب شاي ساخن بغطاء أمان',
-        descEn: 'Cheese honey pie + egg cheese sandwich + hot tea with safety lid',
-        descTr: 'Ballı peynirli börek + yumurtalı sandviç + güvenli kapaklı sıcak çay',
-        descUr: 'شہد اور پنیر پائی + انڈے کا سینڈوچ + محفوظ ڈھکن والی گرم چائے',
-        descZh: '蜂蜜芝士派 + 鸡蛋芝士三明治 + 安全盖热茶',
-        badge: 'وجبات الفطور',
-        badgeEn: 'Breakfast'
-      },
-      {
-        id: 202,
-        category: 'breakfast',
-        price: 19,
-        name: 'ساندوتش حلوم مشوي مع القهوة',
-        nameEn: 'Grilled Halloumi & Coffee Combo',
-        nameTr: 'Izgara Hellim Sandviç ve Kahve',
-        nameUr: 'گرلڈ حلومی سینڈوچ اور کافی',
-        nameZh: '烤哈罗米芝士三明治配咖啡',
-        desc: 'خبز بريوش طري بحلوم مشوي وطماطم مجففة مع قهوة اليوم الساخنة',
-        descEn: 'Soft brioche with grilled halloumi and hot coffee of the day',
-        descTr: 'Yumuşak brioche ekmeğinde ızgara hellim ve sıcak günün kahvesi',
-        descUr: 'نرم بریوش بریڈ میں گرلڈ حلومی اور تازہ گرم کافی',
-        descZh: '松软布里欧修面包配烤芝士及今日热咖啡',
-        badge: 'فطور صحي',
-        badgeEn: 'Healthy Start'
-      },
-      {
-        id: 203,
-        category: 'breakfast',
-        price: 21,
-        name: 'كلوب ساندوتش البيض والديك الرومي',
-        nameEn: 'Egg & Turkey Club Sandwich',
-        nameTr: 'Yumurtalı ve Hindili Kulüp Sandviç',
-        nameUr: 'ایگ اور ٹرکی کلب سینڈوچ',
-        nameZh: '鸡蛋火鸡俱乐部三明治',
-        desc: 'مقطع إلى مثلثات سهلة الإمساك بيد واحدة مع عصير برتقال',
-        descEn: 'Cut into easy single-hand triangles served with orange juice',
-        descTr: 'Tek elle kolayca tutulabilen üçgen dilimler ve portakal suyu',
-        descUr: 'ایک ہاتھ سے کھانے کے لیے آسان تکون ٹکڑے مع تازہ مالٹے کا جوس',
-        descZh: '预切三角造型方便单手拿取，配鲜榨橙汁',
-        badge: 'سهل التناول',
-        badgeEn: 'Easy Grip'
-      },
-      {
-        id: 204,
-        category: 'breakfast',
-        price: 18,
-        name: 'بان كيك دافئ بالعسل والفواكه',
-        nameEn: 'Warm Honey & Fruit Pancakes',
-        nameTr: 'Ballı ve Meyveli Sıcak Pankek',
-        nameUr: 'گرم شہد اور پھلوں والے پین کیک',
-        nameZh: '蜂蜜水果热松饼盒',
-        desc: 'قطع بان كيك مقطعة مسبقاً وجاهزة للأكل بالشوكة داخل العلبة مباشرة',
-        descEn: 'Pre-cut pancake bites ready to eat with a fork inside the box',
-        descTr: 'Kutu içinde çatalla hemen yenebilen önceden dilimlenmiş pankek',
-        descUr: 'پہلے سے کٹے ہوئے پین کیک کے ٹکڑے جو کانٹے سے باآسانی کھائے جا سکیں',
-        descZh: '预先切块松饼，打开餐盒即可用叉子轻松享用',
-        badge: 'فطور شهي',
-        badgeEn: 'Sweet Morning'
-      },
-      {
-        id: 301,
-        category: 'lunch',
-        price: 32,
-        name: 'وجبة كبسة دجاج محمر (بدون عظم)',
-        nameEn: 'Boneless Roasted Chicken Kabsa',
-        nameTr: 'Kemiksiz Kızarmış Tavuklu Kabsa Pilavı',
-        nameUr: 'بون لیس روسٹڈ چکن کبسہ (بغیر ہڈی)',
-        nameZh: '无骨烤鸡阿拉伯香饭 (Kabsa)',
-        desc: 'أرز بسمتي مع دجاج مخلي تماماً من العظم لتسهيل الأكل بالملعقة بيد واحدة',
-        descEn: 'Basmati rice with boneless roasted chicken for easy spoon eating',
-        descTr: 'Tek elle kaşıkla kolay yemek için tamamen kemiksiz tavuk ve basmati pilav',
-        descUr: 'چمچ سے باآسانی کھانے کے لیے ہڈی کے بغیر چکن اور باسمتی چاول',
-        descZh: '巴斯马蒂香米配纯无骨烤鸡，方便单手用勺进餐',
-        badge: 'وجبات الغداء',
-        badgeEn: 'Lunch'
-      },
-      {
-        id: 302,
-        category: 'lunch',
-        price: 30,
-        name: 'طبق شيش طاووق مشوي مع الأرز',
-        nameEn: 'Grilled Shish Tawook Rice Bowl',
-        nameTr: 'Pilav Üstü Izgara Şiş Tavuk Kasesi',
-        nameUr: 'گرلڈ شیش طاووق مع چاول',
-        nameZh: '炭烤鸡肉串配香米饭碗',
-        desc: 'قطع دجاج مشوية طرية مع أرز أبيض وصوص ثوم في حافظة طعام مانعة للانسكاب',
-        descEn: 'Tender grilled chicken cubes with rice in a spill-proof bowl',
-        descTr: 'Dökülmez kasede yumuşak ızgara tavuk küpleri, pilav ve sarımsak sosu',
-        descUr: 'نرم گرلڈ چکن تکہ، سفید چاول اور گارلک سوس محفوظ باؤل میں',
-        descZh: '鲜嫩烤鸡块配白米饭与蒜香酱，防洒餐碗装',
-        badge: 'مشوي طازج',
-        badgeEn: 'Fresh Grill'
-      },
-      {
-        id: 303,
-        category: 'lunch',
-        price: 35,
-        name: 'وجبة فيليه سمك مشوي مع أرز الصيادية',
-        nameEn: 'Grilled Fish Fillet & Sayadiyah Rice',
-        nameTr: 'Izgara Balık Fileto ve Sayadiyah Pilavı',
-        nameUr: 'گرلڈ فش فلے اور صیادیہ چاول',
-        nameZh: '无刺烤鱼柳配海鲜香米饭',
-        desc: 'قطع سمك فيليه طرية خالية من الشوك تماماً مع أرز الصيادية والطحينة',
-        descEn: 'Boneless tender fish fillet with seasoned rice and tahini',
-        descTr: 'Tamamen kılçıksız yumuşak balık fileto, baharatlı pilav ve tahin sosu',
-        descUr: 'کانٹوں سے مکمل پاک مچھلی کے نرم ٹکڑے مع چاول اور طحینہ',
-        descZh: '完全无刺的鲜嫩烤鱼柳，搭配香料米饭与芝麻酱',
-        badge: 'خالي من الشوك',
-        badgeEn: 'Boneless Fish'
-      },
-      {
-        id: 304,
-        category: 'lunch',
-        price: 28,
-        name: 'إيدام دجاج بالكاري مع الأرز الأبيض',
-        nameEn: 'Chicken Curry & White Rice Bowl',
-        nameTr: 'Körili Tavuk ve Beyaz Pilav Kasesi',
-        nameUr: 'چکن کری اور سفید چاول باؤل',
-        nameZh: '咖喱鸡肉配白米饭深碗',
-        desc: 'مقدم في وعاء عميق محكم الغلق يسهل تناوله داخل المركبة دون انسكاب',
-        descEn: 'Served in a deep sealed bowl for easy dining inside your car',
-        descTr: 'Araç içinde dökülmeden kolayca yenebilen derin kapaklı kase',
-        descUr: 'گاڑی کے اندر بغیر گرے کھانے کے لیے گہرے بند ڈبے میں پیشکش',
-        descZh: '深口密封防洒碗装，非常适合在车内安心享用餐点',
-        badge: 'غداء ساخن',
-        badgeEn: 'Hot Lunch'
-      },
-      {
-        id: 401,
-        category: 'dinner',
-        price: 36,
-        name: 'وجبة مشويات مشكلة (عشاء فاخر)',
-        nameEn: 'Mixed Grill Dinner Box',
-        nameTr: 'Karışık Izgara Akşam Yemeği Kutusu',
-        nameUr: 'مکس گرل ڈنر باکس (باربی کیو)',
-        nameZh: '豪华什锦炭烤晚餐盒',
-        desc: 'كباب لحم وأوصال دجاج مشوية مقطعة وجاهزة للتناول مع خبز طري وحمص',
-        descEn: 'Pre-sliced beef & chicken kebab with soft bread and hummus',
-        descTr: 'Yumuşak ekmek ve humus ile önceden dilimlenmiş et ve tavuk kebap',
-        descUr: 'پہلے سے کٹے ہوئے بیف اور چکن کباب مع نرم روٹی اور حمص',
-        descZh: '预切牛肉与鸡肉烤串，配松软薄饼与鹰嘴豆泥',
-        badge: 'وجبات العشاء',
-        badgeEn: 'Dinner'
-      },
-      {
-        id: 402,
-        category: 'dinner',
-        price: 27,
-        name: 'باستا الدجاج بالصلصة البيضاء',
-        nameEn: 'Creamy Chicken Pasta Box',
-        nameTr: 'Kremalı Tavuklu Makarna Kutusu',
-        nameUr: 'کریمی وائٹ سوس چکن پاستا',
-        nameZh: '奶油白汁鸡肉意面盒',
-        desc: 'مكرونة بينا بصلصة الكريمة وقطع الدجاج المشوي في علبة عميقة سهلة الاستخدام',
-        descEn: 'Penne pasta with creamy sauce and grilled chicken in a deep bowl',
-        descTr: 'Derin kasede krema soslu ve ızgara tavuklu penne makarna',
-        descUr: 'گہرے باؤل میں کریمی سوس اور گرلڈ چکن کے ساتھ پینے پاستا',
-        descZh: '奶油烤鸡斜管面，深盒包装方便叉取',
-        badge: 'عشاء إيطالي',
-        badgeEn: 'Creamy Pasta'
-      },
-      {
-        id: 403,
-        category: 'dinner',
-        price: 25,
-        name: 'صينية شاورما عربي مقطعة',
-        nameEn: 'Sliced Arabic Shawarma Platter',
-        nameTr: 'Dilimlenmiş Arap Şavurma Tabağı',
-        nameUr: 'عربی شاورما پلیٹر (کٹا ہوا)',
-        nameZh: '预切阿拉伯沙威玛拼盘',
-        desc: 'قطع شاورما جاهزة للأكل بالشوكة مع البطاطس والثوم في بوكس مقسم',
-        descEn: 'Bite-sized shawarma pieces with fries and garlic sauce',
-        descTr: 'Bölmeli kutuda çatalla yemeye hazır lokmalık şavurma, patates ve sos',
-        descUr: 'کانٹے سے کھانے کے لیے تیار شاورما کے چھوٹے ٹکڑے مع فرائز اور تھوم',
-        descZh: '一口大小沙威玛肉卷块，配薯条与蒜香酱分格盒装',
-        badge: 'مقطعة جاهزة',
-        badgeEn: 'Bite-Sized'
-      },
-      {
-        id: 404,
-        category: 'dinner',
-        price: 23,
-        name: 'سلطة سيزر بالدجاج المشوي (عشاء خفيف)',
-        nameEn: 'Grilled Chicken Caesar Salad',
-        nameTr: 'Izgara Tavuklu Sezar Salata',
-        nameUr: 'گرلڈ چکن سیزر سلاد (ہلکا عشائیہ)',
-        nameZh: '烤鸡凯撒沙拉轻食盒',
-        desc: 'خس طازج وقطع دجاج مشوي مع خبز محمص وصوص سيزر مخلوط وجاهز',
-        descEn: 'Fresh lettuce and warm grilled chicken strips with mixed dressing',
-        descTr: 'Taze marul, sıcak ızgara tavuk dilimleri ve hazır karıştırılmış sos',
-        descUr: 'تازہ سلاد پتے، گرم گرلڈ چکن کے ٹکڑے اور مکسڈ سیزر ڈریسنگ',
-        descZh: '新鲜生菜配温热烤鸡柳与调好凯撒酱，开盒即食',
-        badge: 'عشاء خفيف',
-        badgeEn: 'Light Dinner'
-      },
-      {
-        id: 501,
-        category: 'fastfood',
-        price: 24,
-        name: 'وجبة برجر دجاج كريسبي أو مشوي',
-        nameEn: 'Crispy / Grilled Chicken Burger Meal',
-        nameTr: 'Çıtır veya Izgara Tavuk Burger Menü',
-        nameUr: 'کرسپی یا گرلڈ چکن برگر میل',
-        nameZh: '香脆/炭烤鸡腿堡套餐',
-        desc: 'برجر مقسوم لنصفين في غلاف يفتح بيد واحدة مع حامل بطاطس للسيارة',
-        descEn: 'Burger cut in half with single-hand wrap and car fry holder',
-        descTr: 'Tek elle açılan pakette ikiye bölünmüş burger ve araç patates tutucusu',
-        descUr: 'ایک ہاتھ سے کھلنے والی پیکنگ میں دو حصوں میں کٹا برگر مع کار فرائز ہولڈر',
-        descZh: '汉堡预先切半配单手易开包装及车载薯条杯',
-        badge: 'الوجبات السريعة',
-        badgeEn: 'Fast Food'
-      },
-      {
-        id: 502,
-        category: 'fastfood',
-        price: 28,
-        name: 'وجبة دبل برجر لحم أنجوس',
-        nameEn: 'Double Angus Beef Burger Meal',
-        nameTr: 'Duble Angus Et Burger Menü',
-        nameUr: 'ڈبل اینگس بیف برگر میل',
-        nameZh: '双层安格斯牛肉堡套餐',
-        desc: 'شريحتا لحم أنجوس بالجبن في خبز طري مغلف بإحكام لمنع تساقط الصوص',
-        descEn: 'Double angus beef with cheese in a spill-proof wrap with fries',
-        descTr: 'Sos akıtmayan özel sargılı yumuşak ekmekte çift katlı angus burger',
-        descUr: 'سوس گرنے سے محفوظ پیکنگ میں ڈبل اینگس بیف چیز برگر مع فرائز',
-        descZh: '双层安格斯芝士牛肉堡，防漏酱汁包裹配薯条',
-        badge: 'الأكثر مبيعاً',
-        badgeEn: 'Best Seller'
-      },
-      {
-        id: 503,
-        category: 'fastfood',
-        price: 20,
-        name: 'بوكس مسحب دجاج (ناجتس 8 قطع)',
-        nameEn: 'Boneless Chicken Strips Box (8 Pcs)',
-        nameTr: 'Kemiksiz Çıtır Tavuk Parçaları (8 Adet)',
-        nameUr: 'بون لیس چکن اسٹرپس باکس (8 ٹکڑے)',
-        nameZh: '无骨香脆鸡柳盒（8块装）',
-        desc: 'قطع دجاج مسحب مقرمشة سهلة الأكل باليد مباشرة مع البطاطس والصوص',
-        descEn: 'Easy finger-food chicken strips with fries and dipping sauce',
-        descTr: 'Patates kızartması ve sos ile elle kolayca yenebilen çıtır tavuk',
-        descUr: 'ہاتھ سے باآسانی کھانے کے لیے کرسپی چکن کے ٹکڑے مع فرائز اور سوس',
-        descZh: '方便直接手拿享用的无骨脆鸡柳，配薯条与蘸酱',
-        badge: 'سهل الأكل باليد',
-        badgeEn: 'Finger Food'
-      },
-      {
-        id: 504,
-        category: 'fastfood',
-        price: 19,
-        name: 'راب تورتيلا زنجر حار / عادي',
-        nameEn: 'Zinger Tortilla Wrap (Spicy / Regular)',
-        nameTr: 'Zinger Tortilla Dürüm (Acılı / Normal)',
-        nameUr: 'زنگر ٹورٹیلا ریپ (اسپائسی / نارمل)',
-        nameZh: '香辣/原味鸡肉卷饼',
-        desc: 'ملفوف بإحكام في قصدير سهل السحب والتناول بيد واحدة أثناء التوقف',
-        descEn: 'Tightly rolled in easy-pull foil for one-handed eating',
-        descTr: 'Tek elle kolayca sıyrılabilen folyoya sıkıca sarılmış dürüm',
-        descUr: 'ایک ہاتھ سے کھانے کے لیے آسان فولڈنگ پیپر میں لپٹا ہوا ٹورٹیلا ریپ',
-        descZh: '易撕锡纸紧密包裹，单手即可轻松握持享用',
-        badge: 'سريع وميسّر',
-        badgeEn: 'Quick Wrap'
-      },
-      {
-        id: 601,
-        category: 'desserts',
-        price: 15,
-        name: 'تشيز كيك التوت البري',
-        nameEn: 'Blueberry Cheesecake Cup',
-        nameTr: 'Yaban Mersinli Cheesecake Kabı',
-        nameUr: 'بلو بیری چیز کیک کپ',
-        nameZh: '蓝莓芝士蛋糕杯',
-        desc: 'يقدم في كوب عريض سهل التناول بالملعقة بيد واحدة بدون صحن',
-        descEn: 'Served in a wide cup for easy single-handed spoon eating',
-        descTr: 'Tabak gerektirmeyen, tek elle kaşıkla kolayca yenebilen geniş kap',
-        descUr: 'بغیر پلیٹ کے ایک ہاتھ سے چمچ کے ذریعے کھانے کے لیے چوڑا کپ',
-        descZh: '宽口杯装设计，无需餐盘即可单手用勺挖取',
-        badge: 'قسم الحلى',
-        badgeEn: 'Desserts'
-      },
-      {
-        id: 602,
-        category: 'desserts',
-        price: 14,
-        name: 'كوكيز شوكولاتة دافئ مع آيسكريم',
-        nameEn: 'Warm Chocolate Cookie & Ice Cream',
-        nameTr: 'Dondurmalı Sıcak Çikolatalı Kurabiye',
-        nameUr: 'گرم چاکلیٹ کوکیز مع آئس کریم',
-        nameZh: '热巧克力曲奇配冰淇淋杯',
-        desc: 'قطع كوكيز طرية مقطعة مسبقاً في علبة محكمة',
-        descEn: 'Pre-sliced soft warm cookie pieces in a secure cup',
-        descTr: 'Güvenli kap içinde önceden dilimlenmiş yumuşak sıcak kurabiye',
-        descUr: 'محفوظ کپ میں پہلے سے کٹے ہوئے نرم چاکلیٹ کوکیز کے ٹکڑے',
-        descZh: '预先切块的温热软曲奇，杯装稳固不脏手',
-        badge: 'حلى دافئ',
-        badgeEn: 'Warm Sweet'
-      },
-      {
-        id: 603,
-        category: 'desserts',
-        price: 16,
-        name: 'بودينغ التمر والكراميل الدافئ',
-        nameEn: 'Warm Date & Caramel Pudding Cup',
-        nameTr: 'Sıcak Hurmalı ve Karamelli Puding',
-        nameUr: 'کھجور اور کیریمل گرم پڈنگ کپ',
-        nameZh: '椰枣焦糖热布丁杯',
-        desc: 'كيك التمر الطري بصوص الكراميل يقدم في كوب حراري مريح',
-        descEn: 'Soft date cake with caramel sauce in an easy-hold cup',
-        descTr: 'Kolay tutulan kapta karamel soslu yumuşak hurmalı kek',
-        descUr: 'آرام دہ تھرمل کپ میں کیریمل سوس کے ساتھ نرم کھجور کیک',
-        descZh: '焦糖椰枣软蛋糕，隔热舒适杯装',
-        badge: 'طعم أصيل',
-        badgeEn: 'Signature'
-      },
-      {
-        id: 604,
-        category: 'desserts',
-        price: 11,
-        name: 'كوب آيسكريم فانيليا وشوكولاتة',
-        nameEn: 'Vanilla & Chocolate Ice Cream Cup',
-        nameTr: 'Vanilyalı ve Çikolatalı Dondurma Kabı',
-        nameUr: 'ونیلا اور چاکلیٹ آئس کریم کپ',
-        nameZh: '香草巧克力双色冰淇淋杯',
-        desc: 'كوب يثبت في حامل أكواب السيارة مع ملعقة عريضة مريحة',
-        descEn: 'Cup-holder friendly ice cream tub with wide spoon',
-        descTr: 'Araç bardak tutucusuna tam uyan kap ve geniş rahat kaşık',
-        descUr: 'گاڑی کے کپ ہولڈر میں فٹ ہونے والا کپ مع چوڑا چمچ',
-        descZh: '可稳固放入车载杯架，配宽柄好握勺子',
-        badge: 'بارد ومنعش',
-        badgeEn: 'Cold Treat'
-      },
-      {
-        id: 701,
-        category: 'drinks',
-        price: 14,
-        name: 'قهوة مختصة (باردة / ساخنة)',
-        nameEn: 'Specialty Coffee (Iced / Hot)',
-        nameTr: 'Özel Nitelikli Kahve (Soğuk / Sıcak)',
-        nameUr: 'اسپیشلٹی کافی (ٹھنڈی / گرم)',
-        nameZh: '精品咖啡（冰 / 热）',
-        desc: 'كوب مزود بغطاء أمان مانع للانسكاب ومصاصة ثابتة',
-        descEn: 'Equipped with anti-spill safety lid and fixed straw',
-        descTr: 'Dökülmeyi önleyen güvenlik kapağı ve sabit pipetli bardak',
-        descUr: 'نہ گرنے والے محفوظ ڈھکن اور مضبوط اسٹرا والا کپ',
-        descZh: '配备防洒安全杯盖与固定吸管',
-        badge: 'قسم المشروبات',
-        badgeEn: 'Drinks'
-      },
-      {
-        id: 702,
-        category: 'drinks',
-        price: 13,
-        name: 'عصير برتقال طبيعي طازج',
-        nameEn: '100% Fresh Orange Juice',
-        nameTr: '%100 Taze Sıkma Portakal Suyu',
-        nameUr: 'خالص تازہ مالٹے کا جوس',
-        nameZh: '100% 鲜榨橙汁',
-        desc: 'عبوة مريحة سهلة الإمساك بيد واحدة مع غطاء محكم',
-        descEn: 'Easy one-hand grip bottle with spill-proof cap',
-        descTr: 'Sızdırmaz kapaklı, tek elle kolay kavranan şişe',
-        descUr: 'ایک ہاتھ سے پکڑنے میں آسان بوتل مع مضبوط ڈھکن',
-        descZh: '单手易握瓶身设计，配防漏瓶盖',
-        badge: 'طبيعي 100%',
-        badgeEn: '100% Fresh'
-      },
-      {
-        id: 703,
-        category: 'drinks',
-        price: 9,
-        name: 'شاي أحمر / شاي كرك ساخن',
-        nameEn: 'Hot Red Tea / Karak Tea',
-        nameTr: 'Sıcak Kırmızı Çay / Karak Çayı',
-        nameUr: 'گرم سرخ چائے / کڑک چائے',
-        nameZh: '热红茶 / 阿拉伯香料奶茶 (Karak)',
-        desc: 'كوب حراري مزدوج العزل لحماية اليد من الحرارة مع غطاء أمان',
-        descEn: 'Double-insulated cup to protect hands from heat with safety lid',
-        descTr: 'Eli ısıdan koruyan çift yalıtımlı güvenlik kapaklı bardak',
-        descUr: 'ہاتھ کو گرمی سے بچانے والا ڈبل انسولیٹڈ کپ مع محفوظ ڈھکن',
-        descZh: '双层隔热防烫杯身，配防漏安全盖',
-        badge: 'كوب عازل للحرارة',
-        badgeEn: 'Heat-Safe Cup'
-      },
-      {
-        id: 704,
-        category: 'drinks',
-        price: 7,
-        name: 'مشروب غازي / مياه معدنية',
-        nameEn: 'Soft Drink / Mineral Water',
-        nameTr: 'Gazlı İçecek / Doğal Kaynak Suyu',
-        nameUr: 'کولڈ ڈرنک / منرل واٹر',
-        nameZh: '碳酸软饮 / 矿泉水',
-        desc: 'يقدم مفتوح الغطاء مسبقاً حسب الرغبة مع مصاصة مرنة',
-        descEn: 'Pre-opened upon request with a flexible straw',
-        descTr: 'İsteğe göre önceden açılmış kapak ve esnek pipet ile sunulur',
-        descUr: 'ضرورت کے مطابق پہلے سے کھلا ڈھکن مع لچکدار اسٹرا',
-        descZh: '可按需预先拧开瓶盖并配可弯曲吸管',
-        badge: 'بارد',
-        badgeEn: 'Chilled'
-      }
+      { id: 101, category: 'offers', price: 29, name: 'عرض التوفير الفردي المتكامل', nameEn: 'Complete Solo Saver Offer', nameTr: 'Tam Tek Kişilik Tasarruf Menüsü', nameUr: 'مکمل سنگل سیور آفر بکس', nameZh: '超值单人全享套餐', desc: 'ساندوتش دجاج مشوي + بطاطس + مشروب بارد + حلى صغير في بوكس ميسّر للسيارة', descEn: 'Grilled chicken sandwich + fries + cold drink + mini dessert in a car box', descTr: 'Izgara tavuk sandviç + patates + soğuk içecek + mini tatlı araç kutusunda', descUr: 'گرلڈ چکن سینڈوچ + فرائز + کولڈ ڈرنک + منی سویٹ کار فرینڈلی باکس میں', descZh: '烤鸡三明治 + 薯条 + 冷饮 + 迷你甜点（车载易取盒装）', badge: 'عرض التوفير', badgeEn: 'Special Offer' },
+      { id: 102, category: 'offers', price: 49, name: 'عرض الوجبتين (للأصدقاء)', nameEn: 'Duo Meal Box Offer', nameTr: 'İkili Arkadaş Menü Paketi', nameUr: 'دو افراد کے لیے ڈوئل میل آفر', nameZh: '双人好友欢享套餐', desc: 'وجبتان برجر أو راب مع مشروبين وبطاطس عائلية بتغليف سهل الفتح', descEn: '2 burger/wrap meals with 2 drinks and family fries in easy-open packs', descTr: 'Kolay açılır pakette 2 burger/dürüm, 2 içecek ve aile boyu patates', descUr: 'آسان پیکنگ میں 2 برگر یا ریپ، 2 مشروبات اور فیملی فرائز', descZh: '2份汉堡/卷饼 + 2杯饮品 + 家庭装薯条（易开包装）', badge: 'خصم 25%', badgeEn: '25% OFF' },
+      { id: 103, category: 'offers', price: 79, name: 'بوكس الجمعات العائلي الميسّر', nameEn: 'Family Gathering Box Offer', nameTr: 'Aile Boyu Avantaj Kutusu', nameUr: 'فیملی گیدرنگ باکس آفر', nameZh: '家庭欢聚无障碍分享盒', desc: '4 ساندوتشات متنوعة + بطاطس حجم عائلي + 4 مشروبات في صينية منظمة للسيارة', descEn: '4 assorted sandwiches + family fries + 4 drinks in an organized tray', descTr: 'Araç tepsisinde 4 karışık sandviç + aile boyu patates + 4 içecek', descUr: '4 مختلف سینڈوچز + فیملی فرائز + 4 مشروبات منظم کار ٹرے میں', descZh: '4份精选三明治 + 家庭薯条 + 4杯饮品（配车载托盘）', badge: 'عرض عائلي', badgeEn: 'Family Deal' },
+      { id: 104, category: 'offers', price: 22, name: 'عرض الطالب السريع (غداء + مشروب)', nameEn: 'Student Express Combo Offer', nameTr: 'Öğrenci Hızlı Menü Kampanyası', nameUr: 'اسٹوڈنٹ ایکسپریس کومبو آفر', nameZh: '学生快捷特惠套餐', desc: 'راب كريسبي أو شاورما + بطاطس + مشروب غازي بغطاء مانع للانسكاب', descEn: 'Crispy or shawarma wrap + fries + soft drink with safety lid', descTr: 'Çıtır tavuk veya şavurma dürüm + patates + dökülmez kapaklı içecek', descUr: 'کرسپی یا شاورما ریپ + فرائز + محفوظ ڈھکن والی کولڈ ڈرنک', descZh: '香脆鸡肉卷 + 薯条 + 防洒盖软饮', badge: 'سعر خاص', badgeEn: 'Student Offer' },
+      { id: 201, category: 'breakfast', price: 22, name: 'بوكس فطور الصباح العربي', nameEn: 'Arabic Morning Breakfast Box', nameTr: 'Arap Sabah Kahvaltı Kutusu', nameUr: 'عربی صبح کا ناشتہ باکس', nameZh: '阿拉伯风味早安餐盒', desc: 'فطيرة جبن وعسل + ساندوتش بيض بالجبن + كوب شاي ساخن بغطاء أمان', descEn: 'Cheese honey pie + egg cheese sandwich + hot tea with safety lid', descTr: 'Ballı peynirli börek + yumurtalı sandviç + güvenli kapaklı sıcak çay', descUr: 'شہد اور پنیر پائی + انڈے کا سینڈوچ + محفوظ ڈھکن والی گرم چائے', descZh: '蜂蜜芝士派 + 鸡蛋芝士三明治 + 安全盖热茶', badge: 'وجبات الفطور', badgeEn: 'Breakfast' },
+      { id: 202, category: 'breakfast', price: 19, name: 'ساندوتش حلوم مشوي مع القهوة', nameEn: 'Grilled Halloumi & Coffee Combo', nameTr: 'Izgara Hellim Sandviç ve Kahve', nameUr: 'گرلڈ حلومی سینڈوچ اور کافی', nameZh: '烤哈罗米芝士三明治配咖啡', desc: 'خبز بريوش طري بحلوم مشوي وطماطم مجففة مع قهوة اليوم الساخنة', descEn: 'Soft brioche with grilled halloumi and hot coffee of the day', descTr: 'Yumuşak brioche ekmeğinde ızgara hellim ve sıcak günün kahvesi', descUr: 'نرم بریوش بریڈ میں گرلڈ حلومی اور تازہ گرم کافی', descZh: '松软布里欧修面包配烤芝士及今日热咖啡', badge: 'فطور صحي', badgeEn: 'Healthy Start' },
+      { id: 203, category: 'breakfast', price: 21, name: 'كلوب ساندوتش البيض والديك الرومي', nameEn: 'Egg & Turkey Club Sandwich', nameTr: 'Yumurtalı ve Hindili Kulüp Sandviç', nameUr: 'ایگ اور ٹرکی کلب سینڈوچ', nameZh: '鸡蛋火鸡俱乐部三明治', desc: 'مقطع إلى مثلثات سهلة الإمساك بيد واحدة مع عصير برتقال', descEn: 'Cut into easy single-hand triangles served with orange juice', descTr: 'Tek elle kolayca tutulabilen üçgen dilimler ve portakal suyu', descUr: 'ایک ہاتھ سے کھانے کے لیے آسان تکون ٹکڑے مع تازہ مالٹے کا جوس', descZh: '预切三角造型方便单手拿取，配鲜榨橙汁', badge: 'سهل التناول', badgeEn: 'Easy Grip' },
+      { id: 204, category: 'breakfast', price: 18, name: 'بان كيك دافئ بالعسل والفواكه', nameEn: 'Warm Honey & Fruit Pancakes', nameTr: 'Ballı ve Meyveli Sıcak Pankek', nameUr: 'گرم شہد اور پھلوں والے پین کیک', nameZh: '蜂蜜水果热松饼盒', desc: 'قطع بان كيك مقطعة مسبقاً وجاهزة للأكل بالشوكة داخل العلبة مباشرة', descEn: 'Pre-cut pancake bites ready to eat with a fork inside the box', descTr: 'Kutu içinde çatalla hemen yenebilen önceden dilimlenmiş pankek', descUr: 'پہلے سے کٹے ہوئے پین کیک کے ٹکڑے جو کانٹے سے باآسانی کھائے جا سکیں', descZh: '预先切块松饼，打开餐盒即可用叉子轻松享用', badge: 'فطور شهي', badgeEn: 'Sweet Morning' },
+      { id: 301, category: 'lunch', price: 32, name: 'وجبة كبسة دجاج محمر (بدون عظم)', nameEn: 'Boneless Roasted Chicken Kabsa', nameTr: 'Kemiksiz Kızarmış Tavuklu Kabsa Pilavı', nameUr: 'بون لیس روسٹڈ چکن کبسہ (بغیر ہڈی)', nameZh: '无骨烤鸡阿拉伯香饭 (Kabsa)', desc: 'أرز بسمتي مع دجاج مخلي تماماً من العظم لتسهيل الأكل بالملعقة بيد واحدة', descEn: 'Basmati rice with boneless roasted chicken for easy spoon eating', descTr: 'Tek elle kaşıkla kolay yemek için tamamen kemiksiz tavuk ve basmati pilav', descUr: 'چمچ سے باآسانی کھانے کے لیے ہڈی کے بغیر چکن اور باسمتی چاول', descZh: '巴斯马蒂香米配纯无骨烤鸡，方便单手用勺进餐', badge: 'وجبات الغداء', badgeEn: 'Lunch' },
+      { id: 302, category: 'lunch', price: 30, name: 'طبق شيش طاووق مشوي مع الأرز', nameEn: 'Grilled Shish Tawook Rice Bowl', nameTr: 'Pilav Üstü Izgara Şiş Tavuk Kasesi', nameUr: 'گرلڈ شیش طاووق مع چاول', nameZh: '炭烤鸡肉串配香米饭碗', desc: 'قطع دجاج مشوية طرية مع أرز أبيض وصوص ثوم في حافظة طعام مانعة للانسكاب', descEn: 'Tender grilled chicken cubes with rice in a spill-proof bowl', descTr: 'Dökülmez kasede yumuşak ızgara tavuk küpleri, pilav ve sarımsak sosu', descUr: 'نرم گرلڈ چکن تکہ، سفید چاول اور گارلک سوس محفوظ باؤل میں', descZh: '鲜嫩烤鸡块配白米饭与蒜香酱，防洒餐碗装', badge: 'مشوي طازج', badgeEn: 'Fresh Grill' },
+      { id: 303, category: 'lunch', price: 35, name: 'وجبة فيليه سمك مشوي مع أرز الصيادية', nameEn: 'Grilled Fish Fillet & Sayadiyah Rice', nameTr: 'Izgara Balık Fileto ve Sayadiyah Pilavı', nameUr: 'گرلڈ فش فلے اور صیادیہ چاول', nameZh: '无刺烤鱼柳配海鲜香米饭', desc: 'قطع سمك فيليه طرية خالية من الشوك تماماً مع أرز الصيادية والطحينة', descEn: 'Boneless tender fish fillet with seasoned rice and tahini', descTr: 'Tamamen kılçıksız yumuşak balık fileto, baharatlı pilav ve tahin sosu', descUr: 'کانٹوں سے مکمل پاک مچھلی کے نرم ٹکڑے مع چاول اور طحینہ', descZh: '完全无刺的鲜嫩烤鱼柳，搭配香料米饭与芝麻酱', badge: 'خالي من الشوك', badgeEn: 'Boneless Fish' },
+      { id: 304, category: 'lunch', price: 28, name: 'إيدام دجاج بالكاري مع الأرز الأبيض', nameEn: 'Chicken Curry & White Rice Bowl', nameTr: 'Körili Tavuk ve Beyaz Pilav Kasesi', nameUr: 'چکن کری اور سفید چاول باؤل', nameZh: '咖喱鸡肉配白米饭深碗', desc: 'مقدم في وعاء عميق محكم الغلق يسهل تناوله داخل المركبة دون انسكاب', descEn: 'Served in a deep sealed bowl for easy dining inside your car', descTr: 'Araç içinde dökülmeden kolayca yenebilen derin kapaklı kase', descUr: 'گاڑی کے اندر بغیر گرے کھانے کے لیے گہرے بند ڈبے میں پیشکش', descZh: '深口密封防洒碗装，非常适合在车内安心享用餐点', badge: 'غداء ساخن', badgeEn: 'Hot Lunch' },
+      { id: 401, category: 'dinner', price: 36, name: 'وجبة مشويات مشكلة (عشاء فاخر)', nameEn: 'Mixed Grill Dinner Box', nameTr: 'Karışık Izgara Akşam Yemeği Kutusu', nameUr: 'مکس گرل ڈنر باکس (باربی کیو)', nameZh: '豪华什锦炭烤晚餐盒', desc: 'كباب لحم وأوصال دجاج مشوية مقطعة وجاهزة للتناول مع خبز طري وحمص', descEn: 'Pre-sliced beef & chicken kebab with soft bread and hummus', descTr: 'Yumuşak ekmek ve humus ile önceden dilimlenmiş et ve tavuk kebap', descUr: 'پہلے سے کٹے ہوئے بیف اور چکن کباب مع نرم روٹی اور حمص', descZh: '预切牛肉与鸡肉烤串，配松软薄饼与鹰嘴豆泥', badge: 'وجبات العشاء', badgeEn: 'Dinner' },
+      { id: 402, category: 'dinner', price: 27, name: 'باستا الدجاج بالصلصة البيضاء', nameEn: 'Creamy Chicken Pasta Box', nameTr: 'Kremalı Tavuklu Makarna Kutusu', nameUr: 'کریمی وائٹ سوس چکن پاستا', nameZh: '奶油白汁鸡肉意面盒', desc: 'مكرونة بينا بصلصة الكريمة وقطع الدجاج المشوي في علبة عميقة سهلة الاستخدام', descEn: 'Penne pasta with creamy sauce and grilled chicken in a deep bowl', descTr: 'Derin kasede krema soslu ve ızgara tavuklu penne makarna', descUr: 'گہرے باؤل میں کریمی سوس اور گرلڈ چکن کے ساتھ پینے پاستا', descZh: '奶油烤鸡斜管面，深盒包装方便叉取', badge: 'عشاء إيطالي', badgeEn: 'Creamy Pasta' },
+      { id: 403, category: 'dinner', price: 25, name: 'صينية شاورما عربي مقطعة', nameEn: 'Sliced Arabic Shawarma Platter', nameTr: 'Dilimlenmiş Arap Şavurma Tabağı', nameUr: 'عربی شاورما پلیٹر (کٹا ہوا)', nameZh: '预切阿拉伯沙威玛拼盘', desc: 'قطع شاورما جاهزة للأكل بالشوكة مع البطاطس والثوم في بوكس مقسم', descEn: 'Bite-sized shawarma pieces with fries and garlic sauce', descTr: 'Bölmeli kutuda çatalla yemeye hazır lokmalık şavurma, patates ve sos', descUr: 'کانٹے سے کھانے کے لیے تیار شاورما کے چھوٹے ٹکڑے مع فرائز اور تھوم', descZh: '一口大小沙威玛肉卷块，配薯条与蒜香酱分格盒装', badge: 'مقطعة جاهزة', badgeEn: 'Bite-Sized' },
+      { id: 404, category: 'dinner', price: 23, name: 'سلطة سيزر بالدجاج المشوي (عشاء خفيف)', nameEn: 'Grilled Chicken Caesar Salad', nameTr: 'Izgara Tavuklu Sezar Salata', nameUr: 'گرلڈ چکن سیزر سلاد (ہلکا عشائیہ)', nameZh: '烤鸡凯撒沙拉轻食盒', desc: 'خس طازج وقطع دجاج مشوي مع خبز محمص وصوص سيزر مخلوط وجاهز', descEn: 'Fresh lettuce and warm grilled chicken strips with mixed dressing', descTr: 'Taze marul, sıcak ızgara tavuk dilimleri ve hazır karıştırılmış sos', descUr: 'تازہ سلاد پتے، گرم گرلڈ چکن کے ٹکڑے اور مکسڈ سیزر ڈریسنگ', descZh: '新鲜生菜配温热烤鸡柳与调好凯撒酱，开盒即食', badge: 'عشاء خفيف', badgeEn: 'Light Dinner' },
+      { id: 501, category: 'fastfood', price: 24, name: 'وجبة برجر دجاج كريسبي أو مشوي', nameEn: 'Crispy / Grilled Chicken Burger Meal', nameTr: 'Çıtır veya Izgara Tavuk Burger Menü', nameUr: 'کرسپی یا گرلڈ چکن برگر میل', nameZh: '香脆/炭烤鸡腿堡套餐', desc: 'برجر مقسوم لنصفين في غلاف يفتح بيد واحدة مع حامل بطاطس للسيارة', descEn: 'Burger cut in half with single-hand wrap and car fry holder', descTr: 'Tek elle açılan pakette ikiye bölünmüş burger ve araç patates tutucusu', descUr: 'ایک ہاتھ سے کھلنے والی پیکنگ میں دو حصوں میں کٹا برگر مع کار فرائز ہولڈر', descZh: '汉堡预先切半配单手易开包装及车载薯条杯', badge: 'الوجبات السريعة', badgeEn: 'Fast Food' },
+      { id: 502, category: 'fastfood', price: 28, name: 'وجبة دبل برجر لحم أنجوس', nameEn: 'Double Angus Beef Burger Meal', nameTr: 'Duble Angus Et Burger Menü', nameUr: 'ڈبل اینگس بیف برگر میل', nameZh: '双层安格斯牛肉堡套餐', desc: 'شريحتا لحم أنجوس بالجبن في خبز طري مغلف بإحكام لمنع تساقط الصوص', descEn: 'Double angus beef with cheese in a spill-proof wrap with fries', descTr: 'Sos akıtmayan özel sargılı yumuşak ekmekte çift katlı angus burger', descUr: 'سوس گرنے سے محفوظ پیکنگ میں ڈبل اینگس بیف چیز برگر مع فرائز', descZh: '双层安格斯芝士牛肉堡，防漏酱汁包裹配薯条', badge: 'الأكثر مبيعاً', badgeEn: 'Best Seller' },
+      { id: 503, category: 'fastfood', price: 20, name: 'بوكس مسحب دجاج (ناجتس 8 قطع)', nameEn: 'Boneless Chicken Strips Box (8 Pcs)', nameTr: 'Kemiksiz Çıtır Tavuk Parçaları (8 Adet)', nameUr: 'بون لیس چکن اسٹرپس باکس (8 ٹکڑے)', nameZh: '无骨香脆鸡柳盒（8块装）', desc: 'قطع دجاج مسحب مقرمشة سهلة الأكل باليد مباشرة مع البطاطس والصوص', descEn: 'Easy finger-food chicken strips with fries and dipping sauce', descTr: 'Patates kızartması ve sos ile elle kolayca yenebilen çıtır tavuk', descUr: 'ہاتھ سے باآسانی کھانے کے لیے کرسپی چکن کے ٹکڑے مع فرائز اور سوس', descZh: '方便直接手拿享用的无骨脆鸡柳，配薯条与蘸酱', badge: 'سهل الأكل باليد', badgeEn: 'Finger Food' },
+      { id: 504, category: 'fastfood', price: 19, name: 'راب تورتيلا زنجر حار / عادي', nameEn: 'Zinger Tortilla Wrap (Spicy / Regular)', nameTr: 'Zinger Tortilla Dürüm (Acılı / Normal)', nameUr: 'زنگر ٹورٹیلا ریپ (اسپائسی / نارمل)', nameZh: '香辣/原味鸡肉卷饼', desc: 'ملفوف بإحكام في قصدير سهل السحب والتناول بيد واحدة أثناء التوقف', descEn: 'Tightly rolled in easy-pull foil for one-handed eating', descTr: 'Tek elle kolayca sıyrılabilen folyoya sıkıca sarılmış dürüm', descUr: 'ایک ہاتھ سے کھانے کے لیے آسان فولڈنگ پیپر میں لپٹا ہوا ٹورٹیلا ریپ', descZh: '易撕锡纸紧密包裹，单手即可轻松握持享用', badge: 'سريع وميسّر', badgeEn: 'Quick Wrap' },
+      { id: 601, category: 'desserts', price: 15, name: 'تشيز كيك التوت البري', nameEn: 'Blueberry Cheesecake Cup', nameTr: 'Yaban Mersinli Cheesecake Kabı', nameUr: 'بلو بیری چیز کیک کپ', nameZh: '蓝莓芝士蛋糕杯', desc: 'يقدم في كوب عريض سهل التناول بالملعقة بيد واحدة بدون صحن', descEn: 'Served in a wide cup for easy single-handed spoon eating', descTr: 'Tabak gerektirmeyen, tek elle kaşıkla kolayca yenebilen geniş kap', descUr: 'بغیر پلیٹ کے ایک ہاتھ سے چمچ کے ذریعے کھانے کے لیے چوڑا کپ', descZh: '宽口杯装设计，无需餐盘即可单手用勺挖取', badge: 'قسم الحلى', badgeEn: 'Desserts' },
+      { id: 602, category: 'desserts', price: 14, name: 'كوكيز شوكولاتة دافئ مع آيسكريم', nameEn: 'Warm Chocolate Cookie & Ice Cream', nameTr: 'Dondurmalı Sıcak Çikolatalı Kurabiye', nameUr: 'گرم چاکلیٹ کوکیز مع آئس کریم', nameZh: '热巧克力曲奇配冰淇淋杯', desc: 'قطع كوكيز طرية مقطعة مسبقاً في علبة محكمة', descEn: 'Pre-sliced soft warm cookie pieces in a secure cup', descTr: 'Güvenli kap içinde önceden dilimlenmiş yumuşak sıcak kurabiye', descUr: 'محفوظ کپ میں پہلے سے کٹے ہوئے نرم چاکلیٹ کوکیز کے ٹکڑے', descZh: '预先切块的温热软曲奇，杯装稳固不脏手', badge: 'حلى دافئ', badgeEn: 'Warm Sweet' },
+      { id: 603, category: 'desserts', price: 16, name: 'بودينغ التمر والكراميل الدافئ', nameEn: 'Warm Date & Caramel Pudding Cup', nameTr: 'Sıcak Hurmalı ve Karamelli Puding', nameUr: 'کھجور اور کیریمل گرم پڈنگ کپ', nameZh: '椰枣焦糖热布丁杯', desc: 'كيك التمر الطري بصوص الكراميل يقدم في كوب حراري مريح', descEn: 'Soft date cake with caramel sauce in an easy-hold cup', descTr: 'Kolay tutulan kapta karamel soslu yumuşak hurmalı kek', descUr: 'آرام دہ تھرمل کپ میں کیریمل سوس کے ساتھ نرم کھجور کیک', descZh: '焦糖椰枣软蛋糕，隔热舒适杯装', badge: 'طعم أصيل', badgeEn: 'Signature' },
+      { id: 604, category: 'desserts', price: 11, name: 'كوب آيسكريم فانيليا وشوكولاتة', nameEn: 'Vanilla & Chocolate Ice Cream Cup', nameTr: 'Vanilyalı ve Çikolatalı Dondurma Kabı', nameUr: 'ونیلا اور چاکلیٹ آئس کریم کپ', nameZh: '香草巧克力双色冰淇淋杯', desc: 'كوب يثبت في حامل أكواب السيارة مع ملعقة عريضة مريحة', descEn: 'Cup-holder friendly ice cream tub with wide spoon', descTr: 'Araç bardak tutucusuna tam uyan kap ve geniş rahat kaşık', descUr: 'گاڑی کے کپ ہولڈر میں فٹ ہونے والا کپ مع چوڑا چمچ', descZh: '可稳固放入车载杯架，配宽柄好握勺子', badge: 'بارد ومنعش', badgeEn: 'Cold Treat' },
+      { id: 701, category: 'drinks', price: 14, name: 'قهوة مختصة (باردة / ساخنة)', nameEn: 'Specialty Coffee (Iced / Hot)', nameTr: 'Özel Nitelikli Kahve (Soğuk / Sıcak)', nameUr: 'اسپیشلٹی کافی (ٹھنڈی / گرم)', nameZh: '精品咖啡（冰 / 热）', desc: 'كوب مزود بغطاء أمان مانع للانسكاب ومصاصة ثابتة', descEn: 'Equipped with anti-spill safety lid and fixed straw', descTr: 'Dökülmeyi önleyen güvenlik kapağı ve sabit pipetli bardak', descUr: 'نہ گرنے والے محفوظ ڈھکن اور مضبوط اسٹرا والا کپ', descZh: '配备防洒安全杯盖与固定吸管', badge: 'قسم المشروبات', badgeEn: 'Drinks' },
+      { id: 702, category: 'drinks', price: 13, name: 'عصير برتقال طبيعي طازج', nameEn: '100% Fresh Orange Juice', nameTr: '%100 Taze Sıkma Portakal Suyu', nameUr: 'خالص تازہ مالٹے کا جوس', nameZh: '100% 鲜榨橙汁', desc: 'عبوة مريحة سهلة الإمساك بيد واحدة مع غطاء محكم', descEn: 'Easy one-hand grip bottle with spill-proof cap', descTr: 'Sızdırmaz kapaklı, tek elle kolay kavranan şişe', descUr: 'ایک ہاتھ سے پکڑنے میں آسان بوتل مع مضبوط ڈھکن', descZh: '单手易握瓶身设计，配防漏瓶盖', badge: 'طبيعي 100%', badgeEn: '100% Fresh' },
+      { id: 703, category: 'drinks', price: 9, name: 'شاي أحمر / شاي كرك ساخن', nameEn: 'Hot Red Tea / Karak Tea', nameTr: 'Sıcak Kırmızı Çay / Karak Çayı', nameUr: 'گرم سرخ چائے / کڑک چائے', nameZh: '热红茶 / 阿拉伯香料奶茶 (Karak)', desc: 'كوب حراري مزدوج العزل لحماية اليد من الحرارة مع غطاء أمان', descEn: 'Double-insulated cup to protect hands from heat with safety lid', descTr: 'Eli ısıdan koruyan çift yalıtımlı güvenlik kapaklı bardak', descUr: 'ہاتھ کو گرمی سے بچانے والا ڈبل انسولیٹڈ کپ مع محفوظ ڈھکن', descZh: '双层隔热防烫杯身，配防漏安全盖', badge: 'كوب عازل للحرارة', badgeEn: 'Heat-Safe Cup' },
+      { id: 704, category: 'drinks', price: 7, name: 'مشروب غازي / مياه معدنية', nameEn: 'Soft Drink / Mineral Water', nameTr: 'Gazlı İçecek / Doğal Kaynak Suyu', nameUr: 'کولڈ ڈرنک / منرل واٹر', nameZh: '碳酸软饮 / 矿泉水', desc: 'يقدم مفتوح الغطاء مسبقاً حسب الرغبة مع مصاصة مرنة', descEn: 'Pre-opened upon request with a flexible straw', descTr: 'İsteğe göre önceden açılmış kapak ve esnek pipet ile sunulur', descUr: 'ضرورت کے مطابق پہلے سے کھلا ڈھکن مع لچکدار اسٹرا', descZh: '可按需预先拧开瓶盖并配可弯曲吸管', badge: 'بارد', badgeEn: 'Chilled' }
     ];
 
     let cart = [];
@@ -1786,7 +1618,6 @@
       return item.desc;
     }
 
-    // محرك صوت نقي وطبيعي 100%
     let unifiedAudioPlayer = null;
     let audioChannelUnlocked = false;
     let cachedVoicesList = [];
@@ -1835,7 +1666,7 @@
     function prepareTextForSpeech(text, lang) {
       if (!text) return '';
       return text
-        .replace(/[#*•—\-_✓✕💳💵()]/g, ' ')
+        .replace(/[#*•—\-_✓✕💳💵()؟]/g, ' ')
         .replace(/YSR/gi, lang === 'ar' ? 'يُسر رقم ' : 'Y S R ')
         .replace(/ر\.س/g, 'ريال سعودي')
         .replace(/SAR/gi, lang === 'ar' ? 'ريال سعودي' : 'S A R')
@@ -1937,6 +1768,94 @@
       }
 
       playNextCloudStream();
+    }
+
+    // دوال لوحة التخيير وشرح الواجهة خطوة بخطوة
+    function openTutorialPromptModal() {
+      const tutT = tutorialTranslations[currentLang] || tutorialTranslations.ar;
+      document.getElementById('tutPromptBadge').textContent = tutT.promptBadge;
+      document.getElementById('tutPromptTitle').textContent = tutT.promptTitle;
+      document.getElementById('tutPromptDesc').textContent = tutT.promptDesc;
+      document.getElementById('tutAcceptBtn').textContent = tutT.acceptBtn;
+      document.getElementById('tutDeclineBtn').textContent = tutT.declineBtn;
+
+      document.getElementById('tutorialPromptModal').classList.remove('hidden');
+      speakText(`${tutT.promptTitle}. ${tutT.promptDesc}`);
+    }
+
+    function declineInterfaceTutorial() {
+      document.getElementById('tutorialPromptModal').classList.add('hidden');
+      const t = translations[currentLang] || translations.ar;
+      speakText(t.welcomeSpeech);
+    }
+
+    function acceptInterfaceTutorial() {
+      document.getElementById('tutorialPromptModal').classList.add('hidden');
+      currentTutStepIndex = 0;
+      renderTutorialStep();
+      document.getElementById('tutorialStepsModal').classList.remove('hidden');
+    }
+
+    function renderTutorialStep() {
+      const tutT = tutorialTranslations[currentLang] || tutorialTranslations.ar;
+      const totalSteps = tutT.steps.length;
+      const stepObj = tutT.steps[currentTutStepIndex];
+
+      document.getElementById('tutStepCounter').textContent = tutT.stepCounter(currentTutStepIndex + 1, totalSteps);
+      document.getElementById('tutSkipTopBtn').textContent = tutT.skipTop;
+      document.getElementById('tutStepNumberCircle').textContent = currentTutStepIndex + 1;
+      document.getElementById('tutStepCategoryTag').textContent = stepObj.tag;
+      document.getElementById('tutStepHeading').textContent = stepObj.title;
+      document.getElementById('tutStepBody').textContent = stepObj.body;
+
+      const dotsEl = document.getElementById('tutDotsContainer');
+      dotsEl.innerHTML = tutT.steps.map((_, idx) => `
+        <span class="h-2.5 rounded-full transition-all duration-300 ${
+          idx === currentTutStepIndex ? 'w-7 bg-emerald-600' : 'w-2 bg-slate-300'
+        }"></span>
+      `).join('');
+
+      const prevBtn = document.getElementById('tutPrevBtn');
+      prevBtn.textContent = tutT.prevBtn;
+      if (currentTutStepIndex === 0) {
+        prevBtn.classList.add('hidden');
+      } else {
+        prevBtn.classList.remove('hidden');
+      }
+
+      const nextBtn = document.getElementById('tutNextBtn');
+      if (currentTutStepIndex === totalSteps - 1) {
+        nextBtn.textContent = tutT.finishBtn;
+        nextBtn.className = 'focus-ring flex-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black py-3.5 px-6 rounded-2xl text-base shadow-lg transition cursor-pointer';
+      } else {
+        nextBtn.textContent = tutT.nextBtn;
+        nextBtn.className = 'focus-ring flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 px-6 rounded-2xl text-base shadow-lg transition cursor-pointer';
+      }
+
+      speakText(`${stepObj.title}. ${stepObj.body}`);
+    }
+
+    function nextTutorialStep() {
+      const tutT = tutorialTranslations[currentLang] || tutorialTranslations.ar;
+      if (currentTutStepIndex < tutT.steps.length - 1) {
+        currentTutStepIndex++;
+        renderTutorialStep();
+      } else {
+        closeTutorialSteps();
+      }
+    }
+
+    function prevTutorialStep() {
+      if (currentTutStepIndex > 0) {
+        currentTutStepIndex--;
+        renderTutorialStep();
+      }
+    }
+
+    function closeTutorialSteps() {
+      document.getElementById('tutorialStepsModal').classList.add('hidden');
+      const t = translations[currentLang] || translations.ar;
+      speakText(t.welcomeSpeech);
     }
 
     function renderCustomerMyOrders() {
@@ -2677,14 +2596,13 @@
         currentLang = 'ar';
         applyLanguage('ar');
         selectDisabilityMode('hearing');
-        triggerVisualBanner('أهلاً بك! تم تفعيل نمط التواصل البصري ولغة الإشارة بدون صوت');
+        openTutorialPromptModal();
         return;
       }
 
       currentLang = langSelection;
       applyLanguage(langSelection);
-      const t = translations[currentLang] || translations.ar;
-      speakText(t.welcomeSpeech);
+      openTutorialPromptModal();
     }
 
     function openLanguageModal() {
