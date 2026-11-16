@@ -9,7 +9,7 @@
   <title>يُسْر درايف | Yusr Drive</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=18">
+  <link rel="stylesheet" href="style.css?v=19">
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
@@ -19,7 +19,7 @@
       pointer-events: none;
       transition: opacity 0.5s ease-in-out;
     }
-    /* تنسيق الوضع الداكن المحسّن والشامل */
+    /* تنسيق الوضع الداكن الشامل والمحسّن */
     body.dark-theme {
       background-color: #020617 !important;
       color: #f8fafc !important;
@@ -50,10 +50,31 @@
       color: #e2e8f0 !important;
       border: 1px solid #334155 !important;
     }
-    body.dark-theme .mode-card, body.dark-theme .spot-btn, body.dark-theme .lane-btn {
+    body.dark-theme .mode-card {
       background-color: #0f172a !important;
       color: #f8fafc !important;
       border-color: #334155 !important;
+    }
+    /* وضوح عالي لخيارات مكان التسليم والمسار في الوضع الداكن */
+    body.dark-theme .spot-btn {
+      background-color: #0f172a !important;
+      border-color: #334155 !important;
+      color: #cbd5e1 !important;
+    }
+    body.dark-theme .spot-btn.border-emerald-600 {
+      background-color: #047857 !important;
+      border-color: #34d399 !important;
+      color: #ffffff !important;
+    }
+    body.dark-theme .lane-btn {
+      background-color: #0f172a !important;
+      border-color: #334155 !important;
+      color: #cbd5e1 !important;
+    }
+    body.dark-theme .lane-btn.border-emerald-600 {
+      background-color: #047857 !important;
+      border-color: #34d399 !important;
+      color: #ffffff !important;
     }
 
     /* رفع الشريط العلوي مؤقتاً عند شرح أزراره ليظهر الزر المحدد بلونه الأصلي الساطع وباقي الأزرار معتمة */
@@ -881,7 +902,7 @@
             </div>
 
             <div class="space-y-2 pt-3 border-t border-slate-700">
-              <span class="text-xs text-slate-400 block">إشعارات حالة التسليم السريعة:</span>
+              <span class="text-xs font-slate-400 block">إشعارات حالة التسليم السريعة:</span>
               <button type="button" onclick="triggerCustomerAlert('الموظف في طريقه إليك الآن ومعه الطلب')" class="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition">
                 إشعار العميل: الموظف قادم لسيارتك
               </button>
@@ -946,7 +967,7 @@
   </footer>
 
   <script>
-    console.log("Yusr Drive System v18 Full Optimized Initialized - Developer: Kayan Adel Abbas");
+    console.log("Yusr Drive System v19 Spot & Lane DarkMode Fix Initialized - Developer: Kayan Adel Abbas");
 
     let currentLang = 'ar';
     let ttsEnabled = true;
@@ -967,7 +988,7 @@
     let currentTutStepIndex = 0;
     let activeHighlightedElement = null;
 
-    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v18';
+    const SYNC_TOPIC = 'yusr_drive_kyan1820_live_v19';
     let lastEventStamp = 0;
     const clientSessionId = 'sess_' + Math.random().toString(36).substring(2, 10);
 
@@ -1105,191 +1126,6 @@
           { targetId: 'step3SectionBox', tag: 'خطوات الطلب في الواجهة', title: '7. الخطوة 3: بيانات المركبة ومكان التسليم', body: 'في هذه الخانة تكتب نوع ولون سيارتك، وتحدد مكان استلام الطلب (نافذة السائق، المقعد المجاور، أو الشنطة الخلفية) ورقم المسار.' },
           { targetId: 'submitOrderBtnBox', tag: 'الفاتورة والدفع', title: '8. زر تأكيد الطلب والفاتورة', body: 'عند الضغط على هذا الزر ستظهر لك الفاتورة الضريبية لاختيار طريقة الدفع (مدى، Apple Pay، فيزا، أو نقدي) وإرسال الطلب للمسار.' }
         ]
-      },
-      en: {
-        promptBadge: 'Interface & Accessibility Guide',
-        promptTitle: 'Would you like a quick guided tour?',
-        promptDesc: 'We will point an arrow at each button and explain it right next to it (Simplify, Voice Reader, High Contrast, Font Size, and ordering steps).',
-        acceptBtn: '✓ Accept (Start Guide)',
-        declineBtn: 'Skip',
-        skipTop: 'Skip ✕',
-        prevBtn: 'Previous',
-        nextBtn: 'Next →',
-        finishBtn: '✓ Got it, Start Ordering',
-        stepCounter: (curr, total) => `Step ${curr} of ${total}`,
-        steps: [
-          { targetId: 'simpleModeBtn', tag: 'Accessibility Controls', title: '1. Simplify Button (Hide Secondary Buttons)', body: 'The button pointed to by the arrow hides all secondary buttons and extra text so only essential ordering buttons remain.' },
-          { targetId: 'ttsToggleBtn', tag: 'Accessibility Controls', title: '2. Voice Reader Button', body: 'The button pointed to by the arrow turns automated audio narration ON or OFF for items, prices, and delivery updates.' },
-          { targetId: 'contrastBtn', tag: 'Accessibility Controls', title: '3. High Contrast Button', body: 'The button pointed to by the arrow switches the screen into a sharp, high-contrast color mode for better visibility.' },
-          { targetId: 'fontSizeCycleBtn', tag: 'Accessibility Controls', title: '4. Font Size Button', body: 'The button pointed to by the arrow enlarges text and buttons in three levels (100%, 115%, or 130%).' },
-          { targetId: 'step1SectionBox', tag: 'Ordering Steps', title: '5. Step 1: Select Service & Accessibility Mode', body: 'Choose the mode tailored to your needs so our staff adapts car delivery to your vehicle.' },
-          { targetId: 'step2SectionBox', tag: 'Ordering Steps', title: '6. Step 2: Menu & Easy-Open Packaging', body: 'Browse all 7 food categories, keep free Easy-Open Packaging enabled, and add meals to your cart.' },
-          { targetId: 'step3SectionBox', tag: 'Ordering Steps', title: '7. Step 3: Vehicle Info & Delivery Spot', body: 'Enter your car details, choose where to receive the order in your car, and select your smart lane.' },
-          { targetId: 'submitOrderBtnBox', tag: 'Invoice & Payment', title: '8. Confirm Order & Invoice Button', body: 'Tap this button to review your tax invoice, choose payment (Mada, Apple Pay, Visa, or Cash), and send your order.' }
-        ]
-      },
-      tr: {
-        promptBadge: 'Arayüz ve Erişilebilirlik Rehberi',
-        promptTitle: 'Arayüz için hızlı bir açıklama ister misiniz?',
-        promptDesc: 'Her düğmeyi okla gösterip yanında açıklayacağız (Basit Mod, Sesli Okuyucu, Yüksek Kontrast, Yazı Boyutu ve sipariş adımları).',
-        acceptBtn: '✓ Kabul Et (Rehberi Başlat)',
-        declineBtn: 'Atla',
-        skipTop: 'Atla ✕',
-        prevBtn: 'Önceki',
-        nextBtn: 'Sonraki →',
-        finishBtn: '✓ Anladım, Başla',
-        stepCounter: (curr, total) => `Adım ${curr} / ${total}`,
-        steps: [
-          { targetId: 'simpleModeBtn', tag: 'Erişilebilirlik', title: '1. Basit Mod Düğmesi', body: 'Okla gösterilen bu düğme ikincil düğmeleri gizleyerek yalnızca temel sipariş düğmelerini bırakır.' },
-          { targetId: 'ttsToggleBtn', tag: 'Erişilebilirlik', title: '2. Sesli Okuyucu Düğmesi', body: 'Okla gösterilen bu düğme sesli okumayı açıp kapatmanızı sağlar.' },
-          { targetId: 'contrastBtn', tag: 'Erişilebilirlik', title: '3. Yüksek Kontrast Düğmesi', body: 'Okla gösterilen bu düğme ekranı yüksek kontrast moduna geçirir.' },
-          { targetId: 'fontSizeCycleBtn', tag: 'Erişilebilirlik', title: '4. Yazı Boyutu Düğmesi', body: 'Okla gösterilen bu düğme yazıları %100, %115 ve %130 oranında büyütür.' },
-          { targetId: 'step1SectionBox', tag: 'Sipariş Adımları', title: '5. Adım 1: Hizmet Modunu Seçin', body: 'Size uygun erişilebilirlik modunu buradan seçin.' },
-          { targetId: 'step2SectionBox', tag: 'Sipariş Adımları', title: '6. Adım 2: Menü ve Kolay Paketleme', body: 'Kategorilerden yemek seçip sepetinize ekleyin.' },
-          { targetId: 'step3SectionBox', tag: 'Sipariş Adımları', title: '7. Adım 3: Araç Bilgisi ve Teslimat Yeri', body: 'Araç modelinizi, teslimat yerini ve akıllı hattı seçin.' },
-          { targetId: 'submitOrderBtnBox', tag: 'Fatura ve Ödeme', title: '8. Siparişi Onayla Düğmesi', body: 'Faturanızı inceleyip ödeme yöntemini seçmek için bu düğmeye basın.' }
-        ]
-      },
-      ur: {
-        promptBadge: 'انٹرفیس اور رسائی کی رہنمائی',
-        promptTitle: 'کیا آپ کو انٹرفیس کی مختصر وضاحت درکار ہے؟',
-        promptDesc: 'ہم تیر کے نشان سے ہر بٹن کی نشاندہی کریں گے اور اس کے ساتھ ہی اس کی وضاحت دکھائیں گے۔',
-        acceptBtn: '✓ قبول کریں (وضاحت شروع کریں)',
-        declineBtn: 'تخطی (چھوڑ دیں)',
-        skipTop: 'تخطی ✕',
-        prevBtn: 'پچھلا',
-        nextBtn: 'اگلا ←',
-        finishBtn: '✓ سمجھ گیا، شروع کریں',
-        stepCounter: (curr, total) => `مرحلہ ${curr} از ${total}`,
-        steps: [
-          { targetId: 'simpleModeBtn', tag: 'رسائی کے ٹولز', title: '1. سادہ موڈ بٹن', body: 'تیر کے نشان والا یہ بٹن اضافی بٹنوں کو چھپا کر صرف بنیادی بٹن دکھاتا ہے۔' },
-          { targetId: 'ttsToggleBtn', tag: 'رسائی کے ٹولز', title: '2. صوتی قاری بٹن', body: 'تیر کے نشان والے اس بٹن سے آواز کو آن یا آف کیا جا سکتا ہے۔' },
-          { targetId: 'contrastBtn', tag: 'رسائی کے ٹولز', title: '3. ہائی کنٹراسٹ بٹن', body: 'تیر کے نشان والا یہ بٹن اسکرین کے رنگوں کو انتہائی واضح بناتا ہے۔' },
-          { targetId: 'fontSizeCycleBtn', tag: 'رسائی کے ٹولز', title: '4. خط کا سائز بٹن', body: 'تیر کے نشان والا یہ بٹن تحریر کو 100%، 115% یا 130% تک بڑا کرتا ہے۔' },
-          { targetId: 'step1SectionBox', tag: 'آرڈر کے مراحل', title: '5. مرحلہ 1: خدمت کا انداز', body: 'یہاں سے اپنی ضرورت کے مطابق سروس موڈ منتخب کریں۔' },
-          { targetId: 'step2SectionBox', tag: 'آرڈر کے مراحل', title: '6. مرحلہ 2: مینو اور آسان پیکنگ', body: 'کھانا منتخب کریں اور ٹوکری میں شامل کریں۔' },
-          { targetId: 'step3SectionBox', tag: 'آرڈر کے مراحل', title: '7. مرحلہ 3: گاڑی کی تفصیلات', body: 'گاڑی کی تفصیلات اور ترسیل کی جگہ منتخب کریں۔' },
-          { targetId: 'submitOrderBtnBox', tag: 'بل اور ادائیگی', title: '8. آرڈر کی تصدیق کا بٹن', body: 'بل دیکھنے اور ادائیگی کا طریقہ منتخب کرنے کے لیے یہ بٹن دبائیں۔' }
-        ]
-      },
-      zh: {
-        promptBadge: '界面与无障碍功能指南',
-        promptTitle: '您需要快速了解界面功能吗？',
-        promptDesc: '我们将用箭头指向每个按钮并在其旁边为您说明功能（极简模式、语音朗读、高对比度、字体大小及点餐步骤）。',
-        acceptBtn: '✓ 接受（开始介绍）',
-        declineBtn: '跳过',
-        skipTop: '跳过 ✕',
-        prevBtn: '上一步',
-        nextBtn: '下一步 →',
-        finishBtn: '✓ 明白了，开始点餐',
-        stepCounter: (curr, total) => `第 ${curr} 步（共 ${total} 步）`,
-        steps: [
-          { targetId: 'simpleModeBtn', tag: '无障碍工具', title: '1. 极简模式按钮', body: '箭头所指的按钮可隐藏所有次要按钮，仅保留核心点餐功能。' },
-          { targetId: 'ttsToggleBtn', tag: '无障碍工具', title: '2. 语音朗读按钮', body: '箭头所指的按钮可随时开启或关闭自动语音播报。' },
-          { targetId: 'contrastBtn', tag: '无障碍工具', title: '3. 高对比度按钮', body: '箭头所指的按钮可将屏幕切换为高对比度清晰显示模式。' },
-          { targetId: 'fontSizeCycleBtn', tag: '无障碍工具', title: '4. 字体大小按钮', body: '箭头所指的按钮可在 100%、115% 和 130% 之间切换字体大小。' },
-          { targetId: 'step1SectionBox', tag: '点餐步骤', title: '5. 第 1 步：选择无障碍服务模式', body: '在此选择适合您的服务模式，工作人员将定制送餐方式。' },
-          { targetId: 'step2SectionBox', tag: '点餐步骤', title: '6. 第 2 步：浏览菜单与易开包装', body: '选择餐点分类并加入购物车。' },
-          { targetId: 'step3SectionBox', tag: '点餐步骤', title: '7. 第 3 步：车辆信息与递送位置', body: '输入车型车牌、车内递送位置及智能车道。' },
-          { targetId: 'submitOrderBtnBox', tag: '账单与支付', title: '8. 确认下单按钮', body: '点击此按钮核对税务账单并选择支付方式。' }
-        ]
-      }
-    };
-
-    const stepMessages = {
-      ar: {
-        1: 'المرحلة الأولى خمسة وعشرون بالمئة، تم استلام طلبك وتكييف المسار الذكي',
-        2: 'المرحلة الثانية خمسون بالمئة، جاري تجهيز طلبك بتغليف ميسر سهل الفتح',
-        3: 'المرحلة الثالثة خمسة وسبعون بالمئة، تم التعرف على وصول سيارتك في المسار الذكي',
-        4: 'المرحلة الرابعة مئة بالمئة، الموظف في طريقه لباب سيارتك الآن لتسليم الطلب'
-      },
-      en: {
-        1: 'Stage 1, 25 percent: Order received and smart lane adapted',
-        2: 'Stage 2, 50 percent: Preparing your order with easy-open packaging',
-        3: 'Stage 3, 75 percent: Your vehicle arrival has been detected in the smart lane',
-        4: 'Stage 4, 100 percent: Staff member is on the way to your car door now'
-      },
-      tr: {
-        1: 'Aşama 1: Siparişiniz alındı ve akıllı hat hazırlandı',
-        2: 'Aşama 2: Siparişiniz kolay açılır paketle hazırlanıyor',
-        3: 'Aşama 3: Aracınızın gelişi akıllı hatta algılandı',
-        4: 'Aşama 4: Personelimiz siparişinizi teslim etmek için aracınıza geliyor'
-      },
-      ur: {
-        1: 'پہلا مرحلہ: آپ کا آرڈر موصول ہو گیا ہے اور سمارٹ لین تیار ہے',
-        2: 'دوسرا مرحلہ: آپ کا کھانا آسان پیکنگ میں تیار کیا جا رہا ہے',
-        3: 'تیسرا مرحلہ: سمارٹ لین میں آپ کی گاڑی کی آمد کی تصدیق ہو گئی ہے',
-        4: 'چوتھا مرحلہ: عملہ آرڈر لے کر آپ کی گاڑی کے دروازے کی طرف آ رہا ہے'
-      },
-      zh: {
-        1: '第一阶段：已收到您的订单并调整智能车道',
-        2: '第二阶段：正在为您准备易开包装餐点',
-        3: '第三阶段：智能车道已感应到您的车辆到达',
-        4: '第四阶段：工作人员正前往您的车门递送餐点'
-      }
-    };
-
-    const translations = {
-      ar: {
-        dir: 'rtl',
-        accBadgeTitle: 'شريط الوصول الشامل',
-        simpleOn: 'زر التبسيط: مفعّل (الأزرار الأساسية فقط)',
-        simpleOff: 'زر التبسيط: إخفاء الأزرار الثانوية',
-        inlineSimpleBtn: 'تفعيل / إيقاف وضع التبسيط السريع',
-        changeLangBtn: 'تغيير اللغة (Language)',
-        ttsActive: 'القارئ الصوتي: مفعّل',
-        ttsMuted: 'القارئ الصوتي: متوقف',
-        contrastBtn: 'تباين عالٍ',
-        fontBtnLabel: 'حجم الخط:',
-        flashBtnText: 'إشعارات ضوئية (للصم)',
-        heroBadge: 'مبادرة المسار الذكي الميسّر لذوي الإعاقة',
-        heroMainTitle: 'يُسْر درايف',
-        heroSubTitle: 'اطلب من سيارتك باستقلالية تامة؛ بدون الحاجة للتحدث عبر المايكروفون التقليدي أو النزول من المركبة، مع تسليم مخصص لباب سيارتك.',
-        tabCustomer: 'واجهة العميل (الطلب)',
-        tabTracker: 'مسار الدرايف ثرو المباشر',
-        tabMyOrders: 'قائمة طلباتي',
-        tabStaff: 'شاشة الموظف (محاكاة)',
-        step1Badge: 'الخطوة 1 من 3',
-        step1Title: 'اختر نمط الخدمة وتكييف المسار',
-        listenStep1Btn: 'استمع للشرح',
-        modeMobilityTitle: 'إعاقة حركية',
-        modeMobilityDesc: 'توصيل الطلب حتى نافذة السائق أو المقعد الخلفي دون الحاجة لمد اليد أو النزول.',
-        modeHearingTitle: 'صم وضعاف سمع / نطق',
-        modeHearingDesc: 'إلغاء التخاطب الصوتي تماماً، واستبداله بشاشة تفاعلية وتنبيهات نصية واضحة.',
-        modeVisualTitle: 'مكفوفون وضعاف بصر',
-        modeVisualDesc: 'قراءة صوتية تلقائية للأصناف والأسعار، وأزرار ضخمة عالية التباين.',
-        modeCognitiveTitle: 'واجهة مبسطة وهادئة',
-        modeCognitiveDesc: 'مناسبة لطيف التوحد وكبار السن؛ خطوات واضحة بدون ضوضاء أو استعجال.',
-        step2Badge: 'الخطوة 2 من 3',
-        step2Title: 'منيو مطعم يُسْر المبسط',
-        catOffers: 'قسم العروض',
-        catBreakfast: 'وجبات الفطور',
-        catLunch: 'وجبات الغداء',
-        catDinner: 'وجبات العشاء',
-        catFastfood: 'الوجبات السريعة',
-        catDesserts: 'قسم الحلى',
-        catDrinks: 'قسم المشروبات',
-        easyPackTitle: 'تخصيص التغليف الميسّر (Easy-Open Packaging)',
-        easyPackDesc: 'فتح العبوات مسبقاً أو وضعها في حامل مانع للانسكاب يسهل تناوله بيد واحدة',
-        easyPackLabel: 'تفعيل التغليف الميسّر مجاناً',
-        step3Badge: 'الخطوة 3 من 3',
-        step3Title: 'بيانات المركبة وإتمام الطلب',
-        carDetailsLabel: 'نوع ولون السيارة / رقم اللوحة',
-        carPlaceholder: 'اكتب نوع ولون السيارة ورقم اللوحة هنا...',
-        spotLabel: 'مكان تسليم الطلب في السيارة:',
-        spotWindowText: 'تسليم عبر نافذة السائق بحامل ممتد',
-        spotPassengerText: 'وضع الطلب على المقعد المجاور للسائق',
-        spotTrunkText: 'وضع الطلب في الشنطة الخلفية للسيارة',
-        laneLabel: 'رقم موقف أو مسار الانتظار الذكي:',
-        cartHeaderTitle: 'سلة طلبك الحالية',
-        clearCartBtn: 'إفراغ السلة',
-        emptyCartText: 'السلة فارغة حالياً، اختر وجبتك من الأقسام',
-        totalLabel: 'الإجمالي شامل الضريبة:',
-        currency: 'ريال سعودي',
-        submitOrderBtnText: 'تأكيد الطلب وإشعار المسار الذكي',
-        addBtn: '+ أضف للسلة',
-        voiceBtn: 'صوت',
-        welcomeSpeech: 'أهلاً بك في مطعم يسر درايف، اختر وجبتك المفضلة من الأقسام أمامك'
       },
       en: {
         dir: 'ltr',
@@ -3006,10 +2842,12 @@
       document.querySelectorAll('.spot-btn').forEach(btn => {
         btn.className = 'spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-slate-200 hover:border-slate-300 font-bold text-sm flex items-center justify-between';
         btn.querySelector('span:last-child').textContent = '○';
+        btn.querySelector('span:last-child').className = 'text-slate-400';
       });
 
       btnEl.className = 'spot-btn focus-ring text-right px-4 py-3 rounded-xl border-2 border-emerald-600 bg-emerald-50 font-bold text-sm flex items-center justify-between';
       btnEl.querySelector('span:last-child').textContent = '✓';
+      btnEl.querySelector('span:last-child').className = 'text-emerald-700 font-black';
     }
 
     function selectLane(laneIdx) {
@@ -3209,7 +3047,7 @@
         spotMap: {
           'تسليم عبر نافذة السائق بحامل ممتد': '通过加长托盘递送至驾驶座车窗',
           'وضع الطلب على المقعد المجاور للسائق': '放置在副驾驶座位上',
-          'وضع الطلب في الشنطة الخلفية للسيارة': '放置在车辆后备箱内'
+          'وضع الطلب في الشนطة الخلفية للسيارة': '放置在车辆后备箱内'
         },
         laneMap: {
           'مسار يُسر 1': '易速车道 1',
