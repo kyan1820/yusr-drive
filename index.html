@@ -266,19 +266,11 @@
         <div><span id="invLaneLabel">المسار:</span> <span id="invModalLane" class="text-emerald-700 font-black">—</span></div>
         <div class="col-span-2"><span id="invSpotLabel">طريقة الاستلام:</span> <span id="invModalSpot" class="text-slate-900 font-black">—</span></div>
       </div>
-      </div>
-  </div>
 
-  <!-- أضف كود العداد هنا -->
-  <div id="invoiceTimerContainer" class="bg-amber-50 border-2 border-amber-300 p-3 rounded-2xl text-center space-y-1 my-2">
-    <p class="text-xs font-bold text-amber-900">الوقت المتبقي للتعديل أو الاعتماد التلقائي:</p>
-    <div id="invoiceCountdownDisplay" class="text-xl font-black text-amber-700">02:00</div>
-  </div>
-
-  <div>
+     <div>
         <h4 id="invItemsTitleLabel" class="text-xs font-black text-slate-500 mb-2">تفاصيل الأصناف المطلوبة:</h4>
         <div id="invModalItems" class="space-y-2 max-h-40 overflow-y-auto pr-1 border-b border-slate-200 pb-3"></div>
-
+        
         <!-- إضافة كلمة الخصم -->
         <div class="flex items-center justify-between pt-2 text-xs font-bold text-slate-600 border-b border-slate-200 pb-2">
           <span>الخصم:</span>
@@ -3081,42 +3073,9 @@
     }
 
     function closeInvoiceModal() {
-      stopInvoiceCountdown(); // إيقاف العداد عند الضغط على زر تعديل السلة
       document.getElementById('invoiceCheckoutModal').classList.add('hidden');
     }
-let invoiceTimerInterval = null;
-    let invoiceSecondsLeft = 120; // 120 ثانية = دقيقتان
 
-    function startInvoiceCountdown() {
-      clearInterval(invoiceTimerInterval);
-      invoiceSecondsLeft = 120;
-      updateInvoiceCountdownUI();
-
-      invoiceTimerInterval = setInterval(() => {
-        invoiceSecondsLeft--;
-        updateInvoiceCountdownUI();
-        if (invoiceSecondsLeft <= 0) {
-          clearInterval(invoiceTimerInterval);
-          const modal = document.getElementById('invoiceCheckoutModal');
-          if (modal && !modal.classList.contains('hidden')) {
-            finalizeOrderWithInvoice();
-            triggerVisualBanner('تم اعتماد الطلب تلقائياً بعد مرور دقيقتين');
-          }
-        }
-      }, 1000);
-    }
-
-    function updateInvoiceCountdownUI() {
-      const display = document.getElementById('invoiceCountdownDisplay');
-      if (!display) return;
-      const mins = Math.floor(invoiceSecondsLeft / 60).toString().padStart(2, '0');
-      const secs = (invoiceSecondsLeft % 60).toString().padStart(2, '0');
-      display.textContent = `${mins}:${secs}`;
-    }
-
-    function stopInvoiceCountdown() {
-      clearInterval(invoiceTimerInterval);
-    }
     const invoiceTranslations = {
       ar: {
         locale: 'ar-SA',
@@ -3342,19 +3301,9 @@ let invoiceTimerInterval = null;
 
       document.getElementById('invModalTotal').innerHTML = `<span>${totalAmount}</span> ${saudiRiyalLogoSVG}`;
       document.getElementById('invoiceCheckoutModal').classList.remove('hidden');
-     document.getElementById('invoiceCheckoutModal').classList.remove('hidden');
-      
-    startInvoiceCountdown(); // أضف هذا السطر هنا
-      
-    speakText(invT.speechReady(totalAmount));
       speakText(invT.speechReady(totalAmount));
     }
     function finalizeOrderWithInvoice() {
-      stopInvoiceCountdown(); // أضف هذا السطر هنا
-      closeInvoiceModal();
-      
-      const now = new Date();
-      // ... باقي الكود الموجود لديك ...
       closeInvoiceModal();
 
       const now = new Date();
