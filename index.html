@@ -19,7 +19,7 @@
       pointer-events: none;
       transition: opacity 0.5s ease-in-out;
     }
-    /* تنسيق الوضع الداكن المحسّن والشامل */
+   /* تنسيق الوضع الداكن المحسّن والشامل */
     body.dark-theme {
       background-color: #020617 !important;
       color: #f8fafc !important;
@@ -29,18 +29,66 @@
       color: #f8fafc !important;
       border-color: #334155 !important;
     }
-    body.dark-theme .bg-slate-50, body.dark-theme .bg-slate-100, body.dark-theme .bg-slate-200 {
+    /* شمل الكروت ذات الشفافية مثل كروت المنيو والسلة */
+    body.dark-theme .bg-slate-50,
+    body.dark-theme .bg-slate-50\/70,
+    body.dark-theme .bg-slate-100,
+    body.dark-theme .bg-slate-200 {
       background-color: #1e293b !important;
       color: #f8fafc !important;
       border-color: #334155 !important;
     }
-    body.dark-theme .border-slate-200, body.dark-theme .border-slate-300, body.dark-theme .border-slate-400 {
-      border-color: #334155 !important;
+    /* تحويل الصناديق الخضراء والصفراء الفاتحة (مثل التغليف الميسّر) لألوان داكنة مريحة */
+    body.dark-theme .bg-emerald-50,
+    body.dark-theme .bg-emerald-50\/80,
+    body.dark-theme .bg-emerald-50\/30 {
+      background-color: rgba(6, 78, 59, 0.45) !important;
+      border-color: #059669 !important;
+      color: #ecfdf5 !important;
     }
-    body.dark-theme .text-slate-900, body.dark-theme .text-slate-800, body.dark-theme .text-slate-700, body.dark-theme .text-slate-600, body.dark-theme .text-slate-500 {
+    body.dark-theme .bg-amber-50,
+    body.dark-theme .bg-amber-100 {
+      background-color: rgba(120, 53, 15, 0.4) !important;
+      border-color: #d97706 !important;
+      color: #fef3c7 !important;
+    }
+    /* تفتيح النصوص الداكنة لتكون واضحة تماماً */
+    body.dark-theme .text-slate-900,
+    body.dark-theme .text-slate-800,
+    body.dark-theme .text-slate-700 {
+      color: #f1f5f9 !important;
+    }
+    body.dark-theme .text-slate-600,
+    body.dark-theme .text-slate-500,
+    body.dark-theme .text-slate-400 {
       color: #cbd5e1 !important;
     }
-    body.dark-theme input {
+    body.dark-theme .text-emerald-950,
+    body.dark-theme .text-emerald-900,
+    body.dark-theme .text-emerald-800,
+    body.dark-theme .text-emerald-700 {
+      color: #6ee7b7 !important;
+    }
+    body.dark-theme .text-amber-950,
+    body.dark-theme .text-amber-900,
+    body.dark-theme .text-amber-800 {
+      color: #fcd34d !important;
+    }
+    /* تحسين شكل الشارات الصغيرة (الخطوة 1 من 3، عروض التوفير، إلخ) */
+    body.dark-theme .bg-emerald-100 {
+      background-color: rgba(16, 185, 129, 0.2) !important;
+      color: #6ee7b7 !important;
+      border: 1px solid rgba(52, 211, 153, 0.4) !important;
+    }
+    body.dark-theme .border-slate-200,
+    body.dark-theme .border-slate-300,
+    body.dark-theme .border-slate-400,
+    body.dark-theme .border-emerald-200,
+    body.dark-theme .border-emerald-300 {
+      border-color: #334155 !important;
+    }
+    body.dark-theme input[type="text"],
+    body.dark-theme input[type="password"] {
       background-color: #1e293b !important;
       color: #ffffff !important;
       border-color: #475569 !important;
@@ -50,10 +98,22 @@
       color: #e2e8f0 !important;
       border: 1px solid #334155 !important;
     }
-    body.dark-theme .mode-card, body.dark-theme .spot-btn, body.dark-theme .lane-btn {
+    body.dark-theme .mode-card,
+    body.dark-theme .spot-btn,
+    body.dark-theme .lane-btn,
+    body.dark-theme .pay-method-btn {
       background-color: #0f172a !important;
       color: #f8fafc !important;
       border-color: #334155 !important;
+    }
+    /* تمييز الزر النشط والمحدد باللون الأخضر الداكن الواضح */
+    body.dark-theme .mode-card.border-emerald-600,
+    body.dark-theme .spot-btn.border-emerald-600,
+    body.dark-theme .lane-btn.border-emerald-600,
+    body.dark-theme .pay-method-btn.border-emerald-600 {
+      background-color: rgba(4, 120, 87, 0.35) !important;
+      border-color: #34d399 !important;
+      color: #ffffff !important;
     }
 
     /* رفع الشريط العلوي مؤقتاً عند شرح أزراره ليظهر الزر المحدد بلونه الأصلي الساطع وباقي الأزرار معتمة */
