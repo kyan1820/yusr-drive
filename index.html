@@ -4116,47 +4116,44 @@
     function localizeTimerAndConfirmModals() {
       const L = timerAndConfirmI18n[currentLang] || timerAndConfirmI18n.ar;
 
-      // ربط العناصر بمعرفات تلقائية في أول مرة بناءً على النص العربي الأصلي
-      if (!window._timerConfirmElementsBound) {
-        const textToKeyMap = {
-          'مهلة المراجعة الذكية قبل الإرسال النهائي': 'timerBadge',
-          'مراجعة نهائية لطلبك': 'timerTitle',
-          'سيتم اعتماد طلبك وإرساله للمسار الذكي تلقائياً عند انتهاء الوقت، أو يمكنك التحكم فوراً من الأزرار أدناه:': 'timerDesc',
-          'الوقت المتبقي للاعتماد التلقائي:': 'timerRemaining',
-          'اعتماد الطلب فوراً (عدم الانتظار)': 'timerApproveNow',
-          'تأكيد تعديل السلة': 'editBadge',
-          'العودة لتعديل السلة؟': 'editTitle',
-          'هل أنت متأكد من إيقاف المؤقت والعودة إلى القائمة لتعديل أصناف سلتك؟': 'editDesc',
-          'تأكيد الاعتماد الفوري': 'approveBadge',
-          'اعتماد الطلب الآن؟': 'approveTitle',
-          'هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟': 'approveDesc',
-          'عدم إظهار رسالة التأكيد هذه مرة أخرى': 'dontShowAgain',
-          'نعم، تأكيد': 'confirmYes',
-          'تراجع': 'confirmCancel'
-        };
+      const textToKeyMap = {
+        'مهلة المراجعة الذكية قبل الإرسال النهائي': 'timerBadge',
+        'مراجعة نهائية لطلبك': 'timerTitle',
+        'سيتم اعتماد طلبك وإرساله للمسار الذكي تلقائياً عند انتهاء الوقت، أو يمكنك التحكم فوراً من الأزرار أدناه:': 'timerDesc',
+        'الوقت المتبقي للاعتماد التلقائي:': 'timerRemaining',
+        'اعتماد الطلب فوراً (عدم الانتظار)': 'timerApproveNow',
+        'تأكيد تعديل السلة': 'editBadge',
+        'العودة لتعديل السلة؟': 'editTitle',
+        'هل أنت متأكد من إيقاف المؤقت والعودة إلى القائمة لتعديل أصناف سلتك؟': 'editDesc',
+        'تأكيد الاعتماد الفوري': 'approveBadge',
+        'اعتماد الطلب الآن؟': 'approveTitle',
+        'هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟': 'approveDesc',
+        'عدم إظهار رسالة التأكيد هذه مرة أخرى': 'dontShowAgain',
+        'نعم، تأكيد': 'confirmYes',
+        'تراجع': 'confirmCancel'
+      };
 
-        document.querySelectorAll('span, h3, h4, p, button, label').forEach(el => {
-          if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
-          const cleanText = el.textContent.replace(/[⏳✓✎]/g, '').trim();
-          if (textToKeyMap[cleanText]) {
-            el.setAttribute('data-tc-i18n', textToKeyMap[cleanText]);
-          } else if (cleanText === 'تعديل السلة' && el.id !== 'invCancelBtnText') {
-            el.setAttribute('data-tc-i18n', 'timerEditCart');
-          }
-        });
-        window._timerConfirmElementsBound = true;
-      }
+      // فحص جميع العناصر في كل مرة لضمان التقاط أي نص عربي يتم توليده ديناميكياً عند الضغط
+      document.querySelectorAll('span, h2, h3, h4, p, button, label, div').forEach(el => {
+        if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
+        const cleanText = el.textContent.replace(/[⏳✓✎]/g, '').replace(/\s+/g, ' ').trim();
+        if (textToKeyMap[cleanText]) {
+          el.setAttribute('data-tc-i18n', textToKeyMap[cleanText]);
+        } else if (cleanText === 'تعديل السلة' && el.id !== 'invCancelBtnText') {
+          el.setAttribute('data-tc-i18n', 'timerEditCart');
+        }
+      });
 
-      // تحديث النصوص في كل مرة تتغير فيها اللغة أو تفتح فيها النافذة
+      // تطبيق الترجمة فوراً حسب اللغة الحالية
       document.querySelectorAll('[data-tc-i18n]').forEach(el => {
         const key = el.getAttribute('data-tc-i18n');
-        if (L[key]) {
+        if (L[key] && el.textContent !== L[key]) {
           el.textContent = L[key];
         }
       });
     }
 
-    // ربط الترجمة تلقائياً مع تغيير اللغة ومع فتح النوافذ
+    // ربط الترجمة مع تغيير اللغة ومع فتح النوافذ ومع أي نقرة زر
     const _origApplyLanguageTC = typeof applyLanguage === 'function' ? applyLanguage : null;
     if (_origApplyLanguageTC) {
       applyLanguage = function(lang) {
@@ -4170,8 +4167,13 @@
       showModalSmoothly = function(modalId, callback) {
         localizeTimerAndConfirmModals();
         _origShowModalSmoothlyTC(modalId, callback);
+        setTimeout(localizeTimerAndConfirmModals, 10);
       };
     }
+
+    document.addEventListener('click', () => {
+      setTimeout(localizeTimerAndConfirmModals, 10);
+    });
 
     window.addEventListener('DOMContentLoaded', localizeTimerAndConfirmModals);
     localizeTimerAndConfirmModals();
