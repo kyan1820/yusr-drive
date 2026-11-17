@@ -341,20 +341,10 @@
       </div>
 
       <div class="flex gap-3 pt-2">
-      <!-- شريط المؤقت التنازلي التلقائي (لمدة دقيقتين) -->
-      <div id="checkoutTimerBox" class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 text-center space-y-1.5">
-        <div class="text-xs font-black text-amber-900 flex items-center justify-center gap-1.5">
-          <span>⏳ سيتم اعتماد الطلب تلقائياً خلال:</span>
-          <span id="checkoutCountdownDisplay" class="text-base font-black text-rose-600 bg-white px-2 py-0.5 rounded-lg border border-amber-200" dir="ltr">02:00</span>
-        </div>
-        <p class="text-[11px] text-amber-800 font-bold">يمكنك تأكيد الطلب فوراً أو الضغط على تعديل السلة لتغيير الأصناف.</p>
-      </div>
-
-      <div class="flex gap-3 pt-2">
-        <button type="button" id="invConfirmBtnText" onclick="finalizeOrderWithInvoice()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg transition cursor-pointer">
+        <button type="button" id="invConfirmBtnText" onclick="finalizeOrderWithInvoice()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg transition">
           ✓ اعتماد الفاتورة وإرسال الطلب للمسار
         </button>
-        <button type="button" id="invCancelBtnText" onclick="closeInvoiceModalAndEditCart()" class="px-5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 rounded-2xl text-xs transition cursor-pointer">
+        <button type="button" id="invCancelBtnText" onclick="closeInvoiceModal()" class="px-5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 rounded-2xl text-xs transition">
           تعديل السلة
         </button>
       </div>
@@ -3249,7 +3239,7 @@
       }
     };
 
-   function submitAccessibleOrder() { startCheckoutCountdown();
+   function submitAccessibleOrder() {
       const t = translations[currentLang] || translations.ar;
       const invT = invoiceTranslations[currentLang] || invoiceTranslations.ar;
 
@@ -3314,7 +3304,7 @@
       speakText(invT.speechReady(totalAmount));
     }
     function finalizeOrderWithInvoice() {
-    clearInterval(checkoutTimerInterval);  closeInvoiceModal();
+      closeInvoiceModal();
 
       const now = new Date();
       const orderDate = now.toLocaleDateString('ar-SA', { year: 'numeric', month: '2-digit', day: '2-digit' });
@@ -3557,40 +3547,7 @@
           document.getElementById('tabCustomer').classList.remove('hidden');
         }
       } catch (e) {}
-       });
-    let checkoutTimerInterval = null;
-    let checkoutSecondsRemaining = 120; // دقيقتان
-
-    function startCheckoutCountdown() {
-      clearInterval(checkoutTimerInterval);
-      checkoutSecondsRemaining = 120;
-      updateCheckoutTimerDisplay();
-
-      checkoutTimerInterval = setInterval(() => {
-        checkoutSecondsRemaining--;
-        updateCheckoutTimerDisplay();
-
-        if (checkoutSecondsRemaining <= 0) {
-          clearInterval(checkoutTimerInterval);
-          finalizeOrderWithInvoice();
-          triggerVisualBanner('انتهى الوقت المحدد؛ تم اعتماد طلبك وإرساله تلقائياً للمسار الذكي.');
-        }
-      }, 1000);
-    }
-
-    function updateCheckoutTimerDisplay() {
-      const displayEl = document.getElementById('checkoutCountdownDisplay');
-      if (!displayEl) return;
-      const mins = Math.floor(checkoutSecondsRemaining / 60);
-      const secs = checkoutSecondsRemaining % 60;
-      displayEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    function closeInvoiceModalAndEditCart() {
-      clearInterval(checkoutTimerInterval);
-      closeInvoiceModal();
-      speakText('تم العودة للسلة، يمكنك تعديل الأصناف بحرية');
-    }
+    });
   </script>
 </body>
 </html>
