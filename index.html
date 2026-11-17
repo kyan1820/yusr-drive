@@ -4023,6 +4023,158 @@
       if (vatEl) vatEl.innerHTML = `<span>${vatAmount}</span> ${saudiRiyalLogoSVG}`;
       if (totalEl) totalEl.innerHTML = `<span>${finalTotal.toFixed(2)}</span> ${saudiRiyalLogoSVG}`;
     }
+  // قاموس ترجمة نوافذ المراجعة النهائية والمؤقت ورسائل التأكيد للغات الـ 5
+    const timerAndConfirmI18n = {
+      ar: {
+        timerBadge: '⏳ مهلة المراجعة الذكية قبل الإرسال النهائي',
+        timerTitle: 'مراجعة نهائية لطلبك',
+        timerDesc: 'سيتم اعتماد طلبك وإرساله للمسار الذكي تلقائياً عند انتهاء الوقت، أو يمكنك التحكم فوراً من الأزرار أدناه:',
+        timerRemaining: 'الوقت المتبقي للاعتماد التلقائي:',
+        timerApproveNow: '✓ اعتماد الطلب فوراً (عدم الانتظار)',
+        timerEditCart: '✎ تعديل السلة',
+        editBadge: 'تأكيد تعديل السلة',
+        editTitle: 'العودة لتعديل السلة؟',
+        editDesc: 'هل أنت متأكد من إيقاف المؤقت والعودة إلى القائمة لتعديل أصناف سلتك؟',
+        approveBadge: 'تأكيد الاعتماد الفوري',
+        approveTitle: 'اعتماد الطلب الآن؟',
+        approveDesc: 'هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟',
+        dontShowAgain: 'عدم إظهار رسالة التأكيد هذه مرة أخرى',
+        confirmYes: 'نعم، تأكيد',
+        confirmCancel: 'تراجع'
+      },
+      en: {
+        timerBadge: '⏳ Smart Review Grace Period Before Sending',
+        timerTitle: 'Final Order Review',
+        timerDesc: 'Your order will be automatically confirmed and sent to the smart lane when time runs out, or you can control it immediately below:',
+        timerRemaining: 'Time remaining for auto-approval:',
+        timerApproveNow: '✓ Confirm Order Now (Skip Wait)',
+        timerEditCart: '✎ Edit Cart',
+        editBadge: 'Confirm Cart Edit',
+        editTitle: 'Return to Edit Cart?',
+        editDesc: 'Are you sure you want to stop the timer and return to the menu to edit your cart items?',
+        approveBadge: 'Confirm Immediate Approval',
+        approveTitle: 'Confirm Order Now?',
+        approveDesc: 'Are you sure you want to confirm and send your order immediately to the smart lane before the timer ends?',
+        dontShowAgain: 'Do not show this confirmation message again',
+        confirmYes: 'Yes, Confirm',
+        confirmCancel: 'Cancel'
+      },
+      tr: {
+        timerBadge: '⏳ Gönderim Öncesi Akıllı İnceleme Süresi',
+        timerTitle: 'Siparişin Son İncelemesi',
+        timerDesc: 'Süre dolduğunda siparişiniz otomatik olarak onaylanıp akıllı hatta gönderilecektir veya aşağıdaki düğmelerden hemen işlem yapabilirsiniz:',
+        timerRemaining: 'Otomatik onay için kalan süre:',
+        timerApproveNow: '✓ Siparişi Şimdi Onayla (Bekleme)',
+        timerEditCart: '✎ Sepeti Düzenle',
+        editBadge: 'Sepet Düzenleme Onayı',
+        editTitle: 'Sepeti Düzenlemeye Dönülsün mü?',
+        editDesc: 'Zamanlayıcıyı durdurup sepetinizdeki ürünleri düzenlemek için menüye dönmek istediğinizden emin misiniz?',
+        approveBadge: 'Anında Onay Teyidi',
+        approveTitle: 'Sipariş Şimdi Onaylansın mı?',
+        approveDesc: 'Zamanlayıcı bitmeden siparişi hemen onaylayıp akıllı hatta göndermek istediğinizden emin misiniz?',
+        dontShowAgain: 'Bu onay mesajını bir daha gösterme',
+        confirmYes: 'Evet, Onayla',
+        confirmCancel: 'İptal'
+      },
+      ur: {
+        timerBadge: '⏳ حتمی ارسال سے قبل سمارٹ جائزہ وقت',
+        timerTitle: 'آپ کے آرڈر کا حتمی جائزہ',
+        timerDesc: 'وقت ختم ہونے پر آپ کا آرڈر خودکار طور پر منظور ہو کر سمارٹ لین میں بھیج دیا جائے گا، یا آپ نیچے دیے گئے بٹنوں سے فوری کنٹرول کر سکتے ہیں:',
+        timerRemaining: 'خودکار منظوری کے لیے باقی وقت:',
+        timerApproveNow: '✓ آرڈر کی فوری منظوری دیں (انتظار نہ کریں)',
+        timerEditCart: '✎ کارٹ میں ترمیم کریں',
+        editBadge: 'کارٹ ترمیم کی تصدیق',
+        editTitle: 'کارٹ میں ترمیم کے لیے واپس جائیں؟',
+        editDesc: 'کیا آپ واقعی ٹائمر روک کر اپنی کارٹ کی اشیاء میں ترمیم کے لیے مینو پر واپس جانا چاہتے ہیں؟',
+        approveBadge: 'فوری منظوری کی تصدیق',
+        approveTitle: 'ابھی آرڈر منظور کریں؟',
+        approveDesc: 'کیا آپ واقعی ٹائمر ختم ہونے سے پہلے آرڈر منظور کر کے فوری طور پر سمارٹ لین میں بھیجنا چاہتے ہیں؟',
+        dontShowAgain: 'یہ تصدیقی پیغام دوبارہ نہ دکھائیں',
+        confirmYes: 'ہاں، تصدیق کریں',
+        confirmCancel: 'واپس'
+      },
+      zh: {
+        timerBadge: '⏳ 最终发送前的智能审核宽限期',
+        timerTitle: '订单最终审核',
+        timerDesc: '倒计时结束后，您的订单将自动确认并发送至智能车道，或者您也可以通过下方按钮立即操作：',
+        timerRemaining: '自动确认剩余时间：',
+        timerApproveNow: '✓ 立即确认订单（无需等待）',
+        timerEditCart: '✎ 修改购物车',
+        editBadge: '确认修改购物车',
+        editTitle: '返回修改购物车？',
+        editDesc: '您确定要停止计时器并返回菜单修改购物车中的商品吗？',
+        approveBadge: '确认立即发送',
+        approveTitle: '立即确认订单？',
+        approveDesc: '您确定要在倒计时结束前立即确认订单并发送至智能车道吗？',
+        dontShowAgain: '不再显示此确认消息',
+        confirmYes: '是的，确认',
+        confirmCancel: '取消'
+      }
+    };
+
+    // ربط عناصر النوافذ تلقائياً عند أول تشغيل وترجمتها فوراً حسب اللغة المختارة
+    function localizeTimerAndConfirmModals() {
+      const L = timerAndConfirmI18n[currentLang] || timerAndConfirmI18n.ar;
+
+      // ربط العناصر بمعرفات تلقائية في أول مرة بناءً على النص العربي الأصلي
+      if (!window._timerConfirmElementsBound) {
+        const textToKeyMap = {
+          'مهلة المراجعة الذكية قبل الإرسال النهائي': 'timerBadge',
+          'مراجعة نهائية لطلبك': 'timerTitle',
+          'سيتم اعتماد طلبك وإرساله للمسار الذكي تلقائياً عند انتهاء الوقت، أو يمكنك التحكم فوراً من الأزرار أدناه:': 'timerDesc',
+          'الوقت المتبقي للاعتماد التلقائي:': 'timerRemaining',
+          'اعتماد الطلب فوراً (عدم الانتظار)': 'timerApproveNow',
+          'تأكيد تعديل السلة': 'editBadge',
+          'العودة لتعديل السلة؟': 'editTitle',
+          'هل أنت متأكد من إيقاف المؤقت والعودة إلى القائمة لتعديل أصناف سلتك؟': 'editDesc',
+          'تأكيد الاعتماد الفوري': 'approveBadge',
+          'اعتماد الطلب الآن؟': 'approveTitle',
+          'هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟': 'approveDesc',
+          'عدم إظهار رسالة التأكيد هذه مرة أخرى': 'dontShowAgain',
+          'نعم، تأكيد': 'confirmYes',
+          'تراجع': 'confirmCancel'
+        };
+
+        document.querySelectorAll('span, h3, h4, p, button, label').forEach(el => {
+          if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
+          const cleanText = el.textContent.replace(/[⏳✓✎]/g, '').trim();
+          if (textToKeyMap[cleanText]) {
+            el.setAttribute('data-tc-i18n', textToKeyMap[cleanText]);
+          } else if (cleanText === 'تعديل السلة' && el.id !== 'invCancelBtnText') {
+            el.setAttribute('data-tc-i18n', 'timerEditCart');
+          }
+        });
+        window._timerConfirmElementsBound = true;
+      }
+
+      // تحديث النصوص في كل مرة تتغير فيها اللغة أو تفتح فيها النافذة
+      document.querySelectorAll('[data-tc-i18n]').forEach(el => {
+        const key = el.getAttribute('data-tc-i18n');
+        if (L[key]) {
+          el.textContent = L[key];
+        }
+      });
+    }
+
+    // ربط الترجمة تلقائياً مع تغيير اللغة ومع فتح النوافذ
+    const _origApplyLanguageTC = typeof applyLanguage === 'function' ? applyLanguage : null;
+    if (_origApplyLanguageTC) {
+      applyLanguage = function(lang) {
+        _origApplyLanguageTC(lang);
+        localizeTimerAndConfirmModals();
+      };
+    }
+
+    const _origShowModalSmoothlyTC = typeof showModalSmoothly === 'function' ? showModalSmoothly : null;
+    if (_origShowModalSmoothlyTC) {
+      showModalSmoothly = function(modalId, callback) {
+        localizeTimerAndConfirmModals();
+        _origShowModalSmoothlyTC(modalId, callback);
+      };
+    }
+
+    window.addEventListener('DOMContentLoaded', localizeTimerAndConfirmModals);
+    localizeTimerAndConfirmModals();
   </script>
 </body>
 </html>
