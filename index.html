@@ -4625,11 +4625,13 @@
           }
         }
 
-        // نص المستشعر في المرحلة 3 (يفحصه قبل تخطي العناصر التي بداخلها span)
+        // نص المستشعر في المرحلة 3 (آمن تماماً: يفحص فقط الفقرة الصغيرة التي لا تحتوي على أقسام)
         if (
-          cleanText.includes('المستشعر قرأ وجودك في') ||
-          el.id === 'laneStep3Desc' ||
-          el.getAttribute('data-sensor-desc') === '1'
+          el.tagName !== 'DIV' &&
+          el.children.length <= 1 &&
+          (cleanText.startsWith('المستشعر قرأ وجودك في') ||
+           el.id === 'laneStep3Desc' ||
+           el.getAttribute('data-sensor-desc') === '1')
         ) {
           el.setAttribute('data-sensor-desc', '1');
           let targetSensor = SL.step3Desc1;
