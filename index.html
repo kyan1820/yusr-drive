@@ -367,7 +367,7 @@
         <div class="pt-3 pb-1">
           <div class="flex gap-2">
             <input type="text" id="promoCodeInput" placeholder="أدخل كود الخصم (مثال: YUSR20)" class="flex-1 bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-slate-900 focus:outline-none focus:border-emerald-500 uppercase">
-            <button type="button" onclick="applyPromoCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-4 py-2 rounded-xl text-xs transition shadow-sm cursor-pointer">
+            <button type="button" id="promoApplyBtn" onclick="applyPromoCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-4 py-2 rounded-xl text-xs transition shadow-sm cursor-pointer">
               تطبيق
             </button>
           </div>
@@ -3469,7 +3469,7 @@
               <span class="font-black text-slate-900 inline-flex items-center gap-1">${item.price * item.qty} ${saudiRiyalLogoSVG}</span>
             </div>
             <div class="flex items-center justify-between text-[11px] text-slate-600 font-bold">
-              <span>الكمية: ${item.qty}</span>
+              <span>${(extraInvoiceI18n[currentLang] || extraInvoiceI18n.ar).qty}: ${item.qty}</span>
               <span class="text-emerald-700">${localizedNote}</span>
             </div>
           </div>
@@ -3481,6 +3481,7 @@
       const promoMsg = document.getElementById('promoFeedbackMsg');
       if (promoInput) promoInput.value = '';
       if (promoMsg) promoMsg.classList.add('hidden');
+      localizeExtraInvoiceLabels();
       recalculateInvoiceTotals();
       showModalSmoothly('invoiceCheckoutModal');
      speakText(invT.speechReady(totalAmount));
@@ -3872,17 +3873,109 @@
       'SEU': 15     // خصم 15%
     };
 
+    // قاموس ترجمة عناصر الفاتورة الإضافية وكود الخصم لجميع اللغات الـ 5
+    const extraInvoiceI18n = {
+      ar: {
+        qty: 'الكمية',
+        promoPlaceholder: 'أدخل كود الخصم (مثال: YUSR20)',
+        applyBtn: 'تطبيق',
+        beforeDiscount: 'السعر قبل الخصم:',
+        subtotal: 'المجموع الفرعي (غير شامل الضريبة):',
+        discount: 'إجمالي الخصومات:',
+        vat: 'ضريبة القيمة المضافة (15%):',
+        promoEmpty: 'يرجى كتابة كود الخصم أولاً.',
+        promoSuccess: (code, pct) => `✓ تم تفعيل كود (${code}) بنجاح! حصلت على خصم ${pct}%`,
+        promoInvalid: '✕ كود الخصم غير صحيح أو منتهي الصلاحية.',
+        ttsSuccess: (pct) => `تم تطبيق كود الخصم بنجاح، حصلت على خصم ${pct} بالمئة`,
+        ttsInvalid: 'كود الخصم غير صحيح'
+      },
+      en: {
+        qty: 'Qty',
+        promoPlaceholder: 'Enter Promo Code (e.g., YUSR20)',
+        applyBtn: 'Apply',
+        beforeDiscount: 'Price Before Discount:',
+        subtotal: 'Subtotal (Excl. VAT):',
+        discount: 'Total Discounts:',
+        vat: 'Value Added Tax (15% VAT):',
+        promoEmpty: 'Please enter a promo code first.',
+        promoSuccess: (code, pct) => `✓ Code (${code}) applied! You got ${pct}% OFF`,
+        promoInvalid: '✕ Invalid or expired promo code.',
+        ttsSuccess: (pct) => `Promo code applied successfully, you got ${pct} percent discount`,
+        ttsInvalid: 'Invalid promo code'
+      },
+      tr: {
+        qty: 'Adet',
+        promoPlaceholder: 'İndirim Kodu Girin (Örn: YUSR20)',
+        applyBtn: 'Uygula',
+        beforeDiscount: 'İndirim Öncesi Fiyat:',
+        subtotal: 'Ara Toplam (KDV Hariç):',
+        discount: 'Toplam İndirim:',
+        vat: 'Katma Değer Vergisi (%15 KDV):',
+        promoEmpty: 'Lütfen önce bir indirim kodu girin.',
+        promoSuccess: (code, pct) => `✓ (${code}) kodu uygulandı! %${pct} indirim kazandınız`,
+        promoInvalid: '✕ Geçersiz veya süresi dolmuş indirim kodu.',
+        ttsSuccess: (pct) => `İndirim kodu başarıyla uygulandı, yüzde ${pct} indirim kazandınız`,
+        ttsInvalid: 'Geçersiz indirim kodu'
+      },
+      ur: {
+        qty: 'مقدار',
+        promoPlaceholder: 'پرومو کوڈ درج کریں (مثال: YUSR20)',
+        applyBtn: 'لاگو کریں',
+        beforeDiscount: 'رعایت سے پہلے قیمت:',
+        subtotal: 'ذیلی مجموعہ (بغیر ٹیکس):',
+        discount: 'کل رعایت:',
+        vat: 'ویلیو ایڈڈ ٹیکس (15% VAT):',
+        promoEmpty: 'براہ کرم پہلے پرومو کوڈ درج کریں۔',
+        promoSuccess: (code, pct) => `✓ کوڈ (${code}) لاگو ہو گیا! آپ کو ${pct}% رعایت ملی`,
+        promoInvalid: '✕ غلط یا زائد المیعاد پرومو کوڈ۔',
+        ttsSuccess: (pct) => `پرومو کوڈ کامیابی سے لاگو ہو گیا، آپ کو ${pct} فیصد رعایت ملی`,
+        ttsInvalid: 'غلط پرومو کوڈ'
+      },
+      zh: {
+        qty: '数量',
+        promoPlaceholder: '输入优惠码 (例如: YUSR20)',
+        applyBtn: '应用',
+        beforeDiscount: '折前价格:',
+        subtotal: '小计 (不含税):',
+        discount: '总折扣:',
+        vat: '增值税 (15% VAT):',
+        promoEmpty: '请先输入优惠码。',
+        promoSuccess: (code, pct) => `✓ 优惠码 (${code}) 已生效！享 ${pct}% 折扣`,
+        promoInvalid: '✕ 优惠码无效或已过期。',
+        ttsSuccess: (pct) => `优惠码应用成功，已享百分之${pct}折扣`,
+        ttsInvalid: '优惠码无效'
+      }
+    };
+
+    function localizeExtraInvoiceLabels() {
+      const L = extraInvoiceI18n[currentLang] || extraInvoiceI18n.ar;
+      const promoInput = document.getElementById('promoCodeInput');
+      const applyBtn = document.getElementById('promoApplyBtn');
+      const beforeDiscLabel = document.getElementById('invBeforeDiscountLabel');
+      const subLabel = document.getElementById('invSubtotalLabel');
+      const discLabel = document.getElementById('invDiscountLabel');
+      const vatLabel = document.getElementById('invVatLabel');
+
+      if (promoInput) promoInput.placeholder = L.promoPlaceholder;
+      if (applyBtn) applyBtn.textContent = L.applyBtn;
+      if (beforeDiscLabel) beforeDiscLabel.textContent = L.beforeDiscount;
+      if (subLabel) subLabel.textContent = L.subtotal;
+      if (discLabel) discLabel.textContent = L.discount;
+      if (vatLabel) vatLabel.textContent = L.vat;
+    }
+
     function applyPromoCode() {
       const inputEl = document.getElementById('promoCodeInput');
       const msgEl = document.getElementById('promoFeedbackMsg');
       if (!inputEl || !msgEl) return;
 
+      const L = extraInvoiceI18n[currentLang] || extraInvoiceI18n.ar;
       const code = inputEl.value.trim().toUpperCase();
       msgEl.classList.remove('hidden', 'text-emerald-600', 'text-rose-500');
 
       if (!code) {
         activeDiscountPercent = 0;
-        msgEl.textContent = 'يرجى كتابة كود الخصم أولاً.';
+        msgEl.textContent = L.promoEmpty;
         msgEl.classList.add('text-rose-500');
         recalculateInvoiceTotals();
         return;
@@ -3890,14 +3983,14 @@
 
       if (validPromoCodes[code]) {
         activeDiscountPercent = validPromoCodes[code];
-        msgEl.textContent = `✓ تم تفعيل كود (${code}) بنجاح! حصلت على خصم ${activeDiscountPercent}%`;
+        msgEl.textContent = L.promoSuccess(code, activeDiscountPercent);
         msgEl.classList.add('text-emerald-600');
-        speakText(`تم تطبيق كود الخصم بنجاح، حصلت على خصم ${activeDiscountPercent} بالمئة`);
+        speakText(L.ttsSuccess(activeDiscountPercent));
       } else {
         activeDiscountPercent = 0;
-        msgEl.textContent = '✕ كود الخصم غير صحيح أو منتهي الصلاحية.';
+        msgEl.textContent = L.promoInvalid;
         msgEl.classList.add('text-rose-500');
-        speakText('كود الخصم غير صحيح');
+        speakText(L.ttsInvalid);
       }
 
       recalculateInvoiceTotals();
