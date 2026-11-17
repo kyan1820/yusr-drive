@@ -4392,7 +4392,9 @@
         'المرحلة 3 (75%)': 'step3Tag',
         'التعرف على وصول مركبتك': 'step3Title',
         'المستشعر قرأ وجودك في مسار يُسر 1': 'step3Desc1',
+        'المستشعر قرأ وجودك في مسار يسر 1': 'step3Desc1',
         'المستشعر قرأ وجودك في مسار يُسر 2': 'step3Desc2',
+        'المستشعر قرأ وجودك في مسار يسر 2': 'step3Desc2',
         'المستشعر قرأ وجودك في موقف خاص A': 'step3DescA',
         'المرحلة 4 (100%)': 'step4Tag',
         'التسليم المباشر لسيارتك': 'step4Title',
@@ -4413,16 +4415,41 @@
         'إرسال': 'chatSendBtn'
       };
 
-      // فحص وربط جميع النصوص داخل الصفحة
+      // 1. فحص العناصر العادية + العناصر التي يتم إعادة توليدها ديناميكياً (مثل المستشعر والشات)
       document.querySelectorAll('span, h2, h3, h4, p, button, label, div').forEach(el => {
-        if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
         const cleanText = el.textContent.replace(/\s+/g, ' ').trim();
-        if (textToKeyMap[cleanText]) {
+
+        // معالجة خاصة للشارة العلوية التي تحتوي بداخلها على نقطة خضراء (span)
+        if (cleanText === 'لوحة التواصل اللاتلامسي والمباشر' || el.getAttribute('data-sl-badge') === '1') {
+          el.setAttribute('data-sl-badge', '1');
+          const textNodes = Array.from(el.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim().length > 0);
+          if (textNodes.length > 0) {
+            textNodes[textNodes.length - 1].textContent = ' ' + L.topBadge;
+          } else if (el.children.length === 0) {
+            el.textContent = L.topBadge;
+          }
+          return;
+        }
+
+        if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
+
+        // التقاط جملة المستشعر حتى لو تغير اسم المسار بداخلها ديناميكياً
+        if (cleanText.includes('المستشعر قرأ وجودك في')) {
+          if (cleanText.includes('2') || cleanText.includes('٢')) {
+            el.setAttribute('data-sl-i18n', 'step3Desc2');
+          } else if (cleanText.includes('A') || cleanText.includes('خاص')) {
+            el.setAttribute('data-sl-i18n', 'step3DescA');
+          } else {
+            el.setAttribute('data-sl-i18n', 'step3Desc1');
+          }
+        } else if (cleanText.includes('بانتظار بدء المحادثة')) {
+          el.setAttribute('data-sl-i18n', 'chatWaitMsg');
+        } else if (textToKeyMap[cleanText]) {
           el.setAttribute('data-sl-i18n', textToKeyMap[cleanText]);
         }
       });
 
-      // تحديث النصوص حسب اللغة المختارة
+      // 2. تطبيق الترجمة فوراً حسب اللغة المختارة
       document.querySelectorAll('[data-sl-i18n]').forEach(el => {
         const key = el.getAttribute('data-sl-i18n');
         if (L[key] && el.textContent !== L[key]) {
@@ -4430,7 +4457,7 @@
         }
       });
 
-      // ترجمة نص الـ Placeholder لخانة كتابة الرسالة للموظف
+      // 3. ترجمة نص الـ Placeholder لخانة كتابة الرسالة للموظف
       document.querySelectorAll('input[type="text"]').forEach(inp => {
         if (inp.placeholder && (inp.placeholder.includes('اكتب رسالة للموظف') || inp.getAttribute('data-sl-placeholder'))) {
           inp.setAttribute('data-sl-placeholder', '1');
@@ -4439,17 +4466,35 @@
       });
     }
 
-    // ربط الترجمة تلقائياً عند تغيير اللغة أو تحديث الطلبات أو النقر
+    // ربط الترجمة تلقائياً عند تغيير اللغة أو تحديث حالة الطلب أو الشات
     const _origApplyLanguageSL = typeof applyLanguage === 'function' ? applyLanguage : null;
     if (_origApplyLanguageSL) {
       applyLanguage = function(lang) {
         _origApplyLanguageSL(lang);
         localizeSmartLaneScreen();
+        setTimeout(localizeSmartLaneScreen, 30);
       };
     }
 
+    // مراقب ذكي يترجم أي نص عربي يعيد النظام كتابته داخل شاشة المسار أو الشات فوراً
+    if (!window._smartLaneObserverAdded) {
+      const slObserver = new MutationObserver(() => {
+        if (typeof currentLang !== 'undefined' && currentLang !== 'ar') {
+          localizeSmartLaneScreen();
+        }
+      });
+      window.addEventListener('DOMContentLoaded', () => {
+        slObserver.observe(document.body, { childList: true, subtree: true });
+      });
+      if (document.body) {
+        slObserver.observe(document.body, { childList: true, subtree: true });
+      }
+      window._smartLaneObserverAdded = true;
+    }
+
     document.addEventListener('click', () => {
-      setTimeout(localizeSmartLaneScreen, 15);
+      setTimeout(localizeSmartLaneScreen, 20);
+      setTimeout(localizeSmartLaneScreen, 100);
     });
 
     window.addEventListener('DOMContentLoaded', localizeSmartLaneScreen);
