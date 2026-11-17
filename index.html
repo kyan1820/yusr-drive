@@ -4610,16 +4610,21 @@
           return;
         }
 
-        // زر الوضع الداكن / الفاتح
+        // زر الوضع الداكن / الفاتح (منع تكرار الإيموجي بجميع اللغات)
         if (el.id === 'themeToggleBtn' || el.getAttribute('onclick')?.includes('toggleDarkMode') || el.getAttribute('data-theme-btn') === '1' || cleanText.includes('الوضع الداكن') || cleanText.includes('الوضع الفاتح')) {
           if (el.tagName === 'BUTTON' || el.children.length === 0) {
             el.setAttribute('data-theme-btn', '1');
             const targetThemeTxt = isDark ? SL.lightBtn : SL.darkBtn;
+            const textOnly = targetThemeTxt.replace(/[🌙☀️]/g, '').trim();
             if (el.children.length === 0) {
-              el.textContent = targetThemeTxt;
+              if (el.parentElement && el.parentElement.tagName === 'BUTTON' && el.parentElement.children.length > 1) {
+                el.textContent = textOnly;
+              } else {
+                el.textContent = targetThemeTxt;
+              }
             } else {
               const sp = el.querySelector('span:last-child');
-              if (sp) sp.textContent = targetThemeTxt.replace(/[🌙☀️]/g, '').trim();
+              if (sp) sp.textContent = textOnly;
             }
             return;
           }
