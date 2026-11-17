@@ -115,7 +115,10 @@
       border-color: #34d399 !important;
       color: #ffffff !important;
     }
-
+    /* تحويل نص شعار مدى (مدى / mada) للون الأبيض في الوضع الداكن */
+    body.dark-theme .pay-method-btn svg text {
+      fill: #ffffff !important;
+    }
     /* رفع الشريط العلوي مؤقتاً عند شرح أزراره ليظهر الزر المحدد بلونه الأصلي الساطع وباقي الأزرار معتمة */
     .tutorial-parent-elevated {
       z-index: 61 !important;
@@ -360,14 +363,27 @@
         <h4 id="invItemsTitleLabel" class="text-xs font-black text-slate-500 mb-2">تفاصيل الأصناف المطلوبة:</h4>
         <div id="invModalItems" class="space-y-2 max-h-40 overflow-y-auto pr-1 border-b border-slate-200 pb-3"></div>
         
-        <!-- إضافة كلمة الخصم -->
-        <div class="flex items-center justify-between pt-2 text-xs font-bold text-slate-600 border-b border-slate-200 pb-2">
-          <span>الخصم:</span>
-          <span class="font-black text-slate-900">0.00 <svg class="inline-block w-4 h-4 fill-current shrink-0" viewBox="0 0 100 100"><path d="M58 12 L70 6 L70 72 L58 76 Z"/><path d="M36 20 L48 14 L48 72 C48 82 42 88 31 91 L15 95 L18 82 L31 79 C35 78 36 75 36 70 Z"/><path d="M18 53 L88 38 L85 50 L15 65 Z"/><path d="M58 67 L86 60 L83 72 L58 78 Z"/><path d="M52 86 L84 79 L81 91 L49 98 Z"/></svg></span>
+       <!-- الملخص المالي والضريبي الرسمي -->
+        <div class="pt-3 space-y-2 text-xs font-bold text-slate-600 border-b-2 border-dashed border-slate-200 pb-3">
+          <div class="flex items-center justify-between">
+            <span id="invSubtotalLabel">المجموع الفرعي (غير شامل الضريبة):</span>
+            <span id="invModalSubtotal" class="font-black text-slate-900 inline-flex items-center gap-1">0.00</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span id="invDiscountLabel">إجمالي الخصومات:</span>
+            <span class="font-black text-slate-900 inline-flex items-center gap-1">
+              <span>0.00</span>
+              <svg class="inline-block w-4 h-4 fill-current shrink-0" viewBox="0 0 100 100"><path d="M58 12 L70 6 L70 72 L58 76 Z"/><path d="M36 20 L48 14 L48 72 C48 82 42 88 31 91 L15 95 L18 82 L31 79 C35 78 36 75 36 70 Z"/><path d="M18 53 L88 38 L85 50 L15 65 Z"/><path d="M58 67 L86 60 L83 72 L58 78 Z"/><path d="M52 86 L84 79 L81 91 L49 98 Z"/></svg>
+            </span>
+          </div>
+          <div class="flex items-center justify-between text-emerald-800">
+            <span id="invVatLabel">ضريبة القيمة المضافة (15%):</span>
+            <span id="invModalVat" class="font-black inline-flex items-center gap-1">0.00</span>
+          </div>
         </div>
 
         <div class="flex items-center justify-between pt-3 text-lg font-black text-slate-900">
-          <span id="invTotalLabel">الإجمالي النهائي (شامل الضريبة 15%):</span>
+          <span id="invTotalLabel">الإجمالي المستحق (شامل الضريبة):</span>
           <span id="invModalTotal" class="text-2xl text-emerald-700 inline-flex items-center gap-1"></span>
         </div>
       </div>
@@ -3431,7 +3447,6 @@
       itemsContainer.innerHTML = cart.map(item => {
         const title = item.itemObj ? getItemTitle(item.itemObj) : item.name;
         const localizedNote = isEasyPack ? invT.easyNote : invT.normalNote;
-        const priceBeforeTax = (item.price / 1.15).toFixed(2); // حساب السعر قبل الضريبة
         return `
           <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-200 space-y-1 text-xs">
             <div class="flex items-center justify-between">
@@ -3439,14 +3454,22 @@
               <span class="font-black text-slate-900 inline-flex items-center gap-1">${item.price * item.qty} ${saudiRiyalLogoSVG}</span>
             </div>
             <div class="flex items-center justify-between text-[11px] text-slate-600 font-bold">
-              <span>الكمية: ${item.qty} | السعر قبل الضريبة: ${priceBeforeTax} ${saudiRiyalLogoSVG}</span>
+              <span>الكمية: ${item.qty}</span>
               <span class="text-emerald-700">${localizedNote}</span>
             </div>
           </div>
         `;
       }).join('');
 
-      document.getElementById('invModalTotal').innerHTML = `<span>${totalAmount}</span> ${saudiRiyalLogoSVG}`;
+      const subtotalBeforeTax = (totalAmount / 1.15).toFixed(2);
+      const vatAmount = (totalAmount - (totalAmount / 1.15)).toFixed(2);
+
+      const subEl = document.getElementById('invModalSubtotal');
+      const vatEl = document.getElementById('invModalVat');
+      if (subEl) subEl.innerHTML = `<span>${subtotalBeforeTax}</span> ${saudiRiyalLogoSVG}`;
+      if (vatEl) vatEl.innerHTML = `<span>${vatAmount}</span> ${saudiRiyalLogoSVG}`;
+
+      document.getElementById('invModalTotal').innerHTML = `<span>${totalAmount.toFixed(2)}</span> ${saudiRiyalLogoSVG}`;
       showModalSmoothly('invoiceCheckoutModal');
      speakText(invT.speechReady(totalAmount));
     }
