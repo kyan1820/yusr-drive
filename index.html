@@ -77,6 +77,35 @@
     .animate-pointer-arrow {
       animation: pointerBounce 0.9s infinite ease-in-out;
     }
+    /* حركة انتقال سلسة لجميع النوافذ والشاشات المنبثقة */
+    #welcomeModal,
+    #tutorialPromptModal,
+    #tutorialOverlayLayer,
+    #invoiceCheckoutModal,
+    #standaloneTimerModal,
+    #timerActionConfirmModal,
+    #adminPinModal,
+    #staffConfirmModal {
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .modal-closing {
+      opacity: 0 !important;
+      transform: scale(0.96) !important;
+      pointer-events: none !important;
+    }
+
+    /* حركة انتقال سلسة عند التبديل بين الشاشات الرئيسية */
+    #viewCustomer, #viewTracker, #viewMyOrders, #viewStaff {
+      animation: viewFadeIn 0.35s ease-out;
+    }
+
+    @keyframes viewFadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
@@ -1847,8 +1876,8 @@
       speakText(`${tutT.promptTitle}. ${tutT.promptDesc}`);
     }
 
-    function declineInterfaceTutorial() {
-      document.getElementById('tutorialPromptModal').classList.add('hidden');
+  function declineInterfaceTutorial() {
+      hideModalSmoothly('tutorialPromptModal');
       const t = translations[currentLang] || translations.ar;
       speakText(t.welcomeSpeech);
     }
@@ -1992,7 +2021,7 @@
 
     function closeTutorialSteps() {
       clearActiveHighlight();
-      document.getElementById('tutorialOverlayLayer').classList.add('hidden');
+      hideModalSmoothly('tutorialOverlayLayer');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       const t = translations[currentLang] || translations.ar;
       speakText(t.welcomeSpeech);
@@ -3129,9 +3158,9 @@
       speakText(methodName);
     }
 
-    function closeInvoiceModal() {
+   function closeInvoiceModal() {
       clearInterval(checkoutTimerInterval);
-      document.getElementById('invoiceCheckoutModal').classList.add('hidden');
+      hideModalSmoothly('invoiceCheckoutModal');
     }
 
     const invoiceTranslations = {
@@ -3606,17 +3635,44 @@
         }
       } catch (e) {}
     });
+    // دالة لإخفاء أي نافذة بشكل تدريجي وسلس قبل إغلاقها
+    function hideModalSmoothly(modalId, callback) {
+      const el = document.getElementById(modalId);
+      if (!el || el.classList.contains('hidden')) {
+        if (callback) callback();
+        return;
+      }
+      el.classList.add('modal-closing');
+      setTimeout(() => {
+        el.classList.add('hidden');
+        el.classList.remove('modal-closing');
+        if (callback) callback();
+      }, 340);
+    }
+
+    // دالة لإظهار أي نافذة بشكل تدريجي وسلس
+    function showModalSmoothly(modalId) {
+      const el = document.getElementById(modalId);
+      if (!el) return;
+      el.classList.add('modal-closing');
+      el.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          el.classList.remove('modal-closing');
+        });
+      });
+    }
   let checkoutTimerInterval = null;
     let checkoutSecondsRemaining = 120;
     let skipTimerConfirmation = false; // لحفظ رغبة العميل بعدم إظهار الرسالة مجدداً
     let pendingTimerUserAction = null;
 
-    function openStandaloneTimerScreen() {
-      // إغلاق نافذة الفاتورة وفتح صفحة المؤقت المستقلة
-      document.getElementById('invoiceCheckoutModal').classList.add('hidden');
-      document.getElementById('standaloneTimerModal').classList.remove('hidden');
-      startCheckoutCountdown();
-      speakText('تم الانتقال لشاشة المراجعة النهائية، لديك دقيقتان قبل الاعتماد التلقائي، أو يمكنك الاعتماد فوراً أو تعديل السلة');
+   function openStandaloneTimerScreen() {
+      hideModalSmoothly('invoiceCheckoutModal', () => {
+        showModalSmoothly('standaloneTimerModal');
+        startCheckoutCountdown();
+        speakText('تم الانتقال لشاشة المراجعة النهائية، لديك دقيقتان قبل الاعتماد التلقائي، أو يمكنك الاعتماد فوراً أو تعديل السلة');
+      });
     }
 
     function startCheckoutCountdown() {
@@ -3681,33 +3737,34 @@
         descEl.textContent = 'هل أنت متأكد من إيقاف المؤقت والعودة إلى القائمة لتعديل أصناف سلتك؟';
       }
 
-      document.getElementById('timerActionConfirmModal').classList.remove('hidden');
+     showModalSmoothly('timerActionConfirmModal');
     }
 
-    function proceedWithTimerAction() {
+   function proceedWithTimerAction() {
       const checkbox = document.getElementById('dontShowTimerConfirmCheckbox');
       if (checkbox && checkbox.checked) {
         skipTimerConfirmation = true;
       }
-      document.getElementById('timerActionConfirmModal').classList.add('hidden');
-      executeTimerActionDirectly(pendingTimerUserAction);
+      hideModalSmoothly('timerActionConfirmModal', () => {
+        executeTimerActionDirectly(pendingTimerUserAction);
+      });
     }
 
     function cancelTimerActionConfirm() {
       pendingTimerUserAction = null;
-      document.getElementById('timerActionConfirmModal').classList.add('hidden');
+      hideModalSmoothly('timerActionConfirmModal');
     }
 
     function executeTimerActionDirectly(actionType) {
       clearInterval(checkoutTimerInterval);
-      document.getElementById('standaloneTimerModal').classList.add('hidden');
-
-      if (actionType === 'confirm') {
-        finalizeOrderWithInvoice();
-      } else if (actionType === 'edit') {
-        closeInvoiceModal();
-        speakText('تم إيقاف المؤقت والعودة للسلة، يمكنك تعديل الأصناف بحرية');
-      }
+      hideModalSmoothly('standaloneTimerModal', () => {
+        if (actionType === 'confirm') {
+          finalizeOrderWithInvoice();
+        } else if (actionType === 'edit') {
+          closeInvoiceModal();
+          speakText('تم إيقاف المؤقت والعودة للسلة، يمكنك تعديل الأصناف بحرية');
+        }
+      });
     }
   </script>
 </body>
