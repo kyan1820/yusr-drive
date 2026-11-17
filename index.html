@@ -3387,7 +3387,7 @@
       }).join('');
 
       document.getElementById('invModalTotal').innerHTML = `<span>${totalAmount}</span> ${saudiRiyalLogoSVG}`;
-      document.getElementById('invoiceCheckoutModal').classList.remove('hidden');
+      showModalSmoothly('invoiceCheckoutModal');
      speakText(invT.speechReady(totalAmount));
     }
     function finalizeOrderWithInvoice() {
