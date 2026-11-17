@@ -4177,6 +4177,283 @@
 
     window.addEventListener('DOMContentLoaded', localizeTimerAndConfirmModals);
     localizeTimerAndConfirmModals();
+  // قاموس ترجمة شاشة المسار الذكي داخل السيارة بجميع اللغات الـ 5
+    const smartLaneScreenI18n = {
+      ar: {
+        topBadge: 'لوحة التواصل اللاتلامسي والمباشر',
+        mainTitle: 'شاشة المسار الذكي داخل السيارة',
+        mainDesc: 'تم إرسال طلبك بنجاح! يمكنك متابعة مراحل التسليم أو الاطلاع على الفواتير وحالة طلباتك من زر (قائمة طلباتي).',
+        viewOrdersBtn: 'عرض الفاتورة وقائمة طلباتي',
+        addNewOrderBtn: '+ إضافة طلب جديد آخر',
+        trackedOrderLabel: 'رقم الطلب المتابع حالياً',
+        progressLabel: 'نسبة إنجاز وتقدم طلبك في المسار:',
+        step1Tag: 'المرحلة 1 (25%)',
+        step1Title: 'تم استلام الطلب وتكييف المسار',
+        step1Desc: 'تم إبلاغ الموظف بنوع الاحتياج وطريقة التسليم',
+        step2Tag: 'المرحلة 2 (50%)',
+        step2Title: 'تجهيز وتغليف ميسّر',
+        step2Desc: 'تجهيز العبوات سهلة الفتح وحامل السيارة',
+        step3Tag: 'المرحلة 3 (75%)',
+        step3Title: 'التعرف على وصول مركبتك',
+        step3Desc1: 'المستشعر قرأ وجودك في مسار يُسر 1',
+        step3Desc2: 'المستشعر قرأ وجودك في مسار يُسر 2',
+        step3DescA: 'المستشعر قرأ وجودك في موقف خاص A',
+        step4Tag: 'المرحلة 4 (100%)',
+        step4Title: 'التسليم المباشر لسيارتك',
+        step4Desc: 'الموظف في طريقه لباب المركبة الآن',
+        quickCommTitle: 'أزرار التواصل السريع مع الموظف (بدون تحدث)',
+        quickCommDesc: 'اضغط على أي زر لإرسال إشارة فورية أو اكتب رسالتك في الشات المباشر:',
+        qBtn1Title: 'أنا في المسار الآن',
+        qBtn1Desc: 'إشعار بوصول السيارة لنقطة الاستلام',
+        qBtn2Title: 'أحتاج وقتاً إضافياً',
+        qBtn2Desc: 'إيقاف مؤقت للاستعجال في المسار',
+        qBtn3Title: 'تواصل كتابي / إشارة',
+        qBtn3Desc: 'تنبيه الموظف لعدم استخدام الصوت',
+        qBtn4Title: 'إحضار جهاز الشبكة',
+        qBtn4Desc: 'مدّ جهاز الدفع اللاسلكي للسيارة',
+        chatTitle: 'المحادثة المباشرة مع الموظف',
+        chatLiveBadge: 'مباشر',
+        chatWaitMsg: 'بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...',
+        chatPlaceholder: 'اكتب رسالة للموظف هنا...',
+        chatSendBtn: 'إرسال'
+      },
+      en: {
+        topBadge: 'Contactless & Direct Communication Panel',
+        mainTitle: 'In-Car Smart Lane Screen',
+        mainDesc: 'Your order has been sent! Track delivery stages or view invoices and order status via (My Orders).',
+        viewOrdersBtn: 'View Invoice & My Orders',
+        addNewOrderBtn: '+ Add Another New Order',
+        trackedOrderLabel: 'Currently Tracked Order #',
+        progressLabel: 'Order Completion & Progress in Lane:',
+        step1Tag: 'Stage 1 (25%)',
+        step1Title: 'Order Received & Lane Adapted',
+        step1Desc: 'Staff notified of accessibility mode & delivery spot',
+        step2Tag: 'Stage 2 (50%)',
+        step2Title: 'Easy-Open Prep & Packaging',
+        step2Desc: 'Preparing easy-open packs & car tray',
+        step3Tag: 'Stage 3 (75%)',
+        step3Title: 'Vehicle Arrival Detected',
+        step3Desc1: 'Sensor detected your vehicle in Yusr Lane 1',
+        step3Desc2: 'Sensor detected your vehicle in Yusr Lane 2',
+        step3DescA: 'Sensor detected your vehicle in Special Spot A',
+        step4Tag: 'Stage 4 (100%)',
+        step4Title: 'Direct Delivery to Your Car',
+        step4Desc: 'Staff member is on the way to your vehicle now',
+        quickCommTitle: 'Quick Staff Communication Buttons (No Speech Needed)',
+        quickCommDesc: 'Tap any button to send an instant signal or type in the live chat:',
+        qBtn1Title: 'I Am in the Lane Now',
+        qBtn1Desc: 'Notify vehicle arrival at pickup point',
+        qBtn2Title: 'I Need Extra Time',
+        qBtn2Desc: 'Pause lane rush temporarily',
+        qBtn3Title: 'Text / Sign Communication',
+        qBtn3Desc: 'Alert staff not to use voice speech',
+        qBtn4Title: 'Bring POS Card Reader',
+        qBtn4Desc: 'Extend wireless payment terminal to car',
+        chatTitle: 'Live Chat with Staff',
+        chatLiveBadge: 'Live',
+        chatWaitMsg: 'Waiting to start chat or send a quick signal to staff...',
+        chatPlaceholder: 'Type a message to staff here...',
+        chatSendBtn: 'Send'
+      },
+      tr: {
+        topBadge: 'Temassız ve Doğrudan İletişim Paneli',
+        mainTitle: 'Araç İçi Akıllı Hat Ekranı',
+        mainDesc: 'Siparişiniz başarıyla gönderildi! Teslimat aşamalarını takip edebilir veya (Siparişlerim) düğmesinden faturaları görebilirsiniz.',
+        viewOrdersBtn: 'Faturayı ve Siparişlerimi Gör',
+        addNewOrderBtn: '+ Başka Yeni Sipariş Ekle',
+        trackedOrderLabel: 'Takip Edilen Sipariş No',
+        progressLabel: 'Hattaki Sipariş Tamamlanma Oranı:',
+        step1Tag: 'Aşama 1 (%25)',
+        step1Title: 'Sipariş Alındı ve Hat Uyarlandı',
+        step1Desc: 'Personele ihtiyaç türü ve teslimat noktası bildirildi',
+        step2Tag: 'Aşama 2 (%50)',
+        step2Title: 'Kolay Açılır Hazırlık ve Paketleme',
+        step2Desc: 'Kolay açılır kutular ve araç tepsisi hazırlanıyor',
+        step3Tag: 'Aşama 3 (%75)',
+        step3Title: 'Aracınızın Gelişi Algılandı',
+        step3Desc1: 'Sensör Yusr Hat 1 içindeki varlığınızı okudu',
+        step3Desc2: 'Sensör Yusr Hat 2 içindeki varlığınızı okudu',
+        step3DescA: 'Sensör Özel Park A içindeki varlığınızı okudu',
+        step4Tag: 'Aşama 4 (%100)',
+        step4Title: 'Aracınıza Doğrudan Teslimat',
+        step4Desc: 'Personel şu anda aracınızın kapısına geliyor',
+        quickCommTitle: 'Personelle Hızlı İletişim Düğmeleri (Konuşmadan)',
+        quickCommDesc: 'Anında sinyal göndermek için bir düğmeye basın veya canlı sohbete yazın:',
+        qBtn1Title: 'Şu Anda Hattayım',
+        qBtn1Desc: 'Aracın teslim noktasına vardığını bildir',
+        qBtn2Title: 'Ek Süreye İhtiyacım Var',
+        qBtn2Desc: 'Hattaki aceleyi geçici olarak duraklat',
+        qBtn3Title: 'Yazılı / İşaret İletişimi',
+        qBtn3Desc: 'Personeli ses kullanmaması için uyar',
+        qBtn4Title: 'POS Cihazını Getir',
+        qBtn4Desc: 'Kablosuz ödeme cihazını araca uzat',
+        chatTitle: 'Personelle Canlı Sohbet',
+        chatLiveBadge: 'Canlı',
+        chatWaitMsg: 'Sohbetin başlaması veya hızlı sinyal gönderilmesi bekleniyor...',
+        chatPlaceholder: 'Personele mesajınızı buraya yazın...',
+        chatSendBtn: 'Gönder'
+      },
+      ur: {
+        topBadge: 'کانٹیکٹ لیس اور براہ راست رابطہ پینل',
+        mainTitle: 'گاڑی کے اندر سمارٹ لین اسکرین',
+        mainDesc: 'آپ کا آرڈر کامیابی سے بھیج دیا گیا ہے! ڈیلیوری کے مراحل دیکھیں یا (میرے آرڈرز) بٹن سے بل اور آرڈر کی تفصیلات دیکھیں۔',
+        viewOrdersBtn: 'بل اور میرے آرڈرز دیکھیں',
+        addNewOrderBtn: '+ ایک اور نیا آرڈر شامل کریں',
+        trackedOrderLabel: 'موجودہ ٹریک کردہ آرڈر نمبر',
+        progressLabel: 'لین میں آپ کے آرڈر کی تکمیل کا تناسب:',
+        step1Tag: 'مرحلہ 1 (25%)',
+        step1Title: 'آرڈر موصول اور لین کی مطابقت',
+        step1Desc: 'عملے کو ضرورت کی نوعیت اور ڈیلیوری کے طریقے سے آگاہ کر دیا گیا',
+        step2Tag: 'مرحلہ 2 (50%)',
+        step2Title: 'آسان پیکنگ اور تیاری',
+        step2Desc: 'آسانی سے کھلنے والے ڈبوں اور کار ٹرے کی تیاری',
+        step3Tag: 'مرحلہ 3 (75%)',
+        step3Title: 'آپ کی گاڑی کی آمد کی شناخت',
+        step3Desc1: 'سینسر نے یُسر لین 1 میں آپ کی موجودگی نوٹ کر لی',
+        step3Desc2: 'سینسر نے یُسر لین 2 میں آپ کی موجودگی نوٹ کر لی',
+        step3DescA: 'سینسر نے خصوصی پارکنگ A میں آپ کی موجودگی نوٹ کر لی',
+        step4Tag: 'مرحلہ 4 (100%)',
+        step4Title: 'آپ کی گاڑی تک براہ راست ڈیلیوری',
+        step4Desc: 'عملہ ابھی آپ کی گاڑی کے دروازے کی طرف آ رہا ہے',
+        quickCommTitle: 'عملے سے فوری رابطے کے بٹن (بغیر بولے)',
+        quickCommDesc: 'فوری اشارہ بھیجنے کے لیے کسی بھی بٹن پر دبائیں یا لائیو چیٹ میں لکھیں:',
+        qBtn1Title: 'میں ابھی لین میں ہوں',
+        qBtn1Desc: 'وصولی پوائنٹ پر گاڑی پہنچنے کی اطلاع دیں',
+        qBtn2Title: 'مجھے اضافی وقت چاہیے',
+        qBtn2Desc: 'لین میں جلدی کو عارضی طور پر روکیں',
+        qBtn3Title: 'تحریری / اشاروں سے رابطہ',
+        qBtn3Desc: 'آواز استعمال نہ کرنے کے لیے عملے کو مطلع کریں',
+        qBtn4Title: 'کارڈ مشین لائیں',
+        qBtn4Desc: 'وائرلیس پیمنٹ مشین گاڑی تک بڑھائیں',
+        chatTitle: 'عملے کے ساتھ براہ راست بات چیت',
+        chatLiveBadge: 'لائیو',
+        chatWaitMsg: 'بات چیت شروع ہونے یا عملے کو فوری اشارہ بھیجنے کا انتظار ہے...',
+        chatPlaceholder: 'عملے کے لیے یہاں پیغام لکھیں...',
+        chatSendBtn: 'بھیجیں'
+      },
+      zh: {
+        topBadge: '无接触与直接沟通面板',
+        mainTitle: '车内智能车道屏幕',
+        mainDesc: '您的订单已成功发送！您可以跟踪交付阶段，或通过（我的订单）按钮查看发票和订单状态。',
+        viewOrdersBtn: '查看发票与我的订单',
+        addNewOrderBtn: '+ 添加另一个新订单',
+        trackedOrderLabel: '当前跟踪的订单号',
+        progressLabel: '车道内订单完成与进度比例：',
+        step1Tag: '阶段 1 (25%)',
+        step1Title: '已接单并适配车道',
+        step1Desc: '已通知员工无障碍需求类型与交付方式',
+        step2Tag: '阶段 2 (50%)',
+        step2Title: '易开包装准备中',
+        step2Desc: '正在准备易开包装盒与车载托盘',
+        step3Tag: '阶段 3 (75%)',
+        step3Title: '已识别您的车辆到达',
+        step3Desc1: '传感器已检测到您在 Yusr 车道 1',
+        step3Desc2: '传感器已检测到您在 Yusr 车道 2',
+        step3DescA: '传感器已检测到您在 专用车位 A',
+        step4Tag: '阶段 4 (100%)',
+        step4Title: '直接交付至您的车旁',
+        step4Desc: '工作人员正前往您的车门',
+        quickCommTitle: '与员工快速沟通按钮（无需说话）',
+        quickCommDesc: '点击任意按钮发送即时信号，或在实时聊天中输入消息：',
+        qBtn1Title: '我现在就在车道上',
+        qBtn1Desc: '通知车辆已到达取餐点',
+        qBtn2Title: '我需要更多时间',
+        qBtn2Desc: '暂时减缓车道催促',
+        qBtn3Title: '文字 / 手语沟通',
+        qBtn3Desc: '提醒员工不要使用语音交流',
+        qBtn4Title: '请拿来刷卡机',
+        qBtn4Desc: '将无线支付终端伸至车窗旁',
+        chatTitle: '与工作人员实时聊天',
+        chatLiveBadge: '实时',
+        chatWaitMsg: '等待开始聊天或向工作人员发送快速信号...',
+        chatPlaceholder: '在此输入给工作人员的消息...',
+        chatSendBtn: '发送'
+      }
+    };
+
+    function localizeSmartLaneScreen() {
+      const L = smartLaneScreenI18n[currentLang] || smartLaneScreenI18n.ar;
+
+      const textToKeyMap = {
+        'لوحة التواصل اللاتلامسي والمباشر': 'topBadge',
+        'شاشة المسار الذكي داخل السيارة': 'mainTitle',
+        'تم إرسال طلبك بنجاح! يمكنك متابعة مراحل التسليم أو الاطلاع على الفواتير وحالة طلباتك من زر (قائمة طلباتي).': 'mainDesc',
+        'عرض الفاتورة وقائمة طلباتي': 'viewOrdersBtn',
+        '+ إضافة طلب جديد آخر': 'addNewOrderBtn',
+        'إضافة طلب جديد آخر': 'addNewOrderBtn',
+        'رقم الطلب المتابع حالياً': 'trackedOrderLabel',
+        'نسبة إنجاز وتقدم طلبك في المسار:': 'progressLabel',
+        'المرحلة 1 (25%)': 'step1Tag',
+        'تم استلام الطلب وتكييف المسار': 'step1Title',
+        'تم إبلاغ الموظف بنوع الاحتياج وطريقة التسليم': 'step1Desc',
+        'المرحلة 2 (50%)': 'step2Tag',
+        'تجهيز وتغليف ميسّر': 'step2Title',
+        'تجهيز العبوات سهلة الفتح وحامل السيارة': 'step2Desc',
+        'المرحلة 3 (75%)': 'step3Tag',
+        'التعرف على وصول مركبتك': 'step3Title',
+        'المستشعر قرأ وجودك في مسار يُسر 1': 'step3Desc1',
+        'المستشعر قرأ وجودك في مسار يُسر 2': 'step3Desc2',
+        'المستشعر قرأ وجودك في موقف خاص A': 'step3DescA',
+        'المرحلة 4 (100%)': 'step4Tag',
+        'التسليم المباشر لسيارتك': 'step4Title',
+        'الموظف في طريقه لباب المركبة الآن': 'step4Desc',
+        'أزرار التواصل السريع مع الموظف (بدون تحدث)': 'quickCommTitle',
+        'اضغط على أي زر لإرسال إشارة فورية أو اكتب رسالتك في الشات المباشر:': 'quickCommDesc',
+        'أنا في المسار الآن': 'qBtn1Title',
+        'إشعار بوصول السيارة لنقطة الاستلام': 'qBtn1Desc',
+        'أحتاج وقتاً إضافياً': 'qBtn2Title',
+        'إيقاف مؤقت للاستعجال في المسار': 'qBtn2Desc',
+        'تواصل كتابي / إشارة': 'qBtn3Title',
+        'تنبيه الموظف لعدم استخدام الصوت': 'qBtn3Desc',
+        'إحضار جهاز الشبكة': 'qBtn4Title',
+        'مدّ جهاز الدفع اللاسلكي للسيارة': 'qBtn4Desc',
+        'المحادثة المباشرة مع الموظف': 'chatTitle',
+        'مباشر': 'chatLiveBadge',
+        'بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...': 'chatWaitMsg',
+        'إرسال': 'chatSendBtn'
+      };
+
+      // فحص وربط جميع النصوص داخل الصفحة
+      document.querySelectorAll('span, h2, h3, h4, p, button, label, div').forEach(el => {
+        if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
+        const cleanText = el.textContent.replace(/\s+/g, ' ').trim();
+        if (textToKeyMap[cleanText]) {
+          el.setAttribute('data-sl-i18n', textToKeyMap[cleanText]);
+        }
+      });
+
+      // تحديث النصوص حسب اللغة المختارة
+      document.querySelectorAll('[data-sl-i18n]').forEach(el => {
+        const key = el.getAttribute('data-sl-i18n');
+        if (L[key] && el.textContent !== L[key]) {
+          el.textContent = L[key];
+        }
+      });
+
+      // ترجمة نص الـ Placeholder لخانة كتابة الرسالة للموظف
+      document.querySelectorAll('input[type="text"]').forEach(inp => {
+        if (inp.placeholder && (inp.placeholder.includes('اكتب رسالة للموظف') || inp.getAttribute('data-sl-placeholder'))) {
+          inp.setAttribute('data-sl-placeholder', '1');
+          inp.placeholder = L.chatPlaceholder;
+        }
+      });
+    }
+
+    // ربط الترجمة تلقائياً عند تغيير اللغة أو تحديث الطلبات أو النقر
+    const _origApplyLanguageSL = typeof applyLanguage === 'function' ? applyLanguage : null;
+    if (_origApplyLanguageSL) {
+      applyLanguage = function(lang) {
+        _origApplyLanguageSL(lang);
+        localizeSmartLaneScreen();
+      };
+    }
+
+    document.addEventListener('click', () => {
+      setTimeout(localizeSmartLaneScreen, 15);
+    });
+
+    window.addEventListener('DOMContentLoaded', localizeSmartLaneScreen);
+    localizeSmartLaneScreen();
   </script>
 </body>
 </html>
