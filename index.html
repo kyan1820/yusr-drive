@@ -363,15 +363,26 @@
         <h4 id="invItemsTitleLabel" class="text-xs font-black text-slate-500 mb-2">تفاصيل الأصناف المطلوبة:</h4>
         <div id="invModalItems" class="space-y-2 max-h-40 overflow-y-auto pr-1 border-b border-slate-200 pb-3"></div>
         
-       <!-- الملخص المالي والضريبي الرسمي -->
-        <div class="pt-3 space-y-2 text-xs font-bold text-slate-600 border-b-2 border-dashed border-slate-200 pb-3">
+      <!-- خانة كود الخصم التفاعلية -->
+        <div class="pt-3 pb-1">
+          <div class="flex gap-2">
+            <input type="text" id="promoCodeInput" placeholder="أدخل كود الخصم (مثال: YUSR20)" class="flex-1 bg-slate-50 border-2 border-slate-200 rounded-xl px-3 py-2 text-xs font-black text-slate-900 focus:outline-none focus:border-emerald-500 uppercase">
+            <button type="button" onclick="applyPromoCode()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-4 py-2 rounded-xl text-xs transition shadow-sm cursor-pointer">
+              تطبيق
+            </button>
+          </div>
+          <p id="promoFeedbackMsg" class="hidden text-[11px] font-bold mt-1.5"></p>
+        </div>
+
+        <!-- الملخص المالي والضريبي الرسمي -->
+        <div class="pt-2 space-y-2 text-xs font-bold text-slate-600 border-b-2 border-dashed border-slate-200 pb-3">
           <div class="flex items-center justify-between">
             <span id="invSubtotalLabel">المجموع الفرعي (غير شامل الضريبة):</span>
             <span id="invModalSubtotal" class="font-black text-slate-900 inline-flex items-center gap-1">0.00</span>
           </div>
           <div class="flex items-center justify-between">
             <span id="invDiscountLabel">إجمالي الخصومات:</span>
-            <span class="font-black text-slate-900 inline-flex items-center gap-1">
+            <span id="invModalDiscount" class="font-black text-slate-900 inline-flex items-center gap-1">
               <span>0.00</span>
               <svg class="inline-block w-4 h-4 fill-current shrink-0" viewBox="0 0 100 100"><path d="M58 12 L70 6 L70 72 L58 76 Z"/><path d="M36 20 L48 14 L48 72 C48 82 42 88 31 91 L15 95 L18 82 L31 79 C35 78 36 75 36 70 Z"/><path d="M18 53 L88 38 L85 50 L15 65 Z"/><path d="M58 67 L86 60 L83 72 L58 78 Z"/><path d="M52 86 L84 79 L81 91 L49 98 Z"/></svg>
             </span>
@@ -383,7 +394,7 @@
         </div>
 
         <div class="flex items-center justify-between pt-3 text-lg font-black text-slate-900">
-          <span id="invTotalLabel">الإجمالي المستحق (شامل الضريبة):</span>
+          <span id="invTotalLabel">الإجمالي النهائي (شامل الضريبة 15%):</span>
           <span id="invModalTotal" class="text-2xl text-emerald-700 inline-flex items-center gap-1"></span>
         </div>
       </div>
@@ -3461,15 +3472,12 @@
         `;
       }).join('');
 
-      const subtotalBeforeTax = (totalAmount / 1.15).toFixed(2);
-      const vatAmount = (totalAmount - (totalAmount / 1.15)).toFixed(2);
-
-      const subEl = document.getElementById('invModalSubtotal');
-      const vatEl = document.getElementById('invModalVat');
-      if (subEl) subEl.innerHTML = `<span>${subtotalBeforeTax}</span> ${saudiRiyalLogoSVG}`;
-      if (vatEl) vatEl.innerHTML = `<span>${vatAmount}</span> ${saudiRiyalLogoSVG}`;
-
-      document.getElementById('invModalTotal').innerHTML = `<span>${totalAmount.toFixed(2)}</span> ${saudiRiyalLogoSVG}`;
+      activeDiscountPercent = 0;
+      const promoInput = document.getElementById('promoCodeInput');
+      const promoMsg = document.getElementById('promoFeedbackMsg');
+      if (promoInput) promoInput.value = '';
+      if (promoMsg) promoMsg.classList.add('hidden');
+      recalculateInvoiceTotals();
       showModalSmoothly('invoiceCheckoutModal');
      speakText(invT.speechReady(totalAmount));
     }
@@ -3482,7 +3490,8 @@
       const carInput = document.getElementById('carDetails').value.trim() || 'سيارة العميل (بدون لوحة مدخلة)';
       const randomNum = Math.floor(100 + Math.random() * 900);
       const orderCode = '#YSR-' + randomNum;
-      const totalAmount = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      const rawTotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      const totalAmount = Number((rawTotal * (1 - activeDiscountPercent / 100)).toFixed(2));
 
       const orderData = {
         code: orderCode,
@@ -3848,6 +3857,70 @@
           speakText('تم إيقاف المؤقت والعودة للسلة، يمكنك تعديل الأصناف بحرية');
         }
       });
+    }
+    let activeDiscountPercent = 0;
+
+    // قائمة أكواد الخصم المتاحة ونسبة كل كود (يمكنك إضافة أو تعديل أي كود هنا)
+    const validPromoCodes = {
+      'YUSR20': 20, // خصم 20%
+      'YUSR10': 10, // خصم 10%
+      'KAYAN': 25,  // خصم خاص 25%
+      'SEU': 15     // خصم 15%
+    };
+
+    function applyPromoCode() {
+      const inputEl = document.getElementById('promoCodeInput');
+      const msgEl = document.getElementById('promoFeedbackMsg');
+      if (!inputEl || !msgEl) return;
+
+      const code = inputEl.value.trim().toUpperCase();
+      msgEl.classList.remove('hidden', 'text-emerald-600', 'text-rose-500');
+
+      if (!code) {
+        activeDiscountPercent = 0;
+        msgEl.textContent = 'يرجى كتابة كود الخصم أولاً.';
+        msgEl.classList.add('text-rose-500');
+        recalculateInvoiceTotals();
+        return;
+      }
+
+      if (validPromoCodes[code]) {
+        activeDiscountPercent = validPromoCodes[code];
+        msgEl.textContent = `✓ تم تفعيل كود (${code}) بنجاح! حصلت على خصم ${activeDiscountPercent}%`;
+        msgEl.classList.add('text-emerald-600');
+        speakText(`تم تطبيق كود الخصم بنجاح، حصلت على خصم ${activeDiscountPercent} بالمئة`);
+      } else {
+        activeDiscountPercent = 0;
+        msgEl.textContent = '✕ كود الخصم غير صحيح أو منتهي الصلاحية.';
+        msgEl.classList.add('text-rose-500');
+        speakText('كود الخصم غير صحيح');
+      }
+
+      recalculateInvoiceTotals();
+    }
+
+    function recalculateInvoiceTotals() {
+      const rawTotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      const discountAmount = rawTotal * (activeDiscountPercent / 100);
+      const finalTotal = rawTotal - discountAmount;
+
+      const subtotalBeforeTax = (rawTotal / 1.15).toFixed(2);
+      const vatAmount = (finalTotal - (finalTotal / 1.15)).toFixed(2);
+
+      const subEl = document.getElementById('invModalSubtotal');
+      const discEl = document.getElementById('invModalDiscount');
+      const vatEl = document.getElementById('invModalVat');
+      const totalEl = document.getElementById('invModalTotal');
+
+      if (subEl) subEl.innerHTML = `<span>${subtotalBeforeTax}</span> ${saudiRiyalLogoSVG}`;
+      if (discEl) {
+        discEl.innerHTML = `<span>${discountAmount > 0 ? '-' + discountAmount.toFixed(2) : '0.00'}</span> ${saudiRiyalLogoSVG}`;
+        discEl.className = discountAmount > 0
+          ? 'font-black text-rose-500 inline-flex items-center gap-1'
+          : 'font-black text-slate-900 inline-flex items-center gap-1';
+      }
+      if (vatEl) vatEl.innerHTML = `<span>${vatAmount}</span> ${saudiRiyalLogoSVG}`;
+      if (totalEl) totalEl.innerHTML = `<span>${finalTotal.toFixed(2)}</span> ${saudiRiyalLogoSVG}`;
     }
   </script>
 </body>
