@@ -4832,6 +4832,130 @@
 
     window.addEventListener('DOMContentLoaded', localizeMyOrdersPage);
     localizeMyOrdersPage();
+  // قاموس ترجمة زر الوضع الداكن/الفاتح وإصلاح نص المستشعر بجميع اللغات الـ 5
+    const themeAndSensorFixI18n = {
+      ar: {
+        darkBtn: '🌙 الوضع الداكن',
+        lightBtn: '☀️ الوضع الفاتح',
+        sensor1: 'المستشعر قرأ وجودك في مسار يُسر 1',
+        sensor2: 'المستشعر قرأ وجودك في مسار يُسر 2',
+        sensorA: 'المستشعر قرأ وجودك في موقف خاص A'
+      },
+      en: {
+        darkBtn: '🌙 Dark Mode',
+        lightBtn: '☀️ Light Mode',
+        sensor1: 'Sensor detected your vehicle in Yusr Lane 1',
+        sensor2: 'Sensor detected your vehicle in Yusr Lane 2',
+        sensorA: 'Sensor detected your vehicle in Special Spot A'
+      },
+      tr: {
+        darkBtn: '🌙 Koyu Mod',
+        lightBtn: '☀️ Açık Mod',
+        sensor1: 'Sensör Yusr Hat 1 içindeki varlığınızı okudu',
+        sensor2: 'Sensör Yusr Hat 2 içindeki varlığınızı okudu',
+        sensorA: 'Sensör Özel Park A içindeki varlığınızı okudu'
+      },
+      ur: {
+        darkBtn: '🌙 ڈارک موڈ',
+        lightBtn: '☀️ لائٹ موڈ',
+        sensor1: 'سینسر نے یُسر لین 1 میں آپ کی موجودگی نوٹ کر لی',
+        sensor2: 'سینسر نے یُسر لین 2 میں آپ کی موجودگی نوٹ کر لی',
+        sensorA: 'سینسر نے خصوصی پارکنگ A میں آپ کی موجودگی نوٹ کر لی'
+      },
+      zh: {
+        darkBtn: '🌙 深色模式',
+        lightBtn: '☀️ 浅色模式',
+        sensor1: '传感器已检测到您在 Yusr 车道 1',
+        sensor2: '传感器已检测到您在 Yusr 车道 2',
+        sensorA: '传感器已检测到您在 专用车位 A'
+      }
+    };
+
+    function fixThemeBtnAndSensorText() {
+      const L = themeAndSensorFixI18n[currentLang] || themeAndSensorFixI18n.ar;
+      const isDark = document.body.classList.contains('dark-theme');
+
+      // 1. ترجمة زر الوضع الداكن / الفاتح في الشريط العلوي
+      document.querySelectorAll('button, span').forEach(el => {
+        const txt = el.textContent.trim();
+        if (
+          el.id === 'themeToggleBtn' ||
+          el.getAttribute('onclick')?.includes('toggleDarkMode') ||
+          el.getAttribute('onclick')?.includes('Theme') ||
+          el.getAttribute('data-theme-btn') === '1' ||
+          txt.includes('الوضع الداكن') ||
+          txt.includes('الوضع الفاتح')
+        ) {
+          if (el.tagName === 'BUTTON' || el.children.length === 0) {
+            el.setAttribute('data-theme-btn', '1');
+            const targetText = isDark ? L.lightBtn : L.darkBtn;
+            if (el.children.length === 0 && el.textContent !== targetText) {
+              el.textContent = targetText;
+            } else if (el.tagName === 'BUTTON' && el.children.length > 0) {
+              // إذا كان الزر يحتوي على span داخلي للنص
+              const innerSpan = el.querySelector('span:last-child') || el;
+              const cleanTarget = targetText.replace(/[🌙☀️]/g, '').trim();
+              if (innerSpan !== el && innerSpan.textContent !== cleanTarget) {
+                innerSpan.textContent = cleanTarget;
+              }
+            }
+          }
+        }
+      });
+
+      // 2. إصلاح جملة "المستشعر قرأ وجودك في..." حتى لو تحول جزء منها للإنجليزية أو لغة أخرى
+      document.querySelectorAll('p, span, div').forEach(el => {
+        if (el.children.length > 1) return;
+        const txt = el.textContent.trim();
+        if (
+          txt.includes('المستشعر قرأ وجودك في') ||
+          el.id === 'laneStep3Desc' ||
+          el.getAttribute('data-sensor-desc') === '1'
+        ) {
+          el.setAttribute('data-sensor-desc', '1');
+          let targetSensor = L.sensor1;
+          if (txt.includes('2') || txt.includes('٢')) {
+            targetSensor = L.sensor2;
+          } else if (txt.includes('A') || txt.includes('خاص') || txt.includes('Special') || txt.includes('Özel') || txt.includes('خصوصی') || txt.includes('专用')) {
+            targetSensor = L.sensorA;
+          }
+          if (el.textContent !== targetSensor) {
+            el.textContent = targetSensor;
+          }
+        }
+      });
+    }
+
+    // ربط التحديث مع تغيير اللغة ومع تبديل الوضع الداكن ومع المراقب الذكي
+    const _origApplyLanguageTSF = typeof applyLanguage === 'function' ? applyLanguage : null;
+    if (_origApplyLanguageTSF) {
+      applyLanguage = function(lang) {
+        _origApplyLanguageTSF(lang);
+        fixThemeBtnAndSensorText();
+        setTimeout(fixThemeBtnAndSensorText, 30);
+      };
+    }
+
+    document.addEventListener('click', () => {
+      setTimeout(fixThemeBtnAndSensorText, 10);
+      setTimeout(fixThemeBtnAndSensorText, 60);
+    });
+
+    if (!window._tsfObserverAdded) {
+      const tsfObserver = new MutationObserver(() => {
+        fixThemeBtnAndSensorText();
+      });
+      window.addEventListener('DOMContentLoaded', () => {
+        tsfObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+      });
+      if (document.body) {
+        tsfObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+      }
+      window._tsfObserverAdded = true;
+    }
+
+    window.addEventListener('DOMContentLoaded', fixThemeBtnAndSensorText);
+    fixThemeBtnAndSensorText();
   </script>
 </body>
 </html>
