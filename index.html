@@ -4625,16 +4625,33 @@
           }
         }
 
-        if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
-
-        // نص المستشعر في المرحلة 3
-        if (cleanText.includes('المستشعر قرأ وجودك في') || el.id === 'laneStep3Desc' || el.getAttribute('data-sensor-desc') === '1') {
+        // نص المستشعر في المرحلة 3 (يفحصه قبل تخطي العناصر التي بداخلها span)
+        if (
+          cleanText.includes('المستشعر قرأ وجودك في') ||
+          el.id === 'laneStep3Desc' ||
+          el.getAttribute('data-sensor-desc') === '1'
+        ) {
           el.setAttribute('data-sensor-desc', '1');
-          if (cleanText.includes('2') || cleanText.includes('٢')) el.textContent = SL.step3Desc2;
-          else if (cleanText.includes('A') || cleanText.includes('خاص') || cleanText.includes('Special') || cleanText.includes('Özel') || cleanText.includes('خصوصی') || cleanText.includes('专用')) el.textContent = SL.step3DescA;
-          else el.textContent = SL.step3Desc1;
+          let targetSensor = SL.step3Desc1;
+          if (cleanText.includes('2') || cleanText.includes('٢')) {
+            targetSensor = SL.step3Desc2;
+          } else if (
+            cleanText.includes('A') ||
+            cleanText.includes('خاص') ||
+            cleanText.includes('Special') ||
+            cleanText.includes('Özel') ||
+            cleanText.includes('خصوصی') ||
+            cleanText.includes('专用')
+          ) {
+            targetSensor = SL.step3DescA;
+          }
+          if (el.textContent !== targetSensor) {
+            el.textContent = targetSensor;
+          }
           return;
         }
+
+        if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
 
         if (cleanText.includes('بانتظار بدء المحادثة') || el.getAttribute('data-chat-wait') === '1') {
           el.setAttribute('data-chat-wait', '1');
