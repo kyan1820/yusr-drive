@@ -4499,6 +4499,339 @@
 
     window.addEventListener('DOMContentLoaded', localizeSmartLaneScreen);
     localizeSmartLaneScreen();
+  // قاموس ومترجم شامل لصفحة (قائمة طلباتي والفواتير) بجميع اللغات الـ 5
+    const myOrdersPageI18n = {
+      ar: {
+        topBadge: 'الفواتير الإلكترونية والاستعلام المباشر',
+        mainTitle: 'قائمة طلباتي والفواتير',
+        mainDesc: 'اطلع على فواتير جميع طلباتك واستعلم عن حالة كل طلب ونسبة إنجازه (جاري التسليم أو تم التسليم).',
+        createNewBtn: '+ إنشاء طلب جديد آخر',
+        showAllBtn: 'إظهار الكل',
+        searchPlaceholder: 'ابحث برقم الفاتورة (مثل: #YSR-105 أو 105) أو الوقت (مثل: 10:30)...',
+        invDetails: 'تفاصيل الفاتورة:',
+        discountLabel: 'الخصم:',
+        totalLabel: 'إجمالي الفاتورة (شامل الضريبة):',
+        returnLaneBtn: 'الرجوع لشاشة المسار المباشر لهذا الطلب'
+      },
+      en: {
+        topBadge: 'E-Invoices & Live Order Inquiry',
+        mainTitle: 'My Orders & Invoices',
+        mainDesc: 'View invoices for all your orders and check live status and completion progress (In Progress or Delivered).',
+        createNewBtn: '+ Create Another New Order',
+        showAllBtn: 'Show All',
+        searchPlaceholder: 'Search by invoice # (e.g., #YSR-105 or 105) or time (e.g., 10:30)...',
+        invDetails: 'Invoice Details:',
+        discountLabel: 'Discount:',
+        totalLabel: 'Invoice Total (Incl. VAT):',
+        returnLaneBtn: 'Return to Live Lane Screen for This Order'
+      },
+      tr: {
+        topBadge: 'E-Faturalar ve Canlı Sipariş Sorgulama',
+        mainTitle: 'Siparişlerim ve Faturalar',
+        mainDesc: 'Tüm siparişlerinizin faturalarını görüntüleyin ve her siparişin durumunu ve tamamlanma oranını kontrol edin.',
+        createNewBtn: '+ Başka Yeni Sipariş Oluştur',
+        showAllBtn: 'Tümünü Göster',
+        searchPlaceholder: 'Fatura no (#YSR-105 veya 105) veya saate (10:30) göre الفاتورة ara...',
+        invDetails: 'Fatura Detayları:',
+        discountLabel: 'İndirim:',
+        totalLabel: 'Fatura Toplamı (KDV Dahil):',
+        returnLaneBtn: 'Bu Sipariş İçin Canlı Hat Ekranına Dön'
+      },
+      ur: {
+        topBadge: 'ای-انوائسز اور براہ راست آرڈر استفسار',
+        mainTitle: 'میرے آرڈرز اور بل',
+        mainDesc: 'اپنے تمام آرڈرز کے بل دیکھیں اور ہر آرڈر کی حالت اور تکمیل کے تناسب کے بارے میں جانیں (جاری ہے یا مکمل)۔',
+        createNewBtn: '+ ایک اور نیا آرڈر بنائیں',
+        showAllBtn: 'سب دکھائیں',
+        searchPlaceholder: 'بل نمبر (جیسے: #YSR-105 یا 105) یا وقت (جیسے: 10:30) سے تلاش کریں...',
+        invDetails: 'بل کی تفصیلات:',
+        discountLabel: 'رعایت:',
+        totalLabel: 'کل بل (بشمول ٹیکس):',
+        returnLaneBtn: 'اس آرڈر کی لائیو لین اسکرین پر واپس جائیں'
+      },
+      zh: {
+        topBadge: '电子发票与实时订单查询',
+        mainTitle: '我的订单与发票',
+        mainDesc: '查看您所有订单的发票，并查询每个订单的状态和完成进度（配送中或已交付）。',
+        createNewBtn: '+ 创建另一个新订单',
+        showAllBtn: '显示全部',
+        searchPlaceholder: '按发票号（如：#YSR-105 或 105）或时间（如：10:30）搜索...',
+        invDetails: '发票详情：',
+        discountLabel: '折扣：',
+        totalLabel: '发票总计（含税）：',
+        returnLaneBtn: '返回此订单的实时车道屏幕'
+      }
+    };
+
+    // قاموس استبدال العبارات الديناميكية داخل كروت الفواتير
+    const orderCardReplacements = {
+      en: [
+        ['فاتورة ضريبية مبسطة — طلب #', 'Simplified Tax Invoice — Order #'],
+        ['جاري التسليم', 'In Progress'],
+        ['تم التسليم (مكتمل 100%)', 'Delivered (100% Complete)'],
+        ['حالة الاستعلام: تم تسليم هذا الطلب لمركبتك بنجاح في تمام الساعة', 'Status: Successfully delivered to your vehicle at'],
+        ['حالة الاستعلام: المرحلة 1 من 4 (25%): تم استلام الطلب وتكييف المسار', 'Status: Stage 1 of 4 (25%): Order received & lane adapted'],
+        ['حالة الاستعلام: المرحلة 2 من 4 (50%): تجهيز وتغليف ميسّر', 'Status: Stage 2 of 4 (50%): Easy-open prep & packaging'],
+        ['حالة الاستعلام: المرحلة 3 من 4 (75%): التعرف على وصول مركبتك', 'Status: Stage 3 of 4 (75%): Vehicle arrival detected'],
+        ['حالة الاستعلام: المرحلة 4 من 4 (100%): التسليم المباشر لسيارتك', 'Status: Stage 4 of 4 (100%): Direct delivery to your car'],
+        ['السيارة:', 'Vehicle:'],
+        ['سيارة العميل (بدون لوحة مدخلة)', 'Customer Vehicle (No Plate Entered)'],
+        ['المسار:', 'Lane:'],
+        ['مسار يُسر 1', 'Yusr Lane 1'],
+        ['مسار يُسر 2', 'Yusr Lane 2'],
+        ['موقف خاص A', 'Special Spot A'],
+        ['مكان التسليم:', 'Delivery Spot:'],
+        ['تسليم عبر نافذة السائق بحامل ممتد', 'Driver window via extended tray'],
+        ['وضع الطلب على المقعد المجاور للسائق', 'Place on front passenger seat'],
+        ['وضع الطلب في الشنطة الخلفية للسيارة', 'Place in rear car trunk'],
+        ['طريقة الدفع:', 'Payment Method:'],
+        ['مدى (Mada)', 'Mada'],
+        ['فيزا (Visa)', 'Visa'],
+        ['نقدي (كاش)', 'Cash'],
+        ['التاريخ:', 'Date:'],
+        ['الوقت:', 'Time:'],
+        ['(تغليف ميسّر سهل الفتح)', '(Easy-Open Accessible Packaging)'],
+        ['(تغليف عادي)', '(Standard Packaging)'],
+        ['تغليف ميسّر سهل الفتح', 'Easy-Open Accessible Packaging'],
+        ['تغليف عادي', 'Standard Packaging'],
+        ['الكمية:', 'Qty:'],
+        ['السعر قبل الضريبة:', 'Excl. VAT:'],
+        ['عرض الوجبتين (للأصدقاء)', 'Duo Meal Box Offer'],
+        ['عرض التوفير الفردي المتكامل', 'Solo Value Combo Meal'],
+        ['عرض الطالب السريع (غداء + مشروب)', 'Student Express Lunch Combo'],
+        ['بوكس الجمعات العائلي الميسّر', 'Family Gathering Accessible Box']
+      ],
+      tr: [
+        ['فاتورة ضريبية مبسطة — طلب #', 'Basitleştirilmiş Vergi Faturası — Sipariş #'],
+        ['جاري التسليم', 'Teslim Ediliyor'],
+        ['تم التسليم (مكتمل 100%)', 'Teslim Edildi (%100 Tamamlandı)'],
+        ['حالة الاستعلام: تم تسليم هذا الطلب لمركبتك بنجاح في تمام الساعة', 'Durum: Bu sipariş aracınıza başarıyla teslim edildi, Saat:'],
+        ['حالة الاستعلام: المرحلة 1 من 4 (25%): تم استلام الطلب وتكييف المسار', 'Durum: Aşama 1/4 (%25): Sipariş alındı ve hat uyarlandı'],
+        ['حالة الاستعلام: المرحلة 2 من 4 (50%): تجهيز وتغليف ميسّر', 'Durum: Aşama 2/4 (%50): Kolay açılır hazırlık ve paketleme'],
+        ['حالة الاستعلام: المرحلة 3 من 4 (75%): التعرف على وصول مركبتك', 'Durum: Aşama 3/4 (%75): Aracınızın gelişi algılandı'],
+        ['حالة الاستعلام: المرحلة 4 من 4 (100%): التسليم المباشر لسيارتك', 'Durum: Aşama 4/4 (%100): Aracınıza doğrudan teslimat'],
+        ['السيارة:', 'Araç:'],
+        ['سيارة العميل (بدون لوحة مدخلة)', 'Müşteri Aracı (Plaka Girilmedi)'],
+        ['المسار:', 'Hat:'],
+        ['مسار يُسر 1', 'Yusr Hat 1'],
+        ['مسار يُسر 2', 'Yusr Hat 2'],
+        ['موقف خاص A', 'Özel Park A'],
+        ['مكان التسليم:', 'Teslimat Yeri:'],
+        ['تسليم عبر نافذة السائق بحامل ممتد', 'Uzatmalı tepsi ile sürücü penceresinden'],
+        ['وضع الطلب على المقعد المجاور للسائق', 'Ön yolcu koltuğuna bırakma'],
+        ['وضع الطلب في الشنطة الخلفية للسيارة', 'Arka bagaja bırakma'],
+        ['طريقة الدفع:', 'Ödeme Yöntemi:'],
+        ['مدى (Mada)', 'Mada'],
+        ['فيزا (Visa)', 'Visa'],
+        ['نقدي (كاش)', 'Nakit'],
+        ['التاريخ:', 'Tarih:'],
+        ['الوقت:', 'Saat:'],
+        ['(تغليف ميسّر سهل الفتح)', '(Kolay Açılır Erişilebilir Paket)'],
+        ['(تغليف عادي)', '(Standart Paket)'],
+        ['تغليف ميسّر سهل الفتح', 'Kolay Açılır Erişilebilir Paket'],
+        ['تغليف عادي', 'Standart Paket'],
+        ['الكمية:', 'Adet:'],
+        ['السعر قبل الضريبة:', 'KDV Hariç:'],
+        ['عرض الوجبتين (للأصدقاء)', 'İkili Arkadaş Menüsü'],
+        ['عرض التوفير الفردي المتكامل', 'Tek Kişilik Ekonomik Menü'],
+        ['عرض الطالب السريع (غداء + مشروب)', 'Hızlı Öğrenci Menüsü'],
+        ['بوكس الجمعات العائلي الميسّر', 'Aile Boyu Erişilebilir Kutu']
+      ],
+      ur: [
+        ['فاتورة ضريبية مبسطة — طلب #', 'سادہ ٹیکس انوائس — آرڈر #'],
+        ['جاري التسليم', 'ڈیلیوری جاری ہے'],
+        ['تم التسليم (مكتمل 100%)', 'ڈیلیور ہو گیا (100% مکمل)'],
+        ['حالة الاستعلام: تم تسليم هذا الطلب لمركبتك بنجاح في تمام الساعة', 'حالت: یہ آرڈر کامیابی سے آپ کی گاڑی کو ڈیلیور کیا گیا بوقت'],
+        ['حالة الاستعلام: المرحلة 1 من 4 (25%): تم استلام الطلب وتكييف المسار', 'حالت: مرحلہ 1 از 4 (25%): آرڈر موصول اور لین کی مطابقت'],
+        ['حالة الاستعلام: المرحلة 2 من 4 (50%): تجهيز وتغليف ميسّر', 'حالت: مرحلہ 2 از 4 (50%): آسان پیکنگ اور تیاری'],
+        ['حالة الاستعلام: المرحلة 3 من 4 (75%): التعرف على وصول مركبتك', 'حالت: مرحلہ 3 از 4 (75%): آپ کی گاڑی کی آمد کی شناخت'],
+        ['حالة الاستعلام: المرحلة 4 من 4 (100%): التسليم المباشر لسيارتك', 'حالت: مرحلہ 4 از 4 (100%): گاڑی تک براہ راست ڈیلیوری'],
+        ['السيارة:', 'گاڑی:'],
+        ['سيارة العميل (بدون لوحة مدخلة)', 'کسٹمر کی گاڑی (نمبر پلیٹ کے بغیر)'],
+        ['المسار:', 'لین:'],
+        ['مسار يُسر 1', 'یُسر لین 1'],
+        ['مسار يُسر 2', 'یُسر لین 2'],
+        ['موقف خاص A', 'خصوصی پارکنگ A'],
+        ['مكان التسليم:', 'ڈیلیوری کی جگہ:'],
+        ['تسليم عبر نافذة السائق بحامل ممتد', 'ڈرائیور کی کھڑکی سے توسیعی ٹرے کے ذریعے'],
+        ['وضع الطلب على المقعد المجاور للسائق', 'ڈرائیور کے ساتھ والی سیٹ پر رکھیں'],
+        ['وضع الطلب في الشنطة الخلفية للسيارة', 'گاڑی کی پچھلی ڈگی میں رکھیں'],
+        ['طريقة الدفع:', 'ادائیگی کا طریقہ:'],
+        ['مدى (Mada)', 'مدی (Mada)'],
+        ['فيزا (Visa)', 'ویزا (Visa)'],
+        ['نقدي (كاش)', 'نقد (کیش)'],
+        ['التاريخ:', 'تاریخ:'],
+        ['الوقت:', 'وقت:'],
+        ['(تغليف ميسّر سهل الفتح)', '(آسانی سے کھلنے والی پیکنگ)'],
+        ['(تغليف عادي)', '(عام پیکنگ)'],
+        ['تغليف ميسّر سهل الفتح', 'آسانی سے کھلنے والی پیکنگ'],
+        ['تغليف عادي', 'عام پیکنگ'],
+        ['الكمية:', 'مقدار:'],
+        ['السعر قبل الضريبة:', 'بغیر ٹیکس قیمت:'],
+        ['عرض الوجبتين (للأصدقاء)', 'دوستوں کے لیے دو کھانوں کی آفر'],
+        ['عرض التوفير الفردي المتكامل', 'مکمل سنگل سیونگ آفر'],
+        ['عرض الطالب السريع (غداء + مشروب)', 'اسٹوڈنٹ فاسٹ آفر (لنچ + ڈرنک)'],
+        ['بوكس الجمعات العائلي الميسّر', 'فیملی گیدرنگ آسان باکس']
+      ],
+      zh: [
+        ['فاتورة ضريبية مبسطة — طلب #', '简化税务发票 — 订单 #'],
+        ['جاري التسليم', '配送中'],
+        ['تم التسليم (مكتمل 100%)', '已交付 (100% 完成)'],
+        ['حالة الاستعلام: تم تسليم هذا الطلب لمركبتك بنجاح في تمام الساعة', '查询状态：此订单已成功交付至您的车辆，时间：'],
+        ['حالة الاستعلام: المرحلة 1 من 4 (25%): تم استلام الطلب وتكييف المسار', '查询状态：阶段 1/4 (25%)：已接单并适配车道'],
+        ['حالة الاستعلام: المرحلة 2 من 4 (50%): تجهيز وتغليف ميسّر', '查询状态：阶段 2/4 (50%)：易开包装准备中'],
+        ['حالة الاستعلام: المرحلة 3 من 4 (75%): التعرف على وصول مركبتك', '查询状态：阶段 3/4 (75%)：已识别您的车辆到达'],
+        ['حالة الاستعلام: المرحلة 4 من 4 (100%): التسليم المباشر لسيارتك', '查询状态：阶段 4/4 (100%)：直接交付至您的车旁'],
+        ['السيارة:', '车辆：'],
+        ['سيارة العميل (بدون لوحة مدخلة)', '客户车辆（未输入车牌）'],
+        ['المسار:', '车道：'],
+        ['مسار يُسر 1', 'Yusr 车道 1'],
+        ['مسار يُسر 2', 'Yusr 车道 2'],
+        ['موقف خاص A', '专用车位 A'],
+        ['مكان التسليم:', '交付位置：'],
+        ['تسليم عبر نافذة السائق بحامل ممتد', '通过延伸托盘从驾驶座车窗交付'],
+        ['وضع الطلب على المقعد المجاور للسائق', '放置在副驾驶座位上'],
+        ['وضع الطلب في الشنطة الخلفية للسيارة', '放置在车辆后备箱中'],
+        ['طريقة الدفع:', '支付方式：'],
+        ['مدى (Mada)', 'Mada'],
+        ['فيزا (Visa)', 'Visa'],
+        ['نقدي (كاش)', '现金'],
+        ['التاريخ:', '日期：'],
+        ['الوقت:', '时间：'],
+        ['(تغليف ميسّر سهل الفتح)', '（易开无障碍包装）'],
+        ['(تغليف عادي)', '（标准包装）'],
+        ['تغليف ميسّر سهل الفتح', '易开无障碍包装'],
+        ['تغليف عادي', '标准包装'],
+        ['الكمية:', '数量：'],
+        ['السعر قبل الضريبة:', '税前价格：'],
+        ['عرض الوجبتين (للأصدقاء)', '双人好友套餐优惠'],
+        ['عرض التوفير الفردي المتكامل', '单人超值全餐优惠'],
+        ['عرض الطالب السريع (غداء + مشروب)', '学生快享套餐（午餐+饮品）'],
+        ['بوكس الجمعات العائلي الميسّر', '家庭聚会无障碍套餐盒']
+      ]
+    };
+
+    function localizeMyOrdersPage() {
+      const L = myOrdersPageI18n[currentLang] || myOrdersPageI18n.ar;
+
+      const staticMap = {
+        'الفواتير الإلكترونية والاستعلام المباشر': 'topBadge',
+        'قائمة طلباتي والفواتير': 'mainTitle',
+        'اطلع على فواتير جميع طلباتك واستعلم عن حالة كل طلب ونسبة إنجازه (جاري التسليم أو تم التسليم).': 'mainDesc',
+        '+ إنشاء طلب جديد آخر': 'createNewBtn',
+        'إنشاء طلب جديد آخر +': 'createNewBtn',
+        'إنشاء طلب جديد آخر': 'createNewBtn',
+        'إظهار الكل': 'showAllBtn',
+        'تفاصيل الفاتورة:': 'invDetails',
+        ':تفاصيل الفاتورة': 'invDetails',
+        'الخصم:': 'discountLabel',
+        ':الخصم': 'discountLabel',
+        'إجمالي الفاتورة (شامل الضريبة):': 'totalLabel',
+        ':إجمالي الفاتورة (شامل الضريبة)': 'totalLabel',
+        'الرجوع لشاشة المسار المباشر لهذا الطلب': 'returnLaneBtn'
+      };
+
+      // 1. ترجمة العناوين الثابتة والأزرار
+      document.querySelectorAll('span, h2, h3, h4, p, button, label, div').forEach(el => {
+        const cleanText = el.textContent.replace(/\s+/g, ' ').trim();
+
+        if (cleanText === 'الفواتير الإلكترونية والاستعلام المباشر' || el.getAttribute('data-mo-badge') === '1') {
+          el.setAttribute('data-mo-badge', '1');
+          const textNodes = Array.from(el.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim().length > 0);
+          if (textNodes.length > 0) {
+            textNodes[textNodes.length - 1].textContent = ' ' + L.topBadge;
+          } else if (el.children.length === 0) {
+            el.textContent = L.topBadge;
+          }
+          return;
+        }
+
+        if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
+
+        if (staticMap[cleanText]) {
+          el.setAttribute('data-mo-i18n', staticMap[cleanText]);
+        }
+      });
+
+      document.querySelectorAll('[data-mo-i18n]').forEach(el => {
+        const key = el.getAttribute('data-mo-i18n');
+        if (L[key] && el.textContent !== L[key]) {
+          el.textContent = L[key];
+        }
+      });
+
+      // 2. ترجمة شريط البحث
+      document.querySelectorAll('input[type="text"]').forEach(inp => {
+        if (inp.placeholder && (inp.placeholder.includes('ابحث برقم الفاتورة') || inp.getAttribute('data-mo-search'))) {
+          inp.setAttribute('data-mo-search', '1');
+          inp.placeholder = L.searchPlaceholder;
+        }
+      });
+
+      // 3. ترجمة النصوص الديناميكية داخل كروت الفواتير
+      if (currentLang !== 'ar' && orderCardReplacements[currentLang]) {
+        const pairs = orderCardReplacements[currentLang];
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+        let node;
+        while ((node = walker.nextNode())) {
+          if (!node.parentElement || ['SCRIPT', 'STYLE'].includes(node.parentElement.tagName)) continue;
+          let txt = node.nodeValue;
+          if (!txt || !txt.trim()) continue;
+          let changed = false;
+          for (const [arStr, transStr] of pairs) {
+            if (txt.includes(arStr)) {
+              txt = txt.split(arStr).join(transStr);
+              changed = true;
+            }
+          }
+          if (changed) node.nodeValue = txt;
+        }
+      }
+    }
+
+    // ربط الترجمة تلقائياً مع تغيير اللغة ومع إعادة رسم قائمة الطلبات
+    const _origApplyLanguageMO = typeof applyLanguage === 'function' ? applyLanguage : null;
+    if (_origApplyLanguageMO) {
+      applyLanguage = function(lang) {
+        _origApplyLanguageMO(lang);
+        if (lang === 'ar' && typeof renderCustomerOrdersList === 'function') {
+          renderCustomerOrdersList();
+        }
+        localizeMyOrdersPage();
+        setTimeout(localizeMyOrdersPage, 30);
+      };
+    }
+
+    const _origRenderOrdersMO = typeof renderCustomerOrdersList === 'function' ? renderCustomerOrdersList : null;
+    if (_origRenderOrdersMO) {
+      renderCustomerOrdersList = function(...args) {
+        _origRenderOrdersMO.apply(this, args);
+        localizeMyOrdersPage();
+      };
+    }
+
+    if (!window._myOrdersObserverAdded) {
+      const moObserver = new MutationObserver(() => {
+        if (typeof currentLang !== 'undefined' && currentLang !== 'ar') {
+          localizeMyOrdersPage();
+        }
+      });
+      window.addEventListener('DOMContentLoaded', () => {
+        moObserver.observe(document.body, { childList: true, subtree: true });
+      });
+      if (document.body) {
+        moObserver.observe(document.body, { childList: true, subtree: true });
+      }
+      window._myOrdersObserverAdded = true;
+    }
+
+    document.addEventListener('click', () => {
+      setTimeout(localizeMyOrdersPage, 20);
+      setTimeout(localizeMyOrdersPage, 100);
+    });
+
+    window.addEventListener('DOMContentLoaded', localizeMyOrdersPage);
+    localizeMyOrdersPage();
   </script>
 </body>
 </html>
