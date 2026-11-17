@@ -1872,7 +1872,7 @@
       document.getElementById('tutDeclineBtn').textContent = tutT.declineBtn;
 
       syncTutorialVoiceButtons();
-      document.getElementById('tutorialPromptModal').classList.remove('hidden');
+     showModalSmoothly('tutorialPromptModal');
       speakText(`${tutT.promptTitle}. ${tutT.promptDesc}`);
     }
 
@@ -1947,11 +1947,12 @@
       setTimeout(updateCoords, 420);
     }
 
-    function acceptInterfaceTutorial() {
-      document.getElementById('tutorialPromptModal').classList.add('hidden');
-      currentTutStepIndex = 0;
-      document.getElementById('tutorialOverlayLayer').classList.remove('hidden');
-      renderTutorialStep();
+   function acceptInterfaceTutorial() {
+      hideModalSmoothly('tutorialPromptModal', () => {
+        currentTutStepIndex = 0;
+        showModalSmoothly('tutorialOverlayLayer');
+        renderTutorialStep();
+      });
     }
 
     function renderTutorialStep() {
@@ -2777,26 +2778,25 @@
       }
     }
 
-    function startAppWithLanguage(langSelection) {
+  function startAppWithLanguage(langSelection) {
       unlockDeviceAudioChannel();
-      const modal = document.getElementById('welcomeModal');
-      if (modal) modal.classList.add('hidden');
 
       if (langSelection === 'sign') {
         currentLang = 'ar';
         applyLanguage('ar');
         selectDisabilityMode('hearing');
-        openTutorialPromptModal();
-        return;
+      } else {
+        currentLang = langSelection;
+        applyLanguage(langSelection);
       }
 
-      currentLang = langSelection;
-      applyLanguage(langSelection);
-      openTutorialPromptModal();
+      hideModalSmoothly('welcomeModal', () => {
+        openTutorialPromptModal();
+      });
     }
 
     function openLanguageModal() {
-      document.getElementById('welcomeModal').classList.remove('hidden');
+      showModalSmoothly('welcomeModal');
     }
 
     function applyLanguage(lang) {
