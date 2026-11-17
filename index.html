@@ -377,6 +377,10 @@
         <!-- الملخص المالي والضريبي الرسمي -->
         <div class="pt-2 space-y-2 text-xs font-bold text-slate-600 border-b-2 border-dashed border-slate-200 pb-3">
           <div class="flex items-center justify-between">
+            <span id="invBeforeDiscountLabel">السعر قبل الخصم:</span>
+            <span id="invModalBeforeDiscount" class="font-black text-slate-900 inline-flex items-center gap-1">0.00</span>
+          </div>
+          <div class="flex items-center justify-between">
             <span id="invSubtotalLabel">المجموع الفرعي (غير شامل الضريبة):</span>
             <span id="invModalSubtotal" class="font-black text-slate-900 inline-flex items-center gap-1">0.00</span>
           </div>
@@ -3907,11 +3911,15 @@
       const subtotalBeforeTax = (rawTotal / 1.15).toFixed(2);
       const vatAmount = (finalTotal - (finalTotal / 1.15)).toFixed(2);
 
+      const beforeDiscEl = document.getElementById('invModalBeforeDiscount');
       const subEl = document.getElementById('invModalSubtotal');
       const discEl = document.getElementById('invModalDiscount');
       const vatEl = document.getElementById('invModalVat');
       const totalEl = document.getElementById('invModalTotal');
 
+      if (beforeDiscEl) {
+        beforeDiscEl.innerHTML = `<span class="${discountAmount > 0 ? 'line-through opacity-75' : ''}">${rawTotal.toFixed(2)}</span> ${saudiRiyalLogoSVG}`;
+      }
       if (subEl) subEl.innerHTML = `<span>${subtotalBeforeTax}</span> ${saudiRiyalLogoSVG}`;
       if (discEl) {
         discEl.innerHTML = `<span>${discountAmount > 0 ? '-' + discountAmount.toFixed(2) : '0.00'}</span> ${saudiRiyalLogoSVG}`;
