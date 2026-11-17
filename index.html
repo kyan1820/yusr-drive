@@ -4023,7 +4023,7 @@
       if (vatEl) vatEl.innerHTML = `<span>${vatAmount}</span> ${saudiRiyalLogoSVG}`;
       if (totalEl) totalEl.innerHTML = `<span>${finalTotal.toFixed(2)}</span> ${saudiRiyalLogoSVG}`;
     }
-  // قاموس ترجمة نوافذ المراجعة النهائية والمؤقت ورسائل التأكيد للغات الـ 5
+  // ================= القواميس الموحدة الخفيفة لجميع اللغات الـ 5 =================
     const timerAndConfirmI18n = {
       ar: {
         timerBadge: '⏳ مهلة المراجعة الذكية قبل الإرسال النهائي',
@@ -4112,72 +4112,6 @@
       }
     };
 
-    // ربط عناصر النوافذ تلقائياً عند أول تشغيل وترجمتها فوراً حسب اللغة المختارة
-    function localizeTimerAndConfirmModals() {
-      const L = timerAndConfirmI18n[currentLang] || timerAndConfirmI18n.ar;
-
-      const textToKeyMap = {
-        'مهلة المراجعة الذكية قبل الإرسال النهائي': 'timerBadge',
-        'مراجعة نهائية لطلبك': 'timerTitle',
-        'سيتم اعتماد طلبك وإرساله للمسار الذكي تلقائياً عند انتهاء الوقت، أو يمكنك التحكم فوراً من الأزرار أدناه:': 'timerDesc',
-        'الوقت المتبقي للاعتماد التلقائي:': 'timerRemaining',
-        'اعتماد الطلب فوراً (عدم الانتظار)': 'timerApproveNow',
-        'تأكيد تعديل السلة': 'editBadge',
-        'العودة لتعديل السلة؟': 'editTitle',
-        'هل أنت متأكد من إيقاف المؤقت والعودة إلى القائمة لتعديل أصناف سلتك؟': 'editDesc',
-        'تأكيد الاعتماد الفوري': 'approveBadge',
-        'اعتماد الطلب الآن؟': 'approveTitle',
-        'هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟': 'approveDesc',
-        'عدم إظهار رسالة التأكيد هذه مرة أخرى': 'dontShowAgain',
-        'نعم، تأكيد': 'confirmYes',
-        'تراجع': 'confirmCancel'
-      };
-
-      // فحص جميع العناصر في كل مرة لضمان التقاط أي نص عربي يتم توليده ديناميكياً عند الضغط
-      document.querySelectorAll('span, h2, h3, h4, p, button, label, div').forEach(el => {
-        if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
-        const cleanText = el.textContent.replace(/[⏳✓✎]/g, '').replace(/\s+/g, ' ').trim();
-        if (textToKeyMap[cleanText]) {
-          el.setAttribute('data-tc-i18n', textToKeyMap[cleanText]);
-        } else if (cleanText === 'تعديل السلة' && el.id !== 'invCancelBtnText') {
-          el.setAttribute('data-tc-i18n', 'timerEditCart');
-        }
-      });
-
-      // تطبيق الترجمة فوراً حسب اللغة الحالية
-      document.querySelectorAll('[data-tc-i18n]').forEach(el => {
-        const key = el.getAttribute('data-tc-i18n');
-        if (L[key] && el.textContent !== L[key]) {
-          el.textContent = L[key];
-        }
-      });
-    }
-
-    // ربط الترجمة مع تغيير اللغة ومع فتح النوافذ ومع أي نقرة زر
-    const _origApplyLanguageTC = typeof applyLanguage === 'function' ? applyLanguage : null;
-    if (_origApplyLanguageTC) {
-      applyLanguage = function(lang) {
-        _origApplyLanguageTC(lang);
-        localizeTimerAndConfirmModals();
-      };
-    }
-
-    const _origShowModalSmoothlyTC = typeof showModalSmoothly === 'function' ? showModalSmoothly : null;
-    if (_origShowModalSmoothlyTC) {
-      showModalSmoothly = function(modalId, callback) {
-        localizeTimerAndConfirmModals();
-        _origShowModalSmoothlyTC(modalId, callback);
-        setTimeout(localizeTimerAndConfirmModals, 10);
-      };
-    }
-
-    document.addEventListener('click', () => {
-      setTimeout(localizeTimerAndConfirmModals, 10);
-    });
-
-    window.addEventListener('DOMContentLoaded', localizeTimerAndConfirmModals);
-    localizeTimerAndConfirmModals();
-  // قاموس ترجمة شاشة المسار الذكي داخل السيارة بجميع اللغات الـ 5
     const smartLaneScreenI18n = {
       ar: {
         topBadge: 'لوحة التواصل اللاتلامسي والمباشر',
@@ -4215,7 +4149,9 @@
         chatLiveBadge: 'مباشر',
         chatWaitMsg: 'بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...',
         chatPlaceholder: 'اكتب رسالة للموظف هنا...',
-        chatSendBtn: 'إرسال'
+        chatSendBtn: 'إرسال',
+        darkBtn: '🌙 الوضع الداكن',
+        lightBtn: '☀️ الوضع الفاتح'
       },
       en: {
         topBadge: 'Contactless & Direct Communication Panel',
@@ -4253,7 +4189,9 @@
         chatLiveBadge: 'Live',
         chatWaitMsg: 'Waiting to start chat or send a quick signal to staff...',
         chatPlaceholder: 'Type a message to staff here...',
-        chatSendBtn: 'Send'
+        chatSendBtn: 'Send',
+        darkBtn: '🌙 Dark Mode',
+        lightBtn: '☀️ Light Mode'
       },
       tr: {
         topBadge: 'Temassız ve Doğrudan İletişim Paneli',
@@ -4291,7 +4229,9 @@
         chatLiveBadge: 'Canlı',
         chatWaitMsg: 'Sohbetin başlaması veya hızlı sinyal gönderilmesi bekleniyor...',
         chatPlaceholder: 'Personele mesajınızı buraya yazın...',
-        chatSendBtn: 'Gönder'
+        chatSendBtn: 'Gönder',
+        darkBtn: '🌙 Koyu Mod',
+        lightBtn: '☀️ Açık Mod'
       },
       ur: {
         topBadge: 'کانٹیکٹ لیس اور براہ راست رابطہ پینل',
@@ -4329,7 +4269,9 @@
         chatLiveBadge: 'لائیو',
         chatWaitMsg: 'بات چیت شروع ہونے یا عملے کو فوری اشارہ بھیجنے کا انتظار ہے...',
         chatPlaceholder: 'عملے کے لیے یہاں پیغام لکھیں...',
-        chatSendBtn: 'بھیجیں'
+        chatSendBtn: 'بھیجیں',
+        darkBtn: '🌙 ڈارک موڈ',
+        lightBtn: '☀️ لائٹ موڈ'
       },
       zh: {
         topBadge: '无接触与直接沟通面板',
@@ -4367,139 +4309,12 @@
         chatLiveBadge: '实时',
         chatWaitMsg: '等待开始聊天或向工作人员发送快速信号...',
         chatPlaceholder: '在此输入给工作人员的消息...',
-        chatSendBtn: '发送'
+        chatSendBtn: '发送',
+        darkBtn: '🌙 深色模式',
+        lightBtn: '☀️ 浅色模式'
       }
     };
 
-    function localizeSmartLaneScreen() {
-      const L = smartLaneScreenI18n[currentLang] || smartLaneScreenI18n.ar;
-
-      const textToKeyMap = {
-        'لوحة التواصل اللاتلامسي والمباشر': 'topBadge',
-        'شاشة المسار الذكي داخل السيارة': 'mainTitle',
-        'تم إرسال طلبك بنجاح! يمكنك متابعة مراحل التسليم أو الاطلاع على الفواتير وحالة طلباتك من زر (قائمة طلباتي).': 'mainDesc',
-        'عرض الفاتورة وقائمة طلباتي': 'viewOrdersBtn',
-        '+ إضافة طلب جديد آخر': 'addNewOrderBtn',
-        'إضافة طلب جديد آخر': 'addNewOrderBtn',
-        'رقم الطلب المتابع حالياً': 'trackedOrderLabel',
-        'نسبة إنجاز وتقدم طلبك في المسار:': 'progressLabel',
-        'المرحلة 1 (25%)': 'step1Tag',
-        'تم استلام الطلب وتكييف المسار': 'step1Title',
-        'تم إبلاغ الموظف بنوع الاحتياج وطريقة التسليم': 'step1Desc',
-        'المرحلة 2 (50%)': 'step2Tag',
-        'تجهيز وتغليف ميسّر': 'step2Title',
-        'تجهيز العبوات سهلة الفتح وحامل السيارة': 'step2Desc',
-        'المرحلة 3 (75%)': 'step3Tag',
-        'التعرف على وصول مركبتك': 'step3Title',
-        'المستشعر قرأ وجودك في مسار يُسر 1': 'step3Desc1',
-        'المستشعر قرأ وجودك في مسار يسر 1': 'step3Desc1',
-        'المستشعر قرأ وجودك في مسار يُسر 2': 'step3Desc2',
-        'المستشعر قرأ وجودك في مسار يسر 2': 'step3Desc2',
-        'المستشعر قرأ وجودك في موقف خاص A': 'step3DescA',
-        'المرحلة 4 (100%)': 'step4Tag',
-        'التسليم المباشر لسيارتك': 'step4Title',
-        'الموظف في طريقه لباب المركبة الآن': 'step4Desc',
-        'أزرار التواصل السريع مع الموظف (بدون تحدث)': 'quickCommTitle',
-        'اضغط على أي زر لإرسال إشارة فورية أو اكتب رسالتك في الشات المباشر:': 'quickCommDesc',
-        'أنا في المسار الآن': 'qBtn1Title',
-        'إشعار بوصول السيارة لنقطة الاستلام': 'qBtn1Desc',
-        'أحتاج وقتاً إضافياً': 'qBtn2Title',
-        'إيقاف مؤقت للاستعجال في المسار': 'qBtn2Desc',
-        'تواصل كتابي / إشارة': 'qBtn3Title',
-        'تنبيه الموظف لعدم استخدام الصوت': 'qBtn3Desc',
-        'إحضار جهاز الشبكة': 'qBtn4Title',
-        'مدّ جهاز الدفع اللاسلكي للسيارة': 'qBtn4Desc',
-        'المحادثة المباشرة مع الموظف': 'chatTitle',
-        'مباشر': 'chatLiveBadge',
-        'بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...': 'chatWaitMsg',
-        'إرسال': 'chatSendBtn'
-      };
-
-      // 1. فحص العناصر العادية + العناصر التي يتم إعادة توليدها ديناميكياً (مثل المستشعر والشات)
-      document.querySelectorAll('span, h2, h3, h4, p, button, label, div').forEach(el => {
-        const cleanText = el.textContent.replace(/\s+/g, ' ').trim();
-
-        // معالجة خاصة للشارة العلوية التي تحتوي بداخلها على نقطة خضراء (span)
-        if (cleanText === 'لوحة التواصل اللاتلامسي والمباشر' || el.getAttribute('data-sl-badge') === '1') {
-          el.setAttribute('data-sl-badge', '1');
-          const textNodes = Array.from(el.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim().length > 0);
-          if (textNodes.length > 0) {
-            textNodes[textNodes.length - 1].textContent = ' ' + L.topBadge;
-          } else if (el.children.length === 0) {
-            el.textContent = L.topBadge;
-          }
-          return;
-        }
-
-        if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
-
-        // التقاط جملة المستشعر حتى لو تغير اسم المسار بداخلها ديناميكياً
-        if (cleanText.includes('المستشعر قرأ وجودك في')) {
-          if (cleanText.includes('2') || cleanText.includes('٢')) {
-            el.setAttribute('data-sl-i18n', 'step3Desc2');
-          } else if (cleanText.includes('A') || cleanText.includes('خاص')) {
-            el.setAttribute('data-sl-i18n', 'step3DescA');
-          } else {
-            el.setAttribute('data-sl-i18n', 'step3Desc1');
-          }
-        } else if (cleanText.includes('بانتظار بدء المحادثة')) {
-          el.setAttribute('data-sl-i18n', 'chatWaitMsg');
-        } else if (textToKeyMap[cleanText]) {
-          el.setAttribute('data-sl-i18n', textToKeyMap[cleanText]);
-        }
-      });
-
-      // 2. تطبيق الترجمة فوراً حسب اللغة المختارة
-      document.querySelectorAll('[data-sl-i18n]').forEach(el => {
-        const key = el.getAttribute('data-sl-i18n');
-        if (L[key] && el.textContent !== L[key]) {
-          el.textContent = L[key];
-        }
-      });
-
-      // 3. ترجمة نص الـ Placeholder لخانة كتابة الرسالة للموظف
-      document.querySelectorAll('input[type="text"]').forEach(inp => {
-        if (inp.placeholder && (inp.placeholder.includes('اكتب رسالة للموظف') || inp.getAttribute('data-sl-placeholder'))) {
-          inp.setAttribute('data-sl-placeholder', '1');
-          inp.placeholder = L.chatPlaceholder;
-        }
-      });
-    }
-
-    // ربط الترجمة تلقائياً عند تغيير اللغة أو تحديث حالة الطلب أو الشات
-    const _origApplyLanguageSL = typeof applyLanguage === 'function' ? applyLanguage : null;
-    if (_origApplyLanguageSL) {
-      applyLanguage = function(lang) {
-        _origApplyLanguageSL(lang);
-        localizeSmartLaneScreen();
-        setTimeout(localizeSmartLaneScreen, 30);
-      };
-    }
-
-    // مراقب ذكي يترجم أي نص عربي يعيد النظام كتابته داخل شاشة المسار أو الشات فوراً
-    if (!window._smartLaneObserverAdded) {
-      const slObserver = new MutationObserver(() => {
-        if (typeof currentLang !== 'undefined' && currentLang !== 'ar') {
-          localizeSmartLaneScreen();
-        }
-      });
-      window.addEventListener('DOMContentLoaded', () => {
-        slObserver.observe(document.body, { childList: true, subtree: true });
-      });
-      if (document.body) {
-        slObserver.observe(document.body, { childList: true, subtree: true });
-      }
-      window._smartLaneObserverAdded = true;
-    }
-
-    document.addEventListener('click', () => {
-      setTimeout(localizeSmartLaneScreen, 20);
-      setTimeout(localizeSmartLaneScreen, 100);
-    });
-
-    window.addEventListener('DOMContentLoaded', localizeSmartLaneScreen);
-    localizeSmartLaneScreen();
-  // قاموس ومترجم شامل لصفحة (قائمة طلباتي والفواتير) بجميع اللغات الـ 5
     const myOrdersPageI18n = {
       ar: {
         topBadge: 'الفواتير الإلكترونية والاستعلام المباشر',
@@ -4531,7 +4346,7 @@
         mainDesc: 'Tüm siparişlerinizin faturalarını görüntüleyin ve her siparişin durumunu ve tamamlanma oranını kontrol edin.',
         createNewBtn: '+ Başka Yeni Sipariş Oluştur',
         showAllBtn: 'Tümünü Göster',
-        searchPlaceholder: 'Fatura no (#YSR-105 veya 105) veya saate (10:30) göre الفاتورة ara...',
+        searchPlaceholder: 'Fatura no (#YSR-105 veya 105) veya saate (10:30) göre ara...',
         invDetails: 'Fatura Detayları:',
         discountLabel: 'İndirim:',
         totalLabel: 'Fatura Toplamı (KDV Dahil):',
@@ -4563,7 +4378,6 @@
       }
     };
 
-    // قاموس استبدال العبارات الديناميكية داخل كروت الفواتير
     const orderCardReplacements = {
       en: [
         ['فاتورة ضريبية مبسطة — طلب #', 'Simplified Tax Invoice — Order #'],
@@ -4711,67 +4525,154 @@
       ]
     };
 
-    function localizeMyOrdersPage() {
-      const L = myOrdersPageI18n[currentLang] || myOrdersPageI18n.ar;
+    function runAllCustomLocalizations() {
+      const TC = timerAndConfirmI18n[currentLang] || timerAndConfirmI18n.ar;
+      const SL = smartLaneScreenI18n[currentLang] || smartLaneScreenI18n.ar;
+      const MO = myOrdersPageI18n[currentLang] || myOrdersPageI18n.ar;
+      const isDark = document.body.classList.contains('dark-theme');
 
-      const staticMap = {
-        'الفواتير الإلكترونية والاستعلام المباشر': 'topBadge',
-        'قائمة طلباتي والفواتير': 'mainTitle',
-        'اطلع على فواتير جميع طلباتك واستعلم عن حالة كل طلب ونسبة إنجازه (جاري التسليم أو تم التسليم).': 'mainDesc',
-        '+ إنشاء طلب جديد آخر': 'createNewBtn',
-        'إنشاء طلب جديد آخر +': 'createNewBtn',
-        'إنشاء طلب جديد آخر': 'createNewBtn',
-        'إظهار الكل': 'showAllBtn',
-        'تفاصيل الفاتورة:': 'invDetails',
-        ':تفاصيل الفاتورة': 'invDetails',
-        'الخصم:': 'discountLabel',
-        ':الخصم': 'discountLabel',
-        'إجمالي الفاتورة (شامل الضريبة):': 'totalLabel',
-        ':إجمالي الفاتورة (شامل الضريبة)': 'totalLabel',
-        'الرجوع لشاشة المسار المباشر لهذا الطلب': 'returnLaneBtn'
+      const combinedMap = {
+        'مهلة المراجعة الذكية قبل الإرسال النهائي': TC.timerBadge,
+        'مراجعة نهائية لطلبك': TC.timerTitle,
+        'سيتم اعتماد طلبك وإرساله للمسار الذكي تلقائياً عند انتهاء الوقت، أو يمكنك التحكم فوراً من الأزرار أدناه:': TC.timerDesc,
+        'الوقت المتبقي للاعتماد التلقائي:': TC.timerRemaining,
+        'اعتماد الطلب فوراً (عدم الانتظار)': TC.timerApproveNow,
+        'تأكيد تعديل السلة': TC.editBadge,
+        'العودة لتعديل السلة؟': TC.editTitle,
+        'هل أنت متأكد من إيقاف المؤقت والعودة إلى القائمة لتعديل أصناف سلتك؟': TC.editDesc,
+        'تأكيد الاعتماد الفوري': TC.approveBadge,
+        'اعتماد الطلب الآن؟': TC.approveTitle,
+        'هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟': TC.approveDesc,
+        'عدم إظهار رسالة التأكيد هذه مرة أخرى': TC.dontShowAgain,
+        'نعم، تأكيد': TC.confirmYes,
+        'تراجع': TC.confirmCancel,
+        'شاشة المسار الذكي داخل السيارة': SL.mainTitle,
+        'تم إرسال طلبك بنجاح! يمكنك متابعة مراحل التسليم أو الاطلاع على الفواتير وحالة طلباتك من زر (قائمة طلباتي).': SL.mainDesc,
+        'عرض الفاتورة وقائمة طلباتي': SL.viewOrdersBtn,
+        '+ إضافة طلب جديد آخر': SL.addNewOrderBtn,
+        'إضافة طلب جديد آخر': SL.addNewOrderBtn,
+        'رقم الطلب المتابع حالياً': SL.trackedOrderLabel,
+        'نسبة إنجاز وتقدم طلبك في المسار:': SL.progressLabel,
+        'المرحلة 1 (25%)': SL.step1Tag,
+        'تم استلام الطلب وتكييف المسار': SL.step1Title,
+        'تم إبلاغ الموظف بنوع الاحتياج وطريقة التسليم': SL.step1Desc,
+        'المرحلة 2 (50%)': SL.step2Tag,
+        'تجهيز وتغليف ميسّر': SL.step2Title,
+        'تجهيز العبوات سهلة الفتح وحامل السيارة': SL.step2Desc,
+        'المرحلة 3 (75%)': SL.step3Tag,
+        'التعرف على وصول مركبتك': SL.step3Title,
+        'المرحلة 4 (100%)': SL.step4Tag,
+        'التسليم المباشر لسيارتك': SL.step4Title,
+        'الموظف في طريقه لباب المركبة الآن': SL.step4Desc,
+        'أزرار التواصل السريع مع الموظف (بدون تحدث)': SL.quickCommTitle,
+        'اضغط على أي زر لإرسال إشارة فورية أو اكتب رسالتك في الشات المباشر:': SL.quickCommDesc,
+        'أنا في المسار الآن': SL.qBtn1Title,
+        'إشعار بوصول السيارة لنقطة الاستلام': SL.qBtn1Desc,
+        'أحتاج وقتاً إضافياً': SL.qBtn2Title,
+        'إيقاف مؤقت للاستعجال في المسار': SL.qBtn2Desc,
+        'تواصل كتابي / إشارة': SL.qBtn3Title,
+        'تنبيه الموظف لعدم استخدام الصوت': SL.qBtn3Desc,
+        'إحضار جهاز الشبكة': SL.qBtn4Title,
+        'مدّ جهاز الدفع اللاسلكي للسيارة': SL.qBtn4Desc,
+        'المحادثة المباشرة مع الموظف': SL.chatTitle,
+        'مباشر': SL.chatLiveBadge,
+        'بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...': SL.chatWaitMsg,
+        'إرسال': SL.chatSendBtn,
+        'قائمة طلباتي والفواتير': MO.mainTitle,
+        'اطلع على فواتير جميع طلباتك واستعلم عن حالة كل طلب ونسبة إنجازه (جاري التسليم أو تم التسليم).': MO.mainDesc,
+        '+ إنشاء طلب جديد آخر': MO.createNewBtn,
+        'إنشاء طلب جديد آخر +': MO.createNewBtn,
+        'إنشاء طلب جديد آخر': MO.createNewBtn,
+        'إظهار الكل': MO.showAllBtn,
+        'تفاصيل الفاتورة:': MO.invDetails,
+        ':تفاصيل الفاتورة': MO.invDetails,
+        'الخصم:': MO.discountLabel,
+        ':الخصم': MO.discountLabel,
+        'إجمالي الفاتورة (شامل الضريبة):': MO.totalLabel,
+        ':إجمالي الفاتورة (شامل الضريبة)': MO.totalLabel,
+        'الرجوع لشاشة المسار المباشر لهذا الطلب': MO.returnLaneBtn
       };
 
-      // 1. ترجمة العناوين الثابتة والأزرار
       document.querySelectorAll('span, h2, h3, h4, p, button, label, div').forEach(el => {
-        const cleanText = el.textContent.replace(/\s+/g, ' ').trim();
+        const cleanText = el.textContent.replace(/[⏳✓✎]/g, '').replace(/\s+/g, ' ').trim();
 
+        // الشارات العلوية التي بداخلها نقطة خضراء
+        if (cleanText === 'لوحة التواصل اللاتلامسي والمباشر' || el.getAttribute('data-sl-badge') === '1') {
+          el.setAttribute('data-sl-badge', '1');
+          const tNodes = Array.from(el.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim().length > 0);
+          if (tNodes.length > 0) tNodes[tNodes.length - 1].textContent = ' ' + SL.topBadge;
+          return;
+        }
         if (cleanText === 'الفواتير الإلكترونية والاستعلام المباشر' || el.getAttribute('data-mo-badge') === '1') {
           el.setAttribute('data-mo-badge', '1');
-          const textNodes = Array.from(el.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim().length > 0);
-          if (textNodes.length > 0) {
-            textNodes[textNodes.length - 1].textContent = ' ' + L.topBadge;
-          } else if (el.children.length === 0) {
-            el.textContent = L.topBadge;
-          }
+          const tNodes = Array.from(el.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim().length > 0);
+          if (tNodes.length > 0) tNodes[tNodes.length - 1].textContent = ' ' + MO.topBadge;
           return;
+        }
+
+        // زر الوضع الداكن / الفاتح
+        if (el.id === 'themeToggleBtn' || el.getAttribute('onclick')?.includes('toggleDarkMode') || el.getAttribute('data-theme-btn') === '1' || cleanText.includes('الوضع الداكن') || cleanText.includes('الوضع الفاتح')) {
+          if (el.tagName === 'BUTTON' || el.children.length === 0) {
+            el.setAttribute('data-theme-btn', '1');
+            const targetThemeTxt = isDark ? SL.lightBtn : SL.darkBtn;
+            if (el.children.length === 0) {
+              el.textContent = targetThemeTxt;
+            } else {
+              const sp = el.querySelector('span:last-child');
+              if (sp) sp.textContent = targetThemeTxt.replace(/[🌙☀️]/g, '').trim();
+            }
+            return;
+          }
         }
 
         if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
 
-        if (staticMap[cleanText]) {
-          el.setAttribute('data-mo-i18n', staticMap[cleanText]);
+        // نص المستشعر في المرحلة 3
+        if (cleanText.includes('المستشعر قرأ وجودك في') || el.id === 'laneStep3Desc' || el.getAttribute('data-sensor-desc') === '1') {
+          el.setAttribute('data-sensor-desc', '1');
+          if (cleanText.includes('2') || cleanText.includes('٢')) el.textContent = SL.step3Desc2;
+          else if (cleanText.includes('A') || cleanText.includes('خاص') || cleanText.includes('Special') || cleanText.includes('Özel') || cleanText.includes('خصوصی') || cleanText.includes('专用')) el.textContent = SL.step3DescA;
+          else el.textContent = SL.step3Desc1;
+          return;
+        }
+
+        if (cleanText.includes('بانتظار بدء المحادثة') || el.getAttribute('data-chat-wait') === '1') {
+          el.setAttribute('data-chat-wait', '1');
+          el.textContent = SL.chatWaitMsg;
+          return;
+        }
+
+        if (cleanText === 'تعديل السلة' && el.id !== 'invCancelBtnText') {
+          el.setAttribute('data-orig-ar', 'timerEditCart');
+        } else if (combinedMap[cleanText]) {
+          el.setAttribute('data-orig-ar', cleanText);
+        }
+
+        const origKey = el.getAttribute('data-orig-ar');
+        if (origKey === 'timerEditCart') {
+          el.textContent = TC.timerEditCart;
+        } else if (origKey && combinedMap[origKey]) {
+          el.textContent = combinedMap[origKey];
         }
       });
 
-      document.querySelectorAll('[data-mo-i18n]').forEach(el => {
-        const key = el.getAttribute('data-mo-i18n');
-        if (L[key] && el.textContent !== L[key]) {
-          el.textContent = L[key];
-        }
-      });
-
-      // 2. ترجمة شريط البحث
+      // حقول الإدخال (الشات والبحث)
       document.querySelectorAll('input[type="text"]').forEach(inp => {
-        if (inp.placeholder && (inp.placeholder.includes('ابحث برقم الفاتورة') || inp.getAttribute('data-mo-search'))) {
-          inp.setAttribute('data-mo-search', '1');
-          inp.placeholder = L.searchPlaceholder;
+        if (inp.placeholder && (inp.placeholder.includes('اكتب رسالة للموظف') || inp.getAttribute('data-sl-ph') === '1')) {
+          inp.setAttribute('data-sl-ph', '1');
+          inp.placeholder = SL.chatPlaceholder;
+        }
+        if (inp.placeholder && (inp.placeholder.includes('ابحث برقم الفاتورة') || inp.getAttribute('data-mo-ph') === '1')) {
+          inp.setAttribute('data-mo-ph', '1');
+          inp.placeholder = MO.searchPlaceholder;
         }
       });
 
-      // 3. ترجمة النصوص الديناميكية داخل كروت الفواتير
-      if (currentLang !== 'ar' && orderCardReplacements[currentLang]) {
+      // كروت الفواتير في صفحة طلباتي
+      const ordersView = document.getElementById('customerOrdersView') || document.body;
+      if (currentLang !== 'ar' && orderCardReplacements[currentLang] && ordersView) {
         const pairs = orderCardReplacements[currentLang];
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+        const walker = document.createTreeWalker(ordersView, NodeFilter.SHOW_TEXT, null, false);
         let node;
         while ((node = walker.nextNode())) {
           if (!node.parentElement || ['SCRIPT', 'STYLE'].includes(node.parentElement.tagName)) continue;
@@ -4789,173 +4690,43 @@
       }
     }
 
-    // ربط الترجمة تلقائياً مع تغيير اللغة ومع إعادة رسم قائمة الطلبات
-    const _origApplyLanguageMO = typeof applyLanguage === 'function' ? applyLanguage : null;
-    if (_origApplyLanguageMO) {
+    // ربط نظيف وخفيف بدون أي MutationObserver يسبب تعليق المتصفح
+    const _baseApplyLang = typeof applyLanguage === 'function' ? applyLanguage : null;
+    if (_baseApplyLang) {
       applyLanguage = function(lang) {
-        _origApplyLanguageMO(lang);
+        _baseApplyLang(lang);
         if (lang === 'ar' && typeof renderCustomerOrdersList === 'function') {
           renderCustomerOrdersList();
         }
-        localizeMyOrdersPage();
-        setTimeout(localizeMyOrdersPage, 30);
+        runAllCustomLocalizations();
+        setTimeout(runAllCustomLocalizations, 40);
       };
     }
 
-    const _origRenderOrdersMO = typeof renderCustomerOrdersList === 'function' ? renderCustomerOrdersList : null;
-    if (_origRenderOrdersMO) {
+    const _baseShowModal = typeof showModalSmoothly === 'function' ? showModalSmoothly : null;
+    if (_baseShowModal) {
+      showModalSmoothly = function(modalId, callback) {
+        runAllCustomLocalizations();
+        _baseShowModal(modalId, callback);
+        setTimeout(runAllCustomLocalizations, 25);
+      };
+    }
+
+    const _baseRenderOrders = typeof renderCustomerOrdersList === 'function' ? renderCustomerOrdersList : null;
+    if (_baseRenderOrders) {
       renderCustomerOrdersList = function(...args) {
-        _origRenderOrdersMO.apply(this, args);
-        localizeMyOrdersPage();
-      };
-    }
-
-    if (!window._myOrdersObserverAdded) {
-      const moObserver = new MutationObserver(() => {
-        if (typeof currentLang !== 'undefined' && currentLang !== 'ar') {
-          localizeMyOrdersPage();
-        }
-      });
-      window.addEventListener('DOMContentLoaded', () => {
-        moObserver.observe(document.body, { childList: true, subtree: true });
-      });
-      if (document.body) {
-        moObserver.observe(document.body, { childList: true, subtree: true });
-      }
-      window._myOrdersObserverAdded = true;
-    }
-
-    document.addEventListener('click', () => {
-      setTimeout(localizeMyOrdersPage, 20);
-      setTimeout(localizeMyOrdersPage, 100);
-    });
-
-    window.addEventListener('DOMContentLoaded', localizeMyOrdersPage);
-    localizeMyOrdersPage();
-  // قاموس ترجمة زر الوضع الداكن/الفاتح وإصلاح نص المستشعر بجميع اللغات الـ 5
-    const themeAndSensorFixI18n = {
-      ar: {
-        darkBtn: '🌙 الوضع الداكن',
-        lightBtn: '☀️ الوضع الفاتح',
-        sensor1: 'المستشعر قرأ وجودك في مسار يُسر 1',
-        sensor2: 'المستشعر قرأ وجودك في مسار يُسر 2',
-        sensorA: 'المستشعر قرأ وجودك في موقف خاص A'
-      },
-      en: {
-        darkBtn: '🌙 Dark Mode',
-        lightBtn: '☀️ Light Mode',
-        sensor1: 'Sensor detected your vehicle in Yusr Lane 1',
-        sensor2: 'Sensor detected your vehicle in Yusr Lane 2',
-        sensorA: 'Sensor detected your vehicle in Special Spot A'
-      },
-      tr: {
-        darkBtn: '🌙 Koyu Mod',
-        lightBtn: '☀️ Açık Mod',
-        sensor1: 'Sensör Yusr Hat 1 içindeki varlığınızı okudu',
-        sensor2: 'Sensör Yusr Hat 2 içindeki varlığınızı okudu',
-        sensorA: 'Sensör Özel Park A içindeki varlığınızı okudu'
-      },
-      ur: {
-        darkBtn: '🌙 ڈارک موڈ',
-        lightBtn: '☀️ لائٹ موڈ',
-        sensor1: 'سینسر نے یُسر لین 1 میں آپ کی موجودگی نوٹ کر لی',
-        sensor2: 'سینسر نے یُسر لین 2 میں آپ کی موجودگی نوٹ کر لی',
-        sensorA: 'سینسر نے خصوصی پارکنگ A میں آپ کی موجودگی نوٹ کر لی'
-      },
-      zh: {
-        darkBtn: '🌙 深色模式',
-        lightBtn: '☀️ 浅色模式',
-        sensor1: '传感器已检测到您在 Yusr 车道 1',
-        sensor2: '传感器已检测到您在 Yusr 车道 2',
-        sensorA: '传感器已检测到您在 专用车位 A'
-      }
-    };
-
-    function fixThemeBtnAndSensorText() {
-      const L = themeAndSensorFixI18n[currentLang] || themeAndSensorFixI18n.ar;
-      const isDark = document.body.classList.contains('dark-theme');
-
-      // 1. ترجمة زر الوضع الداكن / الفاتح في الشريط العلوي
-      document.querySelectorAll('button, span').forEach(el => {
-        const txt = el.textContent.trim();
-        if (
-          el.id === 'themeToggleBtn' ||
-          el.getAttribute('onclick')?.includes('toggleDarkMode') ||
-          el.getAttribute('onclick')?.includes('Theme') ||
-          el.getAttribute('data-theme-btn') === '1' ||
-          txt.includes('الوضع الداكن') ||
-          txt.includes('الوضع الفاتح')
-        ) {
-          if (el.tagName === 'BUTTON' || el.children.length === 0) {
-            el.setAttribute('data-theme-btn', '1');
-            const targetText = isDark ? L.lightBtn : L.darkBtn;
-            if (el.children.length === 0 && el.textContent !== targetText) {
-              el.textContent = targetText;
-            } else if (el.tagName === 'BUTTON' && el.children.length > 0) {
-              // إذا كان الزر يحتوي على span داخلي للنص
-              const innerSpan = el.querySelector('span:last-child') || el;
-              const cleanTarget = targetText.replace(/[🌙☀️]/g, '').trim();
-              if (innerSpan !== el && innerSpan.textContent !== cleanTarget) {
-                innerSpan.textContent = cleanTarget;
-              }
-            }
-          }
-        }
-      });
-
-      // 2. إصلاح جملة "المستشعر قرأ وجودك في..." حتى لو تحول جزء منها للإنجليزية أو لغة أخرى
-      document.querySelectorAll('p, span, div').forEach(el => {
-        if (el.children.length > 1) return;
-        const txt = el.textContent.trim();
-        if (
-          txt.includes('المستشعر قرأ وجودك في') ||
-          el.id === 'laneStep3Desc' ||
-          el.getAttribute('data-sensor-desc') === '1'
-        ) {
-          el.setAttribute('data-sensor-desc', '1');
-          let targetSensor = L.sensor1;
-          if (txt.includes('2') || txt.includes('٢')) {
-            targetSensor = L.sensor2;
-          } else if (txt.includes('A') || txt.includes('خاص') || txt.includes('Special') || txt.includes('Özel') || txt.includes('خصوصی') || txt.includes('专用')) {
-            targetSensor = L.sensorA;
-          }
-          if (el.textContent !== targetSensor) {
-            el.textContent = targetSensor;
-          }
-        }
-      });
-    }
-
-    // ربط التحديث مع تغيير اللغة ومع تبديل الوضع الداكن ومع المراقب الذكي
-    const _origApplyLanguageTSF = typeof applyLanguage === 'function' ? applyLanguage : null;
-    if (_origApplyLanguageTSF) {
-      applyLanguage = function(lang) {
-        _origApplyLanguageTSF(lang);
-        fixThemeBtnAndSensorText();
-        setTimeout(fixThemeBtnAndSensorText, 30);
+        _baseRenderOrders.apply(this, args);
+        runAllCustomLocalizations();
       };
     }
 
     document.addEventListener('click', () => {
-      setTimeout(fixThemeBtnAndSensorText, 10);
-      setTimeout(fixThemeBtnAndSensorText, 60);
+      setTimeout(runAllCustomLocalizations, 20);
+      setTimeout(runAllCustomLocalizations, 120);
     });
 
-    if (!window._tsfObserverAdded) {
-      const tsfObserver = new MutationObserver(() => {
-        fixThemeBtnAndSensorText();
-      });
-      window.addEventListener('DOMContentLoaded', () => {
-        tsfObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-      });
-      if (document.body) {
-        tsfObserver.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-      }
-      window._tsfObserverAdded = true;
-    }
-
-    window.addEventListener('DOMContentLoaded', fixThemeBtnAndSensorText);
-    fixThemeBtnAndSensorText();
+    window.addEventListener('DOMContentLoaded', runAllCustomLocalizations);
+    setTimeout(runAllCustomLocalizations, 50);
   </script>
 </body>
 </html>
