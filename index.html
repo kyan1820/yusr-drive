@@ -339,25 +339,69 @@
           </button>
         </div>
       </div>
-<!-- شريط المؤقت التنازلي التلقائي (لمدة دقيقتين) -->
-      <div id="checkoutTimerBox" class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-3 text-center space-y-1.5">
-        <div class="text-xs font-black text-amber-900 flex items-center justify-center gap-1.5">
-          <span>⏳ سيتم اعتماد الطلب تلقائياً خلال:</span>
-          <span id="checkoutCountdownDisplay" class="text-base font-black text-rose-600 bg-white px-2 py-0.5 rounded-lg border border-amber-200" dir="ltr">02:00</span>
-        </div>
-        <p class="text-[11px] text-amber-800 font-bold">يمكنك تأكيد الطلب فوراً أو الضغط على تعديل السلة لتغيير الأصناف.</p>
-      </div>
-      <div class="flex gap-3 pt-2">
-        <button type="button" id="invConfirmBtnText" onclick="finalizeOrderWithInvoice()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg transition">
+<div class="flex gap-3 pt-2">
+        <button type="button" id="invConfirmBtnText" onclick="openStandaloneTimerScreen()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-2xl text-sm shadow-lg transition cursor-pointer">
           ✓ اعتماد الفاتورة وإرسال الطلب للمسار
         </button>
-        <button type="button" id="invCancelBtnText" onclick="closeInvoiceModalAndEditCart()" class="px-5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 rounded-2xl text-xs transition">
+        <button type="button" id="invCancelBtnText" onclick="closeInvoiceModal()" class="px-5 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 rounded-2xl text-xs transition cursor-pointer">
           تعديل السلة
         </button>
       </div>
     </div>
   </div>
+<!-- 6. شاشة المؤقت المستقلة لاعتماد الطلب أو تعديل السلة -->
+  <div id="standaloneTimerModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white text-slate-900 max-w-md w-full rounded-3xl p-6 sm:p-8 shadow-2xl border-4 border-amber-400 text-center space-y-6 my-auto">
+      <div class="inline-flex items-center gap-2 bg-amber-100 text-amber-900 px-4 py-1.5 rounded-full text-xs font-black">
+        <span>⏳ مهلة المراجعة الذكية قبل الإرسال النهائي</span>
+      </div>
 
+      <div class="space-y-2">
+        <h3 class="text-2xl font-black text-slate-900">مراجعة نهائية لطلبك</h3>
+        <p class="text-xs sm:text-sm text-slate-600 font-bold leading-relaxed">
+          سيتم اعتماد طلبك وإرساله للمسار الذكي تلقائياً عند انتهاء الوقت، أو يمكنك التحكم فوراً من الأزرار أدناه:
+        </p>
+      </div>
+
+      <div class="bg-amber-50 border-2 border-amber-300 rounded-3xl p-6 space-y-2 shadow-inner">
+        <span class="text-xs font-extrabold text-amber-900 block">الوقت المتبقي للاعتماد التلقائي:</span>
+        <div id="checkoutCountdownDisplay" class="text-5xl font-black text-rose-600 tracking-wider font-mono" dir="ltr">02:00</div>
+      </div>
+
+      <div class="flex flex-col gap-3 pt-2">
+        <button type="button" onclick="handleTimerButtonClick('confirm')" class="focus-ring w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-2xl text-base shadow-lg transition cursor-pointer">
+          ✓ اعتماد الطلب فوراً (عدم الانتظار)
+        </button>
+        <button type="button" onclick="handleTimerButtonClick('edit')" class="focus-ring w-full bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3.5 rounded-2xl text-sm transition cursor-pointer">
+          ✎ تعديل السلة
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. نافذة رسالة التأكيد عند الضغط قبل انتهاء المؤقت -->
+  <div id="timerActionConfirmModal" class="hidden fixed inset-0 z-[55] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white text-slate-900 max-w-sm w-full rounded-3xl p-6 shadow-2xl border-4 border-emerald-500 text-center space-y-4">
+      <span id="timerConfirmBadge" class="inline-block text-xs font-black px-3 py-1 rounded-full bg-emerald-100 text-emerald-800">تأكيد الإجراء</span>
+      <h3 id="timerConfirmTitle" class="text-xl font-black text-slate-900">هل أنت متأكد؟</h3>
+      <p id="timerConfirmDesc" class="text-xs sm:text-sm text-slate-600 font-bold leading-relaxed"></p>
+
+      <!-- خيار عدم إظهار الرسالة مجدداً (غير محدد افتراضياً) -->
+      <label class="flex items-center justify-center gap-2 pt-2 pb-1 cursor-pointer select-none text-xs font-extrabold text-slate-700 bg-slate-100 p-3 rounded-xl border border-slate-200">
+        <input type="checkbox" id="dontShowTimerConfirmCheckbox" class="w-4 h-4 accent-emerald-600 rounded cursor-pointer">
+        <span>عدم إظهار رسالة التأكيد هذه مرة أخرى</span>
+      </label>
+
+      <div class="flex gap-2.5 pt-2">
+        <button type="button" onclick="proceedWithTimerAction()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl text-xs sm:text-sm transition shadow cursor-pointer">
+          نعم، تأكيد
+        </button>
+        <button type="button" onclick="cancelTimerActionConfirm()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-black py-3 rounded-xl text-xs sm:text-sm transition cursor-pointer">
+          تراجع
+        </button>
+      </div>
+    </div>
+  </div>
   <!-- نافذة دخول المشرف السرية -->
   <div id="adminPinModal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-slate-900 text-white max-w-sm w-full rounded-3xl p-6 shadow-2xl border-2 border-emerald-500 text-center space-y-4">
@@ -3309,7 +3353,6 @@
 
       document.getElementById('invModalTotal').innerHTML = `<span>${totalAmount}</span> ${saudiRiyalLogoSVG}`;
       document.getElementById('invoiceCheckoutModal').classList.remove('hidden');
-      startCheckoutCountdown();
      speakText(invT.speechReady(totalAmount));
     }
     function finalizeOrderWithInvoice() {
@@ -3559,6 +3602,16 @@
     });
   let checkoutTimerInterval = null;
     let checkoutSecondsRemaining = 120;
+    let skipTimerConfirmation = false; // لحفظ رغبة العميل بعدم إظهار الرسالة مجدداً
+    let pendingTimerUserAction = null;
+
+    function openStandaloneTimerScreen() {
+      // إغلاق نافذة الفاتورة وفتح صفحة المؤقت المستقلة
+      document.getElementById('invoiceCheckoutModal').classList.add('hidden');
+      document.getElementById('standaloneTimerModal').classList.remove('hidden');
+      startCheckoutCountdown();
+      speakText('تم الانتقال لشاشة المراجعة النهائية، لديك دقيقتان قبل الاعتماد التلقائي، أو يمكنك الاعتماد فوراً أو تعديل السلة');
+    }
 
     function startCheckoutCountdown() {
       clearInterval(checkoutTimerInterval);
@@ -3571,6 +3624,8 @@
 
         if (checkoutSecondsRemaining <= 0) {
           clearInterval(checkoutTimerInterval);
+          document.getElementById('standaloneTimerModal').classList.add('hidden');
+          document.getElementById('timerActionConfirmModal').classList.add('hidden');
           finalizeOrderWithInvoice();
           triggerVisualBanner('انتهى الوقت المحدد؛ تم اعتماد طلبك وإرساله تلقائياً للمسار الذكي.');
         }
@@ -3585,10 +3640,62 @@
       displayEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
-    function closeInvoiceModalAndEditCart() {
+    function handleTimerButtonClick(actionType) {
+      pendingTimerUserAction = actionType;
+
+      // إذا اختار العميل سابقاً عدم إظهار رسالة التأكيد، ننفذ الأمر مباشرة
+      if (skipTimerConfirmation) {
+        executeTimerActionDirectly(actionType);
+        return;
+      }
+
+      // تجهيز نافذة التأكيد مع إبقاء المربع غير محدد افتراضياً
+      const checkbox = document.getElementById('dontShowTimerConfirmCheckbox');
+      if (checkbox) checkbox.checked = false;
+
+      const titleEl = document.getElementById('timerConfirmTitle');
+      const descEl = document.getElementById('timerConfirmDesc');
+      const badgeEl = document.getElementById('timerConfirmBadge');
+
+      if (actionType === 'confirm') {
+        badgeEl.textContent = 'تأكيد الاعتماد الفوري';
+        badgeEl.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-emerald-100 text-emerald-800';
+        titleEl.textContent = 'اعتماد الطلب الآن؟';
+        descEl.textContent = 'هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟';
+      } else {
+        badgeEl.textContent = 'تأكيد تعديل السلة';
+        badgeEl.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-amber-100 text-amber-900';
+        titleEl.textContent = 'العودة لتعديل السلة؟';
+        descEl.textContent = 'هل أنت متأكد من إيقاف المؤقت والعودة إلى القائمة لتعديل أصناف سلتك؟';
+      }
+
+      document.getElementById('timerActionConfirmModal').classList.remove('hidden');
+    }
+
+    function proceedWithTimerAction() {
+      const checkbox = document.getElementById('dontShowTimerConfirmCheckbox');
+      if (checkbox && checkbox.checked) {
+        skipTimerConfirmation = true;
+      }
+      document.getElementById('timerActionConfirmModal').classList.add('hidden');
+      executeTimerActionDirectly(pendingTimerUserAction);
+    }
+
+    function cancelTimerActionConfirm() {
+      pendingTimerUserAction = null;
+      document.getElementById('timerActionConfirmModal').classList.add('hidden');
+    }
+
+    function executeTimerActionDirectly(actionType) {
       clearInterval(checkoutTimerInterval);
-      closeInvoiceModal();
-      speakText('تم العودة للسلة، يمكنك تعديل الأصناف بحرية');
+      document.getElementById('standaloneTimerModal').classList.add('hidden');
+
+      if (actionType === 'confirm') {
+        finalizeOrderWithInvoice();
+      } else if (actionType === 'edit') {
+        closeInvoiceModal();
+        speakText('تم إيقاف المؤقت والعودة للسلة، يمكنك تعديل الأصناف بحرية');
+      }
     }
   </script>
 </body>
