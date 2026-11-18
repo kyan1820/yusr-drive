@@ -1201,29 +1201,6 @@
         }
       } catch (e) {}
 
-      // مزامنة تلقائية: أي طلب مفتوح (in_progress) عند العميل ولم يُسجل في السجل كمكتمل/محذوف يظهر فوراً للموظف
-      try {
-        const historyCodes = new Set(ordersHistory.map(h => h.code));
-        let synced = false;
-        myCustomerOrders.forEach(ord => {
-          if (ord.status === 'in_progress') {
-            const histMatch = ordersHistory.find(h => h.code === ord.code);
-            if (histMatch) {
-              ord.status = histMatch.status;
-              synced = true;
-            } else if (!activeOrders.some(a => a.code === ord.code)) {
-              activeOrders.push(ord);
-              synced = true;
-            }
-          }
-        });
-        activeOrders = activeOrders.filter(a => !historyCodes.has(a.code) && a.status !== 'completed' && a.status !== 'deleted');
-        if (activeOrders.length > 0 && !activeOrders.some(o => o.code === staffSelectedOrderCode)) {
-          staffSelectedOrderCode = activeOrders[0].code;
-        }
-        if (synced) saveAllOrderStates();
-      } catch (e) {}
-
       try {
         const savedTheme = localStorage.getItem('yusr_dark_mode_active');
         if (savedTheme === 'true') {
@@ -2306,8 +2283,7 @@
       if (!target) return;
       myCustomerOrderCode = target.code;
       document.getElementById('orderNumberDisplay').textContent = target.code;
-      const trkLaneEl = document.getElementById('trackerLaneName');
-if (trkLaneEl) trkLaneEl.textContent = target.lane;
+      document.getElementById('trackerLaneName').textContent = target.lane;
       updateStepUIOnly(target.step || 1);
       renderCustomerTrackedChat(target.messages || []);
 
@@ -3239,8 +3215,7 @@ if (trkLaneEl) trkLaneEl.textContent = target.lane;
 
       const btnClicked = document.getElementById('lane-' + laneIdx);
       if (btnClicked) {
-        const trkLaneEl = document.getElementById('trackerLaneName');
-if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
+        document.getElementById('trackerLaneName').textContent = btnClicked.textContent;
       }
 
       [1, 2, 3].forEach(idx => {
@@ -3541,9 +3516,7 @@ if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
       };
 
       myCustomerOrders.unshift(orderData);
-      if (!activeOrders.some(o => o.code === orderCode)) {
-        activeOrders.push(orderData);
-      }
+      activeOrders.push(orderData);
       if (!staffSelectedOrderCode) {
         staffSelectedOrderCode = orderCode;
       }
@@ -3553,11 +3526,8 @@ if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
       renderStaffActiveQueueAndDetails();
 
       myCustomerOrderCode = orderCode;
-      const ordNumEl = document.getElementById('orderNumberDisplay');
-      if (ordNumEl) ordNumEl.textContent = orderCode;
-      const trkLaneEl = document.getElementById('trackerLaneName');
-      if (trkLaneEl) trkLaneEl.textContent = selectedLane;
-
+      document.getElementById('orderNumberDisplay').textContent = orderCode;
+      document.getElementById('trackerLaneName').textContent = selectedLane;
       updateStepUIOnly(1);
       renderCustomerTrackedChat([]);
 
@@ -3569,53 +3539,9 @@ if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
       document.getElementById('tabCustomer').classList.add('hidden');
       document.getElementById('tabTracker').classList.remove('hidden');
 
-      switchMainView('tracker');
-      if (typeof runAllCustomLocalizations === 'function') {
-        runAllCustomLocalizations();
-        setTimeout(runAllCustomLocalizations, 30);
-      }
-
-      // رسائل التأكيد الصوتية والبصرية بجميع اللغات الـ 5
-      const confirmI18n = {
-        ar: {
-          payMap: { 'مدى (Mada)': 'مدى', 'Apple Pay': 'Apple Pay', 'فيزا (Visa)': 'فيزا', 'نقدي (كاش)': 'نقدي' },
-          speech: (code, pay) => `تم اعتماد الفاتورة رقم ${code} بنجاح عبر ${pay}`,
-          banner: (code, pay) => `✓ ${code} — الدفع: ${pay}`
-        },
-        en: {
-          payMap: { 'مدى (Mada)': 'Mada', 'Apple Pay': 'Apple Pay', 'فيزا (Visa)': 'Visa', 'نقدي (كاش)': 'Cash' },
-          speech: (code, pay) => `Invoice ${code} confirmed successfully via ${pay}`,
-          banner: (code, pay) => `✓ ${code} — Paid via: ${pay}`
-        },
-        tr: {
-          payMap: { 'مدى (Mada)': 'Mada', 'Apple Pay': 'Apple Pay', 'فيزا (Visa)': 'Visa', 'نقدي (كاش)': 'Nakit' },
-          speech: (code, pay) => `${code} numaralı fatura ${pay} ile başarıyla onaylandı`,
-          banner: (code, pay) => `✓ ${code} — Ödeme: ${pay}`
-        },
-        ur: {
-          payMap: { 'مدى (Mada)': 'مدی (Mada)', 'Apple Pay': 'Apple Pay', 'فيزا (Visa)': 'ویزا (Visa)', 'نقدي (كاش)': 'نقد (کیش)' },
-          speech: (code, pay) => `بل نمبر ${code} کی ${pay} کے ذریعے کامیابی سے تصدیق ہو گئی`,
-          banner: (code, pay) => `✓ ${code} — ادائیگی: ${pay}`
-        },
-        zh: {
-          payMap: { 'مدى (Mada)': 'Mada', 'Apple Pay': 'Apple Pay', 'فيزا (Visa)': 'Visa', 'نقدي (كاش)': '现金' },
-          speech: (code, pay) => `发票 ${code} 已通过 ${pay} 成功确认`,
-          banner: (code, pay) => `✓ ${code} — 支付方式：${pay}`
-        }
-      };
-
-      const cf = confirmI18n[currentLang] || confirmI18n.ar;
-      const localizedPay = cf.payMap[selectedPaymentMethod] || selectedPaymentMethod;
-      speakText(cf.speech(orderCode, localizedPay));
-      triggerVisualBanner(cf.banner(orderCode, localizedPay));
-    }
-
-      switchMainView('tracker');
-      if (typeof runAllCustomLocalizations === 'function') {
-        setTimeout(runAllCustomLocalizations, 30);
-      }
       speakText(`تم اعتماد الفاتورة رقم ${orderCode} بنجاح عبر ${selectedPaymentMethod}`);
       triggerVisualBanner(`✓ ${orderCode} — الدفع: ${selectedPaymentMethod}`);
+      switchMainView('tracker');
     }
 
     function switchMainView(view) {
@@ -4605,39 +4531,6 @@ if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
       const MO = myOrdersPageI18n[currentLang] || myOrdersPageI18n.ar;
       const isDark = document.body.classList.contains('dark-theme');
 
-      // 1. تحديث نص زر الوضع الداكن/الفاتح بجميع اللغات الـ 5 بدون تكرار الإيموجي نهائياً
-      const cleanThemeLabel = (isDark ? SL.lightBtn : SL.darkBtn).replace(/[🌙☀️]/g, '').trim();
-      const darkBtnText1 = document.getElementById('darkModeBtnText');
-      const darkBtnText2 = document.getElementById('darkModeBtnTextStaff');
-      if (darkBtnText1) darkBtnText1.textContent = cleanThemeLabel;
-      if (darkBtnText2) darkBtnText2.textContent = cleanThemeLabel;
-
-      // 2. تحديث جملة المستشعر في المرحلة 3 بجميع اللغات الـ 5 مع الحفاظ على <span id="trackerLaneName">
-      const step3Box = document.getElementById('step-3');
-      if (step3Box) {
-        const step3P = step3Box.querySelector('p');
-        if (step3P) {
-          let laneType = 1;
-          const activeOrd = myCustomerOrders.find(o => o.code === myCustomerOrderCode);
-          const laneSource = (activeOrd && activeOrd.lane) ? activeOrd.lane : (selectedLane || step3P.textContent || '');
-          if (laneSource.includes('2') || laneSource.includes('٢') || selectedLaneIndex === 2) {
-            laneType = 2;
-          } else if (
-            laneSource.includes('A') ||
-            laneSource.includes('خاص') ||
-            laneSource.includes('Special') ||
-            laneSource.includes('Özel') ||
-            laneSource.includes('خصوصی') ||
-            laneSource.includes('专用') ||
-            selectedLaneIndex === 3
-          ) {
-            laneType = 3;
-          }
-          const targetSensor = laneType === 2 ? SL.step3Desc2 : laneType === 3 ? SL.step3DescA : SL.step3Desc1;
-          step3P.innerHTML = `<span id="trackerLaneName" class="font-bold">${targetSensor}</span>`;
-        }
-      }
-
       const combinedMap = {
         'مهلة المراجعة الذكية قبل الإرسال النهائي': TC.timerBadge,
         'مراجعة نهائية لطلبك': TC.timerTitle,
@@ -4653,8 +4546,6 @@ if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
         'عدم إظهار رسالة التأكيد هذه مرة أخرى': TC.dontShowAgain,
         'نعم، تأكيد': TC.confirmYes,
         'تراجع': TC.confirmCancel,
-        'لوحة التواصل اللالمسي والمباشر': SL.topBadge,
-        'لوحة التواصل اللاتلامسي والمباشر': SL.topBadge,
         'شاشة المسار الذكي داخل السيارة': SL.mainTitle,
         'تم إرسال طلبك بنجاح! يمكنك متابعة مراحل التسليم أو الاطلاع على الفواتير وحالة طلباتك من زر (قائمة طلباتي).': SL.mainDesc,
         'عرض الفاتورة وقائمة طلباتي': SL.viewOrdersBtn,
@@ -4687,7 +4578,6 @@ if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
         'مباشر': SL.chatLiveBadge,
         'بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...': SL.chatWaitMsg,
         'إرسال': SL.chatSendBtn,
-        'الفواتير الإلكترونية والاستعلام المباشر': MO.topBadge,
         'قائمة طلباتي والفواتير': MO.mainTitle,
         'اطلع على فواتير جميع طلباتك واستعلم عن حالة كل طلب ونسبة إنجازه (جاري التسليم أو تم التسليم).': MO.mainDesc,
         '+ إنشاء طلب جديد آخر': MO.createNewBtn,
@@ -4704,18 +4594,70 @@ if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
       };
 
       document.querySelectorAll('span, h2, h3, h4, p, button, label, div').forEach(el => {
-        if (
-          el.id === 'darkModeBtnText' ||
-          el.id === 'darkModeBtnTextStaff' ||
-          el.id === 'darkModeIcon' ||
-          el.id === 'darkModeIconStaff' ||
-          el.id === 'darkModeToggleBtn' ||
-          el.id === 'darkModeToggleBtnStaff' ||
-          el.id === 'trackerLaneName'
-        ) return;
-        if (el.closest && el.closest('#viewStaff')) return;
-
         const cleanText = el.textContent.replace(/[⏳✓✎]/g, '').replace(/\s+/g, ' ').trim();
+
+        // الشارات العلوية التي بداخلها نقطة خضراء
+        if (cleanText === 'لوحة التواصل اللاتلامسي والمباشر' || el.getAttribute('data-sl-badge') === '1') {
+          el.setAttribute('data-sl-badge', '1');
+          const tNodes = Array.from(el.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim().length > 0);
+          if (tNodes.length > 0) tNodes[tNodes.length - 1].textContent = ' ' + SL.topBadge;
+          return;
+        }
+        if (cleanText === 'الفواتير الإلكترونية والاستعلام المباشر' || el.getAttribute('data-mo-badge') === '1') {
+          el.setAttribute('data-mo-badge', '1');
+          const tNodes = Array.from(el.childNodes).filter(n => n.nodeType === 3 && n.textContent.trim().length > 0);
+          if (tNodes.length > 0) tNodes[tNodes.length - 1].textContent = ' ' + MO.topBadge;
+          return;
+        }
+
+        // زر الوضع الداكن / الفاتح (منع تكرار الإيموجي بجميع اللغات)
+        if (el.id === 'themeToggleBtn' || el.getAttribute('onclick')?.includes('toggleDarkMode') || el.getAttribute('data-theme-btn') === '1' || cleanText.includes('الوضع الداكن') || cleanText.includes('الوضع الفاتح')) {
+          if (el.tagName === 'BUTTON' || el.children.length === 0) {
+            el.setAttribute('data-theme-btn', '1');
+            const targetThemeTxt = isDark ? SL.lightBtn : SL.darkBtn;
+            const textOnly = targetThemeTxt.replace(/[🌙☀️]/g, '').trim();
+            if (el.children.length === 0) {
+              if (el.parentElement && el.parentElement.tagName === 'BUTTON' && el.parentElement.children.length > 1) {
+                el.textContent = textOnly;
+              } else {
+                el.textContent = targetThemeTxt;
+              }
+            } else {
+              const sp = el.querySelector('span:last-child');
+              if (sp) sp.textContent = textOnly;
+            }
+            return;
+          }
+        }
+
+        // نص المستشعر في المرحلة 3 (آمن تماماً: يفحص فقط الفقرة الصغيرة التي لا تحتوي على أقسام)
+        if (
+          el.tagName !== 'DIV' &&
+          el.children.length <= 1 &&
+          (cleanText.startsWith('المستشعر قرأ وجودك في') ||
+           el.id === 'laneStep3Desc' ||
+           el.getAttribute('data-sensor-desc') === '1')
+        ) {
+          el.setAttribute('data-sensor-desc', '1');
+          let targetSensor = SL.step3Desc1;
+          if (cleanText.includes('2') || cleanText.includes('٢')) {
+            targetSensor = SL.step3Desc2;
+          } else if (
+            cleanText.includes('A') ||
+            cleanText.includes('خاص') ||
+            cleanText.includes('Special') ||
+            cleanText.includes('Özel') ||
+            cleanText.includes('خصوصی') ||
+            cleanText.includes('专用')
+          ) {
+            targetSensor = SL.step3DescA;
+          }
+          if (el.textContent !== targetSensor) {
+            el.textContent = targetSensor;
+          }
+          return;
+        }
+
         if (el.children.length > 0 && el.tagName !== 'BUTTON') return;
 
         if (cleanText.includes('بانتظار بدء المحادثة') || el.getAttribute('data-chat-wait') === '1') {
@@ -4738,14 +4680,20 @@ if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
         }
       });
 
-      // ترجمة حقول الإدخال (الشات والبحث) بجميع اللغات الـ 5
-      const chatInp = document.getElementById('customerChatInput');
-      if (chatInp) chatInp.placeholder = SL.chatPlaceholder;
-      const searchInp = document.getElementById('customerOrderSearchInput');
-      if (searchInp) searchInp.placeholder = MO.searchPlaceholder;
+      // حقول الإدخال (الشات والبحث)
+      document.querySelectorAll('input[type="text"]').forEach(inp => {
+        if (inp.placeholder && (inp.placeholder.includes('اكتب رسالة للموظف') || inp.getAttribute('data-sl-ph') === '1')) {
+          inp.setAttribute('data-sl-ph', '1');
+          inp.placeholder = SL.chatPlaceholder;
+        }
+        if (inp.placeholder && (inp.placeholder.includes('ابحث برقم الفاتورة') || inp.getAttribute('data-mo-ph') === '1')) {
+          inp.setAttribute('data-mo-ph', '1');
+          inp.placeholder = MO.searchPlaceholder;
+        }
+      });
 
-      // ترجمة كروت الفواتير داخل حاوية (قائمة طلباتي) بجميع اللغات الـ 5
-      const ordersView = document.getElementById('customerMyOrdersList');
+      // كروت الفواتير في صفحة طلباتي
+      const ordersView = document.getElementById('customerOrdersView') || document.body;
       if (currentLang !== 'ar' && orderCardReplacements[currentLang] && ordersView) {
         const pairs = orderCardReplacements[currentLang];
         const walker = document.createTreeWalker(ordersView, NodeFilter.SHOW_TEXT, null, false);
@@ -4766,12 +4714,13 @@ if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
       }
     }
 
+    // ربط نظيف وخفيف بدون أي MutationObserver يسبب تعليق المتصفح
     const _baseApplyLang = typeof applyLanguage === 'function' ? applyLanguage : null;
     if (_baseApplyLang) {
       applyLanguage = function(lang) {
         _baseApplyLang(lang);
-        if (lang === 'ar' && typeof renderCustomerMyOrders === 'function') {
-          renderCustomerMyOrders();
+        if (lang === 'ar' && typeof renderCustomerOrdersList === 'function') {
+          renderCustomerOrdersList();
         }
         runAllCustomLocalizations();
         setTimeout(runAllCustomLocalizations, 40);
@@ -4787,9 +4736,9 @@ if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
       };
     }
 
-    const _baseRenderOrders = typeof renderCustomerMyOrders === 'function' ? renderCustomerMyOrders : null;
+    const _baseRenderOrders = typeof renderCustomerOrdersList === 'function' ? renderCustomerOrdersList : null;
     if (_baseRenderOrders) {
-      renderCustomerMyOrders = function(...args) {
+      renderCustomerOrdersList = function(...args) {
         _baseRenderOrders.apply(this, args);
         runAllCustomLocalizations();
       };
