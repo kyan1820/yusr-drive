@@ -1873,10 +1873,40 @@
     let unifiedAudioPlayer = null;
     let audioChannelUnlocked = false;
     let cachedVoicesList = [];
+    let activeSpeechSessionId = 0;
+
+    // حقن تأثير بصري حديث لزر القارئ الصوتي أثناء التحدث
+    (function injectModernTTSStyles() {
+      if (document.getElementById('yusrModernTTSStyles')) return;
+      const st = document.createElement('style');
+      st.id = 'yusrModernTTSStyles';
+      st.textContent = `
+        @keyframes ttsSpeakingPulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); border-color: #10b981 !important; }
+          50% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); border-color: #34d399 !important; }
+        }
+        .tts-speaking-now {
+          animation: ttsSpeakingPulse 1.2s infinite ease-in-out !important;
+        }
+      `;
+      document.head.appendChild(st);
+    })();
+
+    function setTTSSpeakingUIState(isSpeaking) {
+      const btn = document.getElementById('ttsToggleBtn');
+      const dot = document.getElementById('ttsStatusDot');
+      if (btn) btn.classList.toggle('tts-speaking-now', isSpeaking && ttsEnabled);
+      if (dot && ttsEnabled) {
+        dot.className = isSpeaking
+          ? 'w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping'
+          : 'w-2.5 h-2.5 rounded-full bg-emerald-400';
+      }
+    }
 
     if ('speechSynthesis' in window) {
       const refreshVoices = () => {
-        cachedVoicesList = window.speechSynthesis.getVoices();
+        const v = window.speechSynthesis.getVoices();
+        if (v && v.length > 0) cachedVoicesList = v;
       };
       refreshVoices();
       window.speechSynthesis.onvoiceschanged = refreshVoices;
@@ -1915,19 +1945,109 @@
     document.addEventListener('click', unlockDeviceAudioChannel, { once: true });
     document.addEventListener('touchstart', unlockDeviceAudioChannel, { once: true });
 
+    // قاموس النطق الصوتي الذكي للعملات والاختصارات والرموز بجميع اللغات الـ 5
+    const phoneticSpeechI18n = {
+      ar: {
+        ysr: 'يُسر رقم ',
+        sar: ' ريال سعودي ',
+        percent: ' بالمئة ',
+        mins: ' دقائق ',
+        rate: 1.0,
+        pitch: 1.0
+      },
+      en: {
+        ysr: 'Order Y S R ',
+        sar: ' Saudi Riyals ',
+        percent: ' percent ',
+        mins: ' minutes ',
+        rate: 1.0,
+        pitch: 1.0
+      },
+      tr: {
+        ysr: 'Sipariş Y S R ',
+        sar: ' Suudi Riyali ',
+        percent: ' yüzde ',
+        mins: ' dakika ',
+        rate: 1.0,
+        pitch: 1.0
+      },
+      ur: {
+        ysr: 'آرڈر نمبر ',
+        sar: ' سعودی ریال ',
+        percent: ' فیصد ',
+        mins: ' منٹ ',
+        rate: 0.98,
+        pitch: 1.0
+      },
+      zh: {
+        ysr: '订单号 ',
+        sar: ' 沙特里亚尔 ',
+        percent: ' 百分之 ',
+        mins: ' 分钟 ',
+        rate: 1.0,
+        pitch: 1.0
+      }
+    };
+
     function prepareTextForSpeech(text, lang) {
       if (!text) return '';
-      return text
-        .replace(/[#*•—\-_✓✕💳💵()؟🌙☀️]/g, ' ')
-        .replace(/YSR/gi, lang === 'ar' ? 'يُسر رقم ' : 'Y S R ')
-        .replace(/ر\.س/g, 'ريال سعودي')
-        .replace(/SAR/gi, lang === 'ar' ? 'ريال سعودي' : 'S A R')
-        .replace(/%/g, lang === 'ar' ? ' بالمئة ' : ' percent ')
+      const P = phoneticSpeechI18n[lang] || phoneticSpeechI18n.ar;
+
+      let cleaned = text
+        // إزالة الإيموجي والرموز البصرية غير المنطوقة
+        .replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}⏳✓✕✎🔒⏱🌙☀️💳💵•—_←→]/gu, ' ')
+        .replace(/#?YSR[-\s]?/gi, P.ysr)
+        .replace(/ر\.س/g, P.sar)
+        .replace(/\bSAR\b/gi, P.sar);
+
+      if (lang === 'tr' || lang === 'zh') {
+        cleaned = cleaned.replace(/%\s*(\d+)/g, `${P.percent} $1`).replace(/(\d+)\s*%/g, `${P.percent} $1`);
+      } else {
+        cleaned = cleaned.replace(/%/g, P.percent);
+      }
+
+      return cleaned
+        .replace(/[()[\]{}"'«»]/g, ' ')
         .replace(/\s+/g, ' ')
-        .trim()
-        .substring(0, 180);
+        .trim();
     }
 
+    // تقسيم النصوص الطويلة إلى جمل طبيعية قصيرة لضمان عدم انقطاع الصوت أبداً
+    function splitTextIntoSpeechChunks(text, maxLen = 150) {
+      if (!text) return [];
+      const rawSentences = text.split(/(?<=[.!?؟،,;؛。！\n])\s+/);
+      const chunks = [];
+      let current = '';
+
+      for (const part of rawSentences) {
+        const trimmed = part.trim();
+        if (!trimmed) continue;
+        if ((current + ' ' + trimmed).trim().length <= maxLen) {
+          current = (current + ' ' + trimmed).trim();
+        } else {
+          if (current) chunks.push(current);
+          if (trimmed.length <= maxLen) {
+            current = trimmed;
+          } else {
+            // تقسيم الجمل الطويلة جداً على المسافات
+            const words = trimmed.split(' ');
+            current = '';
+            for (const w of words) {
+              if ((current + ' ' + w).trim().length <= maxLen) {
+                current = (current + ' ' + w).trim();
+              } else {
+                if (current) chunks.push(current);
+                current = w;
+              }
+            }
+          }
+        }
+      }
+      if (current) chunks.push(current);
+      return chunks.length > 0 ? chunks : [text];
+    }
+
+    // اختيار أفضل صوت عصبي طبيعي (Neural / Natural HD) متوفر لكل لغة من اللغات الـ 5
     function getBestHighQualityVoice(shortLang) {
       if (!('speechSynthesis' in window)) return null;
       if (cachedVoicesList.length === 0) {
@@ -1935,93 +2055,186 @@
       }
 
       const langVoices = cachedVoicesList.filter(v =>
-        v.lang.toLowerCase().replace('_', '-').startsWith(shortLang)
+        v.lang && v.lang.toLowerCase().replace('_', '-').startsWith(shortLang)
       );
       if (langVoices.length === 0) return null;
 
-      const maleNames = /Hamed|Shakir|Maged|Tarik|Omar|Guy|Andrew|Brian|Christopher|Ahmet|Asad|Yunxi|Yunjian/i;
+      // تفضيل الأصوات العصبية الطبيعية لكل لغة (Microsoft Natural / Google / Apple Enhanced)
+      const preferredVoicesByLang = {
+        ar: ['Hamed', 'Zariyah', 'Salma', 'Fahed', 'Fatima', 'Maged', 'Tarik', 'Naayf', 'Google العربية'],
+        en: ['Andrew', 'Ava', 'Aria', 'Guy', 'Jenny', 'Brian', 'Christopher', 'Samantha', 'Daniel', 'Google US English'],
+        tr: ['Ahmet', 'Emel', 'Yelda', 'Filiz', 'Google Türkçe'],
+        ur: ['Asad', 'Uzma', 'Salman', 'Google اردو'],
+        zh: ['Xiaoxiao', 'Yunxi', 'Yunjian', 'Xiaoyi', 'Tingting', 'Google 普通话']
+      };
 
-      const neuralMale = langVoices.find(v =>
-        (v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Siri') || v.name.includes('Premium')) &&
-        maleNames.test(v.name)
-      );
-      if (neuralMale) return neuralMale;
+      const prefList = preferredVoicesByLang[shortLang] || [];
 
-      const anyNeural = langVoices.find(v =>
-        v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Google')
-      );
-      if (anyNeural) return anyNeural;
+      const scoreVoice = (v) => {
+        let score = 0;
+        const name = v.name || '';
+        const langCode = (v.lang || '').toLowerCase();
 
-      const appleMale = langVoices.find(v => /Maged|Tarik/i.test(v.name));
-      if (appleMale) return appleMale;
+        // أعلى أولوية لأصوات Neural / Natural Online الحديثة
+        if (/Natural|Neural/i.test(name)) score += 100;
+        if (/Online|Premium|Enhanced|Siri/i.test(name)) score += 50;
+        if (/Google/i.test(name)) score += 40;
 
-      return null;
+        // مطابقة الأسماء المفضلة لكل لغة
+        for (let i = 0; i < prefList.length; i++) {
+          if (name.toLowerCase().includes(prefList[i].toLowerCase())) {
+            score += (35 - i * 2);
+            break;
+          }
+        }
+
+        // تفضيل اللهجة السعودية للعربية والأمريكية للإنجليزية والباكستانية للأردو
+        if (shortLang === 'ar' && langCode.includes('sa')) score += 20;
+        if (shortLang === 'en' && langCode.includes('us')) score += 15;
+        if (shortLang === 'ur' && langCode.includes('pk')) score += 15;
+        if (shortLang === 'zh' && langCode.includes('cn')) score += 15;
+
+        return score;
+      };
+
+      const sorted = [...langVoices].sort((a, b) => scoreVoice(b) - scoreVoice(a));
+      return sorted[0] || null;
     }
 
-    function speakText(rawText) {
-      if (currentView === 'staff' || !ttsEnabled || !rawText) return;
-
-      const fullLang = voiceLangCodes[currentLang] || 'ar-SA';
-      const shortLang = fullLang.split('-')[0].toLowerCase();
-      const cleanText = prepareTextForSpeech(rawText, shortLang);
-      if (!cleanText) return;
-
+    function stopAllActiveSpeech() {
+      activeSpeechSessionId++;
+      setTTSSpeakingUIState(false);
       const player = getUnifiedAudioPlayer();
-      try { player.pause(); } catch (e) {}
-
+      try {
+        player.pause();
+        player.onended = null;
+        player.onerror = null;
+      } catch (e) {}
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch (e) {}
       }
+    }
 
+    async function speakText(rawText) {
+      if (currentView === 'staff' || !ttsEnabled || !rawText) return;
+
+      stopAllActiveSpeech();
+      const mySession = activeSpeechSessionId;
+
+      const fullLang = voiceLangCodes[currentLang] || 'ar-SA';
+      const shortLang = fullLang.split('-')[0].toLowerCase();
+      const P = phoneticSpeechI18n[shortLang] || phoneticSpeechI18n.ar;
+
+      let textToSpeak = String(rawText).trim();
+
+      // إذا كان العميل يستخدم لغة غير العربية ووصلته جملة عربية، نترجمها للغته تلقائياً قبل نطقها
+      if (
+        shortLang !== 'ar' &&
+        /[\u0600-\u06FF]/.test(textToSpeak) &&
+        shortLang !== 'ur' &&
+        typeof fetchAccurateChatTranslation === 'function'
+      ) {
+        try {
+          const translated = await fetchAccurateChatTranslation(textToSpeak, shortLang);
+          if (mySession !== activeSpeechSessionId) return;
+          if (translated) textToSpeak = translated;
+        } catch (e) {}
+      }
+
+      const cleanText = prepareTextForSpeech(textToSpeak, shortLang);
+      if (!cleanText || mySession !== activeSpeechSessionId) return;
+
+      const chunks = splitTextIntoSpeechChunks(cleanText, 155);
       const hqVoice = getBestHighQualityVoice(shortLang);
+
+      // المسار الأول: استخدام الأصوات العصبية الطبيعية في المتصفح/النظام مع دعم القراءة المتسلسلة للجمل الطويلة
       if (hqVoice && 'speechSynthesis' in window) {
         try {
           window.speechSynthesis.resume();
-          const utterance = new SpeechSynthesisUtterance(cleanText);
-          utterance.voice = hqVoice;
-          utterance.lang = hqVoice.lang || fullLang;
-          utterance.rate = 1.0;
-          utterance.pitch = 1.0;
-          utterance.volume = 1.0;
-          window.speechSynthesis.speak(utterance);
+          setTTSSpeakingUIState(true);
+
+          let chunkIdx = 0;
+          const speakNextBrowserChunk = () => {
+            if (mySession !== activeSpeechSessionId || !ttsEnabled || chunkIdx >= chunks.length) {
+              if (mySession === activeSpeechSessionId) setTTSSpeakingUIState(false);
+              return;
+            }
+            const u = new SpeechSynthesisUtterance(chunks[chunkIdx++]);
+            u.voice = hqVoice;
+            u.lang = hqVoice.lang || fullLang;
+            u.rate = P.rate || 1.0;
+            u.pitch = P.pitch || 1.0;
+            u.volume = 1.0;
+            u.onend = speakNextBrowserChunk;
+            u.onerror = () => {
+              // في حال تعذر نطق أي جملة محلياً ننتقل فوراً للبث السحابي الاحتياطي
+              playCloudTTSChunks(chunks.slice(chunkIdx - 1), shortLang, fullLang, mySession);
+            };
+            window.speechSynthesis.speak(u);
+          };
+
+          speakNextBrowserChunk();
           return;
         } catch (e) {}
       }
 
-      const encodedText = encodeURIComponent(cleanText);
-      const cloudStreams = [
-        `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&q=${encodedText}`,
-        `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=${shortLang}&client=tw-ob`,
-        `https://corsproxy.io/?${encodeURIComponent(`https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&q=${encodedText}`)}`
-      ];
+      // المسار الثاني: البث الصوتي السحابي المتسلسل لجميع اللغات الـ 5 (عند عدم توفر صوت محلي للغة مثل الأردو أو الصينية على بعض الأجهزة)
+      playCloudTTSChunks(chunks, shortLang, fullLang, mySession);
+    }
 
-      let streamIdx = 0;
-      function playNextCloudStream() {
-        if (streamIdx >= cloudStreams.length) {
-          if ('speechSynthesis' in window) {
-            try {
-              const u = new SpeechSynthesisUtterance(cleanText);
-              u.lang = fullLang;
-              u.rate = 1.0;
-              u.pitch = 1.0;
-              window.speechSynthesis.speak(u);
-            } catch (err) {}
-          }
+    function playCloudTTSChunks(chunks, shortLang, fullLang, sessionToken) {
+      const player = getUnifiedAudioPlayer();
+      let cIdx = 0;
+      setTTSSpeakingUIState(true);
+
+      const playNextChunk = () => {
+        if (sessionToken !== activeSpeechSessionId || !ttsEnabled || cIdx >= chunks.length) {
+          if (sessionToken === activeSpeechSessionId) setTTSSpeakingUIState(false);
           return;
         }
 
-        player.src = cloudStreams[streamIdx++];
-        player.playbackRate = 1.0;
-        player.onerror = playNextCloudStream;
-        const p = player.play();
-        if (p !== undefined) {
-          p.catch(playNextCloudStream);
-        }
-      }
+        const chunkText = chunks[cIdx++];
+        const encodedText = encodeURIComponent(chunkText);
+        const cloudStreams = [
+          `https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&q=${encodedText}`,
+          `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodedText}&tl=${shortLang}&client=tw-ob`,
+          `https://corsproxy.io/?${encodeURIComponent(`https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=${shortLang}&q=${encodedText}`)}`
+        ];
 
-      playNextCloudStream();
+        let streamIdx = 0;
+        const tryStream = () => {
+          if (sessionToken !== activeSpeechSessionId) return;
+          if (streamIdx >= cloudStreams.length) {
+            if ('speechSynthesis' in window) {
+              try {
+                const u = new SpeechSynthesisUtterance(chunkText);
+                u.lang = fullLang;
+                u.rate = 1.0;
+                u.onend = playNextChunk;
+                u.onerror = playNextChunk;
+                window.speechSynthesis.speak(u);
+                return;
+              } catch (err) {}
+            }
+            playNextChunk();
+            return;
+          }
+
+          player.src = cloudStreams[streamIdx++];
+          player.playbackRate = 1.0;
+          player.onended = playNextChunk;
+          player.onerror = tryStream;
+          const p = player.play();
+          if (p !== undefined) {
+            p.catch(tryStream);
+          }
+        };
+
+        tryStream();
+      };
+
+      playNextChunk();
     }
-
     function syncTutorialVoiceButtons() {
       const t = translations[currentLang] || translations.ar;
       document.querySelectorAll('.tut-tts-label').forEach(el => {
