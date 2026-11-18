@@ -15,37 +15,47 @@
     body.simple-mode-active .secondary-ui {
       display: none !important;
     }
-    /* حركات شاشة الترحيب الافتتاحية الرسمية (فارغة -> ظهور متدرج حبة حبة -> وميض -> اختفاء سلس) */
+    /* حركات شاشة الترحيب الافتتاحية: شعار المنصة -> كتابة حرف بحرف -> بقية الأسطر -> وميض أصلي -> اختفاء سلس */
     .splash-item {
       opacity: 0;
-      transform: translateY(18px) scale(0.98);
-      filter: blur(4px);
+      transform: translateY(14px);
     }
     @keyframes splashItemReveal {
       0% {
         opacity: 0;
-        transform: translateY(18px) scale(0.98);
-        filter: blur(4px);
+        transform: translateY(14px);
       }
       100% {
         opacity: 1;
-        transform: translateY(0) scale(1);
-        filter: blur(0);
+        transform: translateY(0);
       }
     }
-    .splash-item-1 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards; }
-    .splash-item-2 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 1.0s forwards; }
-    .splash-item-3 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 1.6s forwards; }
-    .splash-item-4 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 2.2s forwards; }
-    .splash-item-5 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 2.8s forwards; }
+    .splash-item-1 {
+      animation: splashItemReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
+    }
+    .splash-item-visible {
+      animation: splashItemReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
 
+    /* مؤشر الكتابة الناعم أثناء ظهور الحروف */
+    .typing-cursor-ar::after,
+    .typing-cursor-en::after {
+      content: '|';
+      display: inline-block;
+      color: #34d399;
+      font-weight: 400;
+      margin: 0 3px;
+      animation: splashCursorBlink 0.55s infinite;
+    }
+    @keyframes splashCursorBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* نفس الوميض الأصلي في الملف */
     @keyframes splashOriginalPulse {
-      0%, 100% {
-        opacity: 1;
-      }
-      50% {
-        opacity: 0.5;
-      }
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
     }
     .splash-all-flash {
       animation: splashOriginalPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -277,16 +287,12 @@
       <div class="splash-item splash-item-1 inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-5 py-2 rounded-full text-sm font-black">
         <span>Yusr Drive | منصة يُسْر درايف</span>
       </div>
-      <h1 class="splash-item splash-item-2 text-4xl sm:text-5xl font-black leading-tight text-white">
-        أهلاً بك في يُسْر درايف
-      </h1>
-      <p class="splash-item splash-item-3 text-2xl sm:text-3xl font-extrabold text-emerald-200 tracking-wide" dir="ltr">
-        Welcome to Yusr Drive
-      </p>
-      <p class="splash-item splash-item-4 text-lg sm:text-xl font-bold text-emerald-300">
+      <h1 id="splashArHeading" dir="rtl" class="min-h-[3.2rem] sm:min-h-[3.8rem] text-4xl sm:text-5xl font-black leading-tight text-white"></h1>
+      <p id="splashEnHeading" dir="ltr" class="min-h-[2.2rem] sm:min-h-[2.5rem] text-2xl sm:text-3xl font-extrabold text-emerald-200 tracking-wide"></p>
+      <p id="splashSubAr" class="splash-item text-lg sm:text-xl font-bold text-emerald-300">
         خدمتك من سيارتك بكل يُسر واستقلالية
       </p>
-      <p class="splash-item splash-item-5 text-xs text-slate-400 font-bold pt-2">
+      <p id="splashSubLangs" class="splash-item text-xs text-slate-400 font-bold pt-2">
         Welcome • Hoş Geldiniz • خوش آمدید • 欢迎光临
       </p>
     </div>
@@ -1297,15 +1303,76 @@
       }, 250);
     }
 
-    // بعد اكتمال ظهور جميع الكلمات حبة حبة (عند 3.5 ثانية) تبدأ بالوميض معاً مرتين ثم تختفي الصفحة بسلاسة
-    setTimeout(() => {
-      const contentBox = document.getElementById('introSplashContent');
-      if (contentBox && !splashDismissed) {
-        contentBox.classList.add('splash-all-flash');
+    // دالة كتابة النص حرفاً بحرف بسلاسة (مع دمج الحركات والتشكيل العربي مع الحرف الأساسي)
+    function typeSplashTextCharByChar(elementId, fullText, speedMs, cursorClass, onComplete) {
+      const el = document.getElementById(elementId);
+      if (!el) {
+        if (onComplete) onComplete();
+        return;
       }
-    }, 3550);
 
-    setTimeout(dismissSplashAndShowLanguages, 5350);
+      // تقسيم ذكي يبقي التشكيل العربي ملتصقاً بالحرف حتى لا يظهر التشكيل منفصلاً أثناء الكتابة
+      const units = [];
+      for (const ch of fullText) {
+        if (/[\u064B-\u065F\u0670]/.test(ch) && units.length > 0) {
+          units[units.length - 1] += ch;
+        } else {
+          units.push(ch);
+        }
+      }
+
+      el.textContent = '';
+      el.classList.add(cursorClass);
+      let idx = 0;
+
+      const step = () => {
+        if (splashDismissed) {
+          el.classList.remove(cursorClass);
+          el.textContent = fullText;
+          return;
+        }
+        if (idx < units.length) {
+          idx++;
+          el.textContent = units.slice(0, idx).join('');
+          setTimeout(step, speedMs);
+        } else {
+          el.classList.remove(cursorClass);
+          if (onComplete) onComplete();
+        }
+      };
+
+      step();
+    }
+
+    // التسلسل الزمني لشاشة البداية:
+    // 1. بعد ظهور شارة (منصة يُسر درايف) فوق، تبدأ كتابة الجملة العربية من اليمين لليسار حرفاً بحرف
+    setTimeout(() => {
+      if (splashDismissed) return;
+      typeSplashTextCharByChar('splashArHeading', 'أهلاً بك في يُسْر درايف', 55, 'typing-cursor-ar', () => {
+        // 2. فور اكتمال الجملة العربية، تبدأ كتابة الجملة الإنجليزية من اليسار لليمين حرفاً بحرف
+        setTimeout(() => {
+          if (splashDismissed) return;
+          typeSplashTextCharByChar('splashEnHeading', 'Welcome to Yusr Drive', 45, 'typing-cursor-en', () => {
+            // 3. إظهار السطرين السفليين بسلاسة
+            const subAr = document.getElementById('splashSubAr');
+            const subLangs = document.getElementById('splashSubLangs');
+            if (subAr) subAr.classList.add('splash-item-visible');
+            setTimeout(() => {
+              if (subLangs) subLangs.classList.add('splash-item-visible');
+              // 4. تشغيل الوميض الأصلي بعد اكتمال جميع الكلمات
+              setTimeout(() => {
+                const contentBox = document.getElementById('introSplashContent');
+                if (contentBox && !splashDismissed) {
+                  contentBox.classList.add('splash-all-flash');
+                }
+                // 5. اختفاء الشاشة الترحيبية بسلاسة بعد الوميض
+                setTimeout(dismissSplashAndShowLanguages, 1900);
+              }, 550);
+            }, 350);
+          });
+        }, 200);
+      });
+    }, 950);
 
     function loadPersistedData() {
       try {
