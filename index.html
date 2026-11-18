@@ -5038,7 +5038,7 @@
 
     window.addEventListener('DOMContentLoaded', runAllCustomLocalizations);
     setTimeout(runAllCustomLocalizations, 50);
-  // ================= نظام قبول الطلب وتحديد وقت التجهيز والاستلام بجميع اللغات الـ 5 =================
+  // ================= نظام قبول الطلب وتحديد وقت التجهيز والتقدم التلقائي للمراحل بجميع اللغات الـ 5 =================
     const orderApprovalI18n = {
       ar: {
         pendingBadge: '⏳ بانتظار قبول الفرع وتحديد وقت التجهيز...',
@@ -5048,8 +5048,10 @@
         prepTimeLabel: 'مدة التجهيز المعتمدة:',
         pickupTimeLabel: 'الوقت المتوقع للاستلام من المسار:',
         minutesUnit: 'دقيقة',
-        trackerWaitingBanner: '⏳ طلبك لدى الفرع الآن — بانتظار قبول الموظف وتحديد وقت التجهيز...',
-        trackerAcceptedBanner: (mins, pickup) => `✓ تم قبول طلبك! مدة التجهيز: ${mins} دقيقة — وقت الاستلام المتوقع: ${pickup}`,
+        trackerWaitingBanner: '⏳ طلبك لدى الفرع الآن — بانتظار قبول الموظف وتحديد وقت التجهيز (0%)...',
+        trackerAcceptedBanner: (mins, pickup, rem) => `✓ تم قبول طلبك! مدة التجهيز: ${mins} دقيقة — وقت الاستلام المتوقع: ${pickup} ${rem ? `(${rem})` : ''}`,
+        remText: (m, s) => `المتبقي: ${m}:${s.toString().padStart(2, '0')}`,
+        readyNowText: 'جاهز للاستلام الآن ✓',
         customerSubmittedSpeech: (code) => `تم إرسال طلبك رقم ${code} إلى الفرع، يرجى الانتظار قليلاً حتى يقوم الموظف بقبول الطلب وتحديد وقت التجهيز`,
         customerSubmittedBanner: (code) => `⏳ تم إرسال الطلب ${code} — بانتظار قبول الموظف وتحديد وقت التجهيز`,
         customerAcceptedSpeech: (code, mins, pickup) => `تم قبول طلبك رقم ${code} من الفرع وإصدار فاتورتك النهائية. وقت التجهيز ${mins} دقائق، ووقت الاستلام المتوقع الساعة ${pickup}`,
@@ -5063,8 +5065,10 @@
         prepTimeLabel: 'Approved Preparation Time:',
         pickupTimeLabel: 'Estimated Lane Pickup Time:',
         minutesUnit: 'mins',
-        trackerWaitingBanner: '⏳ Order received by branch — Awaiting staff acceptance & prep time...',
-        trackerAcceptedBanner: (mins, pickup) => `✓ Order Accepted! Prep Time: ${mins} mins — Estimated Pickup: ${pickup}`,
+        trackerWaitingBanner: '⏳ Order received by branch — Awaiting staff acceptance & prep time (0%)...',
+        trackerAcceptedBanner: (mins, pickup, rem) => `✓ Order Accepted! Prep Time: ${mins} mins — Estimated Pickup: ${pickup} ${rem ? `(${rem})` : ''}`,
+        remText: (m, s) => `Remaining: ${m}:${s.toString().padStart(2, '0')}`,
+        readyNowText: 'Ready for Pickup Now ✓',
         customerSubmittedSpeech: (code) => `Your order ${code} has been sent to the branch. Please wait for the staff to accept it and set the preparation time.`,
         customerSubmittedBanner: (code) => `⏳ Order ${code} Sent — Awaiting Staff Acceptance & Prep Time`,
         customerAcceptedSpeech: (code, mins, pickup) => `Your order ${code} has been accepted and your final invoice is ready. Preparation time is ${mins} minutes, estimated pickup at ${pickup}.`,
@@ -5078,8 +5082,10 @@
         prepTimeLabel: 'Onaylanan Hazırlık Süresi:',
         pickupTimeLabel: 'Tahmini Teslim Alma Saati:',
         minutesUnit: 'dakika',
-        trackerWaitingBanner: '⏳ Siparişiniz şubede — Personel onayı ve hazırlık süresi bekleniyor...',
-        trackerAcceptedBanner: (mins, pickup) => `✓ Siparişiniz Onaylandı! Hazırlık: ${mins} dk — Tahmini Teslim: ${pickup}`,
+        trackerWaitingBanner: '⏳ Siparişiniz şubede — Personel onayı ve hazırlık süresi bekleniyor (%0)...',
+        trackerAcceptedBanner: (mins, pickup, rem) => `✓ Siparişiniz Onaylandı! Hazırlık: ${mins} dk — Tahmini Teslim: ${pickup} ${rem ? `(${rem})` : ''}`,
+        remText: (m, s) => `Kalan: ${m}:${s.toString().padStart(2, '0')}`,
+        readyNowText: 'Teslime Hazır ✓',
         customerSubmittedSpeech: (code) => `${code} numaralı siparişiniz şubeye gönderildi. Lütfen personelin onaylamasını ve hazırlık süresini belirlemesini bekleyin.`,
         customerSubmittedBanner: (code) => `⏳ Sipariş ${code} Gönderildi — Personel Onayı Bekleniyor`,
         customerAcceptedSpeech: (code, mins, pickup) => `${code} numaralı siparişiniz onaylandı ve faturanız hazır. Hazırlık süresi ${mins} dakika, tahmini teslim saati ${pickup}.`,
@@ -5093,8 +5099,10 @@
         prepTimeLabel: 'منظور شدہ تیاری کا وقت:',
         pickupTimeLabel: 'سمارٹ لین سے وصولی کا متوقع وقت:',
         minutesUnit: 'منٹ',
-        trackerWaitingBanner: '⏳ آپ کا آرڈر برانچ میں ہے — عملے کی منظوری اور تیاری کے وقت کا انتظار...',
-        trackerAcceptedBanner: (mins, pickup) => `✓ آپ کا آرڈر منظور ہو گیا! تیاری کا وقت: ${mins} منٹ — متوقع وصولی: ${pickup}`,
+        trackerWaitingBanner: '⏳ آپ کا آرڈر برانچ میں ہے — عملے کی منظوری اور تیاری کے وقت کا انتظار (0%)...',
+        trackerAcceptedBanner: (mins, pickup, rem) => `✓ آپ کا آرڈر منظور ہو گیا! تیاری کا وقت: ${mins} منٹ — متوقع وصولی: ${pickup} ${rem ? `(${rem})` : ''}`,
+        remText: (m, s) => `باقی وقت: ${m}:${s.toString().padStart(2, '0')}`,
+        readyNowText: 'وصولی کے لیے تیار ✓',
         customerSubmittedSpeech: (code) => `آپ کا آرڈر نمبر ${code} برانچ کو بھیج دیا گیا ہے، براہ کرم عملے کی منظوری اور تیاری کے وقت کے تعین کا انتظار کریں۔`,
         customerSubmittedBanner: (code) => `⏳ آرڈر ${code} بھیج دیا گیا — عملے کی منظوری کا انتظار ہے`,
         customerAcceptedSpeech: (code, mins, pickup) => `آپ کا آرڈر نمبر ${code} منظور کر لیا گیا ہے اور مکمل بل جاری ہو گیا ہے۔ تیاری کا وقت ${mins} منٹ ہے اور وصولی کا وقت ${pickup} ہے۔`,
@@ -5108,8 +5116,10 @@
         prepTimeLabel: '核准制作时长：',
         pickupTimeLabel: '预计智能车道取餐时间：',
         minutesUnit: '分钟',
-        trackerWaitingBanner: '⏳ 订单已送达门店 — 正在等待员工接单并确认制作时间...',
-        trackerAcceptedBanner: (mins, pickup) => `✓ 门店已接单！制作时长：${mins} 分钟 — 预计取餐时间：${pickup}`,
+        trackerWaitingBanner: '⏳ 订单已送达门店 — 正在等待员工接单并确认制作时间 (0%)...',
+        trackerAcceptedBanner: (mins, pickup, rem) => `✓ 门店已接单！制作时长：${mins} 分钟 — 预计取餐时间：${pickup} ${rem ? `(${rem})` : ''}`,
+        remText: (m, s) => `剩余时间：${m}:${s.toString().padStart(2, '0')}`,
+        readyNowText: '现已备妥可取餐 ✓',
         customerSubmittedSpeech: (code) => `您的订单 ${code} 已发送至门店，请稍候等待工作人员接单并确认制作时间。`,
         customerSubmittedBanner: (code) => `⏳ 订单 ${code} 已发送 — 等待员工接单确认`,
         customerAcceptedSpeech: (code, mins, pickup) => `您的订单 ${code} 已被门店接受，正式发票已生成。制作时间为 ${mins} 分钟，预计取餐时间为 ${pickup}。`,
@@ -5117,8 +5127,45 @@
       }
     };
 
-    // دالة تحديث شريط حالة القبول ووقت الاستلام داخل شاشة المسار الذكي للعميل
-    function updateTrackerApprovalBanner() {
+    // تعديل updateStepUIOnly ليدعم حالة 0% (قبل قبول الموظف لا تتحدد المرحلة 1) ويدعم التحرك السلس للخط حسب النسبة الدقيقة
+    updateStepUIOnly = function(stepNum, customExactPercent) {
+      const myOrd = myCustomerOrders.find(o => o.code === myCustomerOrderCode) || activeOrders.find(o => o.code === myCustomerOrderCode);
+      const isPending = (myOrd && myOrd.staffAccepted === false) || stepNum === 0;
+
+      const barEl = document.getElementById('orderProgressBar');
+      const pctEl = document.getElementById('orderProgressPercent');
+
+      if (isPending) {
+        if (barEl) barEl.style.width = '0%';
+        if (pctEl) pctEl.textContent = '0%';
+        for (let i = 1; i <= 4; i++) {
+          const box = document.getElementById('step-' + i);
+          if (box) {
+            box.className = 'step-box p-5 rounded-2xl border-2 border-slate-200 bg-slate-50 opacity-60 transition-all duration-300';
+          }
+        }
+        return;
+      }
+
+      const exactPct = typeof customExactPercent === 'number'
+        ? Math.min(100, Math.max(25, Math.round(customExactPercent)))
+        : Math.min(100, Math.max(25, stepNum * 25));
+
+      if (barEl) barEl.style.width = exactPct + '%';
+      if (pctEl) pctEl.textContent = exactPct + '%';
+
+      for (let i = 1; i <= 4; i++) {
+        const box = document.getElementById('step-' + i);
+        if (!box) continue;
+        if (i <= stepNum) {
+          box.className = 'step-box p-5 rounded-2xl border-2 border-emerald-600 bg-emerald-50 transition-all duration-300 shadow-sm';
+        } else {
+          box.className = 'step-box p-5 rounded-2xl border-2 border-slate-200 bg-slate-50 transition-all duration-300';
+        }
+      }
+    };
+
+    function updateTrackerApprovalBanner(remFormatted) {
       const step1Box = document.getElementById('step-1');
       if (!step1Box || !step1Box.parentElement) return;
 
@@ -5146,7 +5193,7 @@
       } else if (myOrd.prepTimeMinutes) {
         bannerEl.className = 'w-full p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-black text-xs sm:text-sm flex flex-wrap items-center justify-between gap-3 shadow-sm';
         bannerEl.innerHTML = `
-          <span>${AP.trackerAcceptedBanner(myOrd.prepTimeMinutes, myOrd.estimatedPickupTime || '—')}</span>
+          <span>${AP.trackerAcceptedBanner(myOrd.prepTimeMinutes, myOrd.estimatedPickupTime || '—', remFormatted || '')}</span>
           <button type="button" onclick="switchMainView('myorders')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-black transition shadow cursor-pointer">
             ${(smartLaneScreenI18n[currentLang] || smartLaneScreenI18n.ar).viewOrdersBtn}
           </button>
@@ -5156,7 +5203,70 @@
       }
     }
 
-    // تعديل finalizeOrderWithInvoice ليصبح الطلب الجديد بحالة "بانتظار قبول الموظف" (staffAccepted: false)
+    // محرك التقدم التلقائي للخط الأخضر والمراحل الـ 4 ثانية بثانية حسب الوقت الذي حدده الموظف
+    function tickAutoOrderProgress() {
+      const nowMs = Date.now();
+      let stateChanged = false;
+      const AP = orderApprovalI18n[currentLang] || orderApprovalI18n.ar;
+
+      const processOrder = (ord, isCustomerCopy) => {
+        if (!ord || ord.status !== 'in_progress' || ord.staffAccepted !== true || !ord.acceptedTimestamp || !ord.prepTimeMinutes) return;
+
+        const totalDurationMs = ord.prepTimeMinutes * 60 * 1000;
+        const elapsedMs = Math.max(0, nowMs - ord.acceptedTimestamp);
+        const ratio = Math.min(1, elapsedMs / totalDurationMs);
+
+        // يبدأ الخط من 25% فور قبول الموظف ويتحرك تدريجياً حتى 100% عند انتهاء وقت التجهيز
+        const basePct = 25 + Math.round(ratio * 75);
+        const manualMinPct = (ord.manualStep || 1) * 25;
+        const currentExactPct = Math.min(100, Math.max(basePct, manualMinPct));
+
+        let computedStep = 1;
+        if (currentExactPct >= 100) computedStep = 4;
+        else if (currentExactPct >= 75) computedStep = 3;
+        else if (currentExactPct >= 50) computedStep = 2;
+
+        if (ord.exactProgress !== currentExactPct) {
+          ord.exactProgress = currentExactPct;
+        }
+
+        if (computedStep > (ord.step || 1)) {
+          ord.step = computedStep;
+          stateChanged = true;
+
+          if (isCustomerCopy && currentView !== 'staff') {
+            const langPack = stepMessages[currentLang] || stepMessages.ar;
+            const msg = langPack[computedStep] || stepMessages.ar[computedStep];
+            triggerVisualBanner(`${ord.code}: ${msg}`);
+            speakText(msg);
+          }
+        }
+
+        if (isCustomerCopy && ord.code === myCustomerOrderCode) {
+          const remainingMs = Math.max(0, totalDurationMs - elapsedMs);
+          const remTotalSecs = Math.ceil(remainingMs / 1000);
+          const remMins = Math.floor(remTotalSecs / 60);
+          const remSecs = remTotalSecs % 60;
+          const remStr = remainingMs > 0 ? AP.remText(remMins, remSecs) : AP.readyNowText;
+
+          updateStepUIOnly(ord.step || 1, currentExactPct);
+          updateTrackerApprovalBanner(remStr);
+        }
+      };
+
+      myCustomerOrders.forEach(o => processOrder(o, true));
+      activeOrders.forEach(o => processOrder(o, false));
+
+      if (stateChanged) {
+        saveAllOrderStates();
+        renderCustomerMyOrders();
+        if (currentView === 'staff') renderStaffActiveQueueAndDetails();
+      }
+    }
+
+    setInterval(tickAutoOrderProgress, 1000);
+
+    // عند اعتماد العميل للطلب: يبدأ عند 0% و step = 0 (المرحلة 1 غير محددة حتى يقبل الموظف)
     const _origFinalizeOrder = finalizeOrderWithInvoice;
     finalizeOrderWithInvoice = function() {
       _origFinalizeOrder();
@@ -5165,17 +5275,22 @@
         latestOrd.staffAccepted = false;
         latestOrd.prepTimeMinutes = null;
         latestOrd.estimatedPickupTime = null;
+        latestOrd.acceptedTimestamp = null;
         latestOrd.step = 0;
+        latestOrd.exactProgress = 0;
 
         const staffCopy = activeOrders.find(o => o.code === latestOrd.code);
         if (staffCopy) {
           staffCopy.staffAccepted = false;
           staffCopy.prepTimeMinutes = null;
           staffCopy.estimatedPickupTime = null;
+          staffCopy.acceptedTimestamp = null;
           staffCopy.step = 0;
+          staffCopy.exactProgress = 0;
         }
 
         saveAllOrderStates();
+        updateStepUIOnly(0, 0);
         renderCustomerMyOrders();
         renderStaffActiveQueueAndDetails();
         updateTrackerApprovalBanner();
@@ -5188,7 +5303,7 @@
       }
     };
 
-    // دالة قبول الطلب من قِبل الموظف وتحديد وقت التجهيز وحساب وقت الاستلام الرسمي
+    // عند ضغط الموظف على "قبول الطلب": تتحدد المرحلة 1 (25%) فوراً ويبدأ المؤقت التلقائي بتحريك الخط والمراحل
     function acceptOrderByStaff() {
       const currentOrd = getSelectedStaffOrder();
       if (!currentOrd) {
@@ -5200,7 +5315,8 @@
       const prepMins = selectEl ? parseInt(selectEl.value, 10) || 10 : 10;
 
       const now = new Date();
-      const pickupDate = new Date(now.getTime() + prepMins * 60000);
+      const nowMs = now.getTime();
+      const pickupDate = new Date(nowMs + prepMins * 60000);
       const pickupTimeAr = pickupDate.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
       const acceptedAtAr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
 
@@ -5208,7 +5324,9 @@
       currentOrd.prepTimeMinutes = prepMins;
       currentOrd.estimatedPickupTime = pickupTimeAr;
       currentOrd.acceptedAtTime = acceptedAtAr;
+      currentOrd.acceptedTimestamp = nowMs;
       currentOrd.step = 1;
+      currentOrd.exactProgress = 25;
 
       const myOrd = myCustomerOrders.find(o => o.code === currentOrd.code);
       if (myOrd) {
@@ -5216,10 +5334,15 @@
         myOrd.prepTimeMinutes = prepMins;
         myOrd.estimatedPickupTime = pickupTimeAr;
         myOrd.acceptedAtTime = acceptedAtAr;
+        myOrd.acceptedTimestamp = nowMs;
         myOrd.step = 1;
+        myOrd.exactProgress = 25;
       }
 
       saveAllOrderStates();
+      if (myCustomerOrderCode === currentOrd.code) {
+        updateStepUIOnly(1, 25);
+      }
       renderStaffActiveQueueAndDetails();
       renderCustomerMyOrders();
       updateTrackerApprovalBanner();
@@ -5229,13 +5352,29 @@
         orderCode: currentOrd.code,
         prepTimeMinutes: prepMins,
         estimatedPickupTime: pickupTimeAr,
-        acceptedAtTime: acceptedAtAr
+        acceptedAtTime: acceptedAtAr,
+        acceptedTimestamp: nowMs
       });
 
-      triggerVisualBanner(`✓ تم قبول الطلب ${currentOrd.code} وتحديد وقت التجهيز (${prepMins} دقائق — الاستلام: ${pickupTimeAr}) وإصدار الفاتورة للعميل`);
+      triggerVisualBanner(`✓ تم قبول الطلب ${currentOrd.code} وتحديد وقت التجهيز (${prepMins} دقائق — الاستلام: ${pickupTimeAr}) وبدء تحرك المسار تلقائياً`);
     }
 
-    // تحديث واجهة الموظف لإظهار شريط القبول للطلبات الجديدة وقفل المراحل حتى يتم القبول
+    // حفظ المرحلة اليدوية إذا رغب الموظف بتقديم المرحلة يدوياً
+    const _origSetOrderStep = setOrderStep;
+    setOrderStep = function(stepNum) {
+      const currentOrd = getSelectedStaffOrder();
+      if (currentOrd) {
+        currentOrd.manualStep = stepNum;
+        currentOrd.exactProgress = Math.max(currentOrd.exactProgress || 25, stepNum * 25);
+        const myOrd = myCustomerOrders.find(o => o.code === currentOrd.code);
+        if (myOrd) {
+          myOrd.manualStep = stepNum;
+          myOrd.exactProgress = currentOrd.exactProgress;
+        }
+      }
+      _origSetOrderStep(stepNum);
+    };
+
     const _origRenderStaffQueue = renderStaffActiveQueueAndDetails;
     renderStaffActiveQueueAndDetails = function() {
       _origRenderStaffQueue();
@@ -5262,12 +5401,8 @@
       }
 
       const isPendingApproval = currentOrd.staffAccepted === false;
-      if (acceptBar) {
-        acceptBar.classList.toggle('hidden', !isPendingApproval);
-      }
-      if (completeBtn) {
-        completeBtn.classList.toggle('hidden', isPendingApproval);
-      }
+      if (acceptBar) acceptBar.classList.toggle('hidden', !isPendingApproval);
+      if (completeBtn) completeBtn.classList.toggle('hidden', isPendingApproval);
 
       [1, 2, 3, 4].forEach(stepIdx => {
         const sBtn = document.getElementById('staff-step-btn-' + stepIdx);
@@ -5292,7 +5427,6 @@
       }
     };
 
-    // تحديث عرض الفواتير في صفحة (قائمة طلباتي) لإخفاء الفاتورة الكاملة قبل القبول وإظهارها كاملة مع وقت الاستلام بعد القبول
     const _origRenderMyOrders = renderCustomerMyOrders;
     renderCustomerMyOrders = function() {
       _origRenderMyOrders();
@@ -5314,7 +5448,6 @@
         const ord = filteredMyOrders[idx];
         if (!ord) return;
 
-        // 1. إذا كان الطلب لم يُقبل بعد من الموظف: نخفي تفاصيل الفاتورة ونعرض رسالة انتظار القبول الرسمية
         if (ord.status === 'in_progress' && ord.staffAccepted === false) {
           const topBadge = card.querySelector('.bg-amber-100');
           if (topBadge) {
@@ -5325,7 +5458,10 @@
             statusBox.innerHTML = `
               <div class="flex items-center justify-between">
                 <span>${AP.pendingStatusLine}</span>
-                <span class="font-black">⏳</span>
+                <span class="font-black">0%</span>
+              </div>
+              <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden mt-1.5">
+                <div class="bg-amber-500 h-full rounded-full" style="width: 0%"></div>
               </div>
             `;
           }
@@ -5342,9 +5478,20 @@
             bottomSection.children[0].classList.add('hidden');
             bottomSection.children[1].classList.add('hidden');
           }
-        }
-        // 2. إذا قَبِل الموظف الطلب: نعرض الفاتورة الضريبية الكاملة + صندوق رسمي بوقت التجهيز ووقت الاستلام المتوقع
-        else if (ord.staffAccepted === true && ord.prepTimeMinutes) {
+        } else if (ord.staffAccepted === true && ord.prepTimeMinutes) {
+          const pctVal = ord.status === 'completed' ? 100 : (ord.exactProgress || Math.max(25, (ord.step || 1) * 25));
+          const statusBox = card.querySelector('.bg-amber-50');
+          if (statusBox) {
+            const barInner = statusBox.querySelector('.bg-emerald-600');
+            if (barInner) barInner.style.width = `${pctVal}%`;
+            const pctSpan = statusBox.querySelector('.font-black');
+            if (pctSpan) pctSpan.textContent = `${pctVal}%`;
+          }
+          const topBadge = card.querySelector('.bg-amber-100');
+          if (topBadge) {
+            topBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span><span>${currentLang === 'ar' ? 'جاري التسليم' : (orderCardReplacements[currentLang]?.[1]?.[1] || 'In Progress')} (${pctVal}%)</span>`;
+          }
+
           const gridInfo = card.querySelector('.grid.grid-cols-2');
           if (gridInfo && !card.querySelector('.approved-pickup-box')) {
             const pickupBox = document.createElement('div');
@@ -5369,7 +5516,6 @@
       });
     };
 
-    // استقبال حدث قبول الطلب (ACCEPT_ORDER) لحظياً عند العميل بجميع اللغات الـ 5
     const _origHandleSync = handleIncomingSyncData;
     handleIncomingSyncData = function(data) {
       if (data && data.type === 'ACCEPT_ORDER') {
@@ -5382,7 +5528,9 @@
           targetOrd.prepTimeMinutes = data.prepTimeMinutes;
           targetOrd.estimatedPickupTime = data.estimatedPickupTime;
           targetOrd.acceptedAtTime = data.acceptedAtTime;
+          targetOrd.acceptedTimestamp = data.acceptedTimestamp || Date.now();
           targetOrd.step = 1;
+          targetOrd.exactProgress = 25;
         }
 
         const myOrd = myCustomerOrders.find(o => o.code === data.orderCode);
@@ -5391,7 +5539,9 @@
           myOrd.prepTimeMinutes = data.prepTimeMinutes;
           myOrd.estimatedPickupTime = data.estimatedPickupTime;
           myOrd.acceptedAtTime = data.acceptedAtTime;
+          myOrd.acceptedTimestamp = data.acceptedTimestamp || Date.now();
           myOrd.step = 1;
+          myOrd.exactProgress = 25;
           saveAllOrderStates();
           renderCustomerMyOrders();
           renderStaffActiveQueueAndDetails();
@@ -5399,7 +5549,7 @@
 
           if (currentView !== 'staff') {
             if (myCustomerOrderCode === data.orderCode) {
-              updateStepUIOnly(1);
+              updateStepUIOnly(1, 25);
             }
             const AP = orderApprovalI18n[currentLang] || orderApprovalI18n.ar;
             triggerVisualBanner(AP.customerAcceptedAlert(data.orderCode, data.prepTimeMinutes, data.estimatedPickupTime));
@@ -5418,7 +5568,13 @@
       updateTrackerApprovalBanner();
     };
 
-    setTimeout(updateTrackerApprovalBanner, 100);
+    setTimeout(() => {
+      const myOrd = myCustomerOrders.find(o => o.code === myCustomerOrderCode);
+      if (myOrd) {
+        updateStepUIOnly(myOrd.staffAccepted === false ? 0 : (myOrd.step || 1), myOrd.exactProgress || 0);
+      }
+      updateTrackerApprovalBanner();
+    }, 100);
   </script>
 </body>
 </html>
