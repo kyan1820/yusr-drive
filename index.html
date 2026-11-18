@@ -15,10 +15,51 @@
     body.simple-mode-active .secondary-ui {
       display: none !important;
     }
-    .splash-fade-out {
+    /* حركات شاشة الترحيب الافتتاحية الرسمية (فارغة -> ظهور متدرج حبة حبة -> وميض -> اختفاء سلس) */
+    .splash-item {
       opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.5s ease-in-out;
+      transform: translateY(18px) scale(0.98);
+      filter: blur(4px);
+    }
+    @keyframes splashItemReveal {
+      0% {
+        opacity: 0;
+        transform: translateY(18px) scale(0.98);
+        filter: blur(4px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+      }
+    }
+    .splash-item-1 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.4s forwards; }
+    .splash-item-2 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 1.0s forwards; }
+    .splash-item-3 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 1.6s forwards; }
+    .splash-item-4 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 2.2s forwards; }
+    .splash-item-5 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 2.8s forwards; }
+
+    @keyframes splashOfficialPulseGlow {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: drop-shadow(0 0 0px rgba(52, 211, 153, 0));
+      }
+      50% {
+        opacity: 0.35;
+        transform: scale(1.02);
+        filter: drop-shadow(0 0 18px rgba(52, 211, 153, 0.55));
+      }
+    }
+    .splash-all-flash {
+      animation: splashOfficialPulseGlow 0.85s ease-in-out 2;
+    }
+
+    .splash-fade-out {
+      opacity: 0 !important;
+      transform: scale(1.03);
+      pointer-events: none !important;
+      transition: opacity 0.85s cubic-bezier(0.4, 0, 0.2, 1), transform 0.85s cubic-bezier(0.4, 0, 0.2, 1);
     }
    /* تنسيق الوضع الداكن المحسّن والشامل */
     body.dark-theme {
@@ -235,21 +276,21 @@
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 transition-all duration-200">
 
   <!-- 1. شاشة الكلمة الترحيبية الافتتاحية -->
-  <div id="introSplash" onclick="dismissSplashAndShowLanguages()" class="fixed inset-0 z-[70] bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white flex items-center justify-center p-6 text-center cursor-pointer">
-    <div class="max-w-lg w-full space-y-5 animate-pulse">
-      <div class="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-5 py-2 rounded-full text-sm font-black">
+  <div id="introSplash" onclick="dismissSplashAndShowLanguages()" class="fixed inset-0 z-[70] bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white flex items-center justify-center p-6 text-center cursor-pointer transition-all duration-700">
+    <div id="introSplashContent" class="max-w-lg w-full space-y-5">
+      <div class="splash-item splash-item-1 inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-5 py-2 rounded-full text-sm font-black">
         <span>Yusr Drive | منصة يُسْر درايف</span>
       </div>
-      <h1 class="text-4xl sm:text-5xl font-black leading-tight text-white">
+      <h1 class="splash-item splash-item-2 text-4xl sm:text-5xl font-black leading-tight text-white">
         أهلاً بك في يُسْر درايف
       </h1>
-      <p class="text-2xl sm:text-3xl font-extrabold text-emerald-200 tracking-wide" dir="ltr">
+      <p class="splash-item splash-item-3 text-2xl sm:text-3xl font-extrabold text-emerald-200 tracking-wide" dir="ltr">
         Welcome to Yusr Drive
       </p>
-      <p class="text-lg sm:text-xl font-bold text-emerald-300">
+      <p class="splash-item splash-item-4 text-lg sm:text-xl font-bold text-emerald-300">
         خدمتك من سيارتك بكل يُسر واستقلالية
       </p>
-      <p class="text-xs text-slate-400 font-bold pt-2">
+      <p class="splash-item splash-item-5 text-xs text-slate-400 font-bold pt-2">
         Welcome • Hoş Geldiniz • خوش آمدید • 欢迎光临
       </p>
     </div>
@@ -1244,19 +1285,31 @@
       if (splashDismissed) return;
       splashDismissed = true;
       const splash = document.getElementById('introSplash');
-      const langModal = document.getElementById('welcomeModal');
       if (splash) {
         splash.classList.add('splash-fade-out');
         setTimeout(() => {
           splash.classList.add('hidden');
-        }, 500);
+        }, 850);
       }
-      if (langModal) {
-        langModal.classList.remove('hidden');
-      }
+      setTimeout(() => {
+        if (typeof showModalSmoothly === 'function') {
+          showModalSmoothly('welcomeModal');
+        } else {
+          const langModal = document.getElementById('welcomeModal');
+          if (langModal) langModal.classList.remove('hidden');
+        }
+      }, 250);
     }
 
-    setTimeout(dismissSplashAndShowLanguages, 2000);
+    // بعد اكتمال ظهور جميع الكلمات حبة حبة (عند 3.5 ثانية) تبدأ بالوميض معاً مرتين ثم تختفي الصفحة بسلاسة
+    setTimeout(() => {
+      const contentBox = document.getElementById('introSplashContent');
+      if (contentBox && !splashDismissed) {
+        contentBox.classList.add('splash-all-flash');
+      }
+    }, 3550);
+
+    setTimeout(dismissSplashAndShowLanguages, 5350);
 
     function loadPersistedData() {
       try {
