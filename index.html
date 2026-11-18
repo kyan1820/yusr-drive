@@ -15,41 +15,81 @@
     body.simple-mode-active .secondary-ui {
       display: none !important;
     }
-    /* حركات شاشة الترحيب الافتتاحية: شعار المنصة -> كتابة حرف بحرف -> بقية الأسطر -> وميض أصلي -> اختفاء سلس */
+    /* حركات شاشة الترحيب الافتتاحية: كشف تدريجي ناعم للحروف حرفاً بحرف */
     .splash-item {
       opacity: 0;
       transform: translateY(14px);
+      filter: blur(4px);
     }
     @keyframes splashItemReveal {
       0% {
         opacity: 0;
         transform: translateY(14px);
+        filter: blur(4px);
       }
       100% {
         opacity: 1;
         transform: translateY(0);
+        filter: blur(0);
       }
     }
     .splash-item-1 {
-      animation: splashItemReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.35s forwards;
+      animation: splashItemReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards;
     }
     .splash-item-visible {
-      animation: splashItemReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      animation: splashItemReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
 
-    /* مؤشر الكتابة الناعم أثناء ظهور الحروف */
-    .typing-cursor-ar::after,
-    .typing-cursor-en::after {
-      content: '|';
+    /* 1. كشف الجملة العربية تدريجياً حرفاً بحرف من اليمين لليسار بحواف ضبابية ناعمة مع الحفاظ على تشبيك الحروف */
+    .smooth-rtl-gradual-reveal {
       display: inline-block;
-      color: #34d399;
-      font-weight: 400;
-      margin: 0 3px;
-      animation: splashCursorBlink 0.55s infinite;
+      -webkit-mask-image: linear-gradient(to left, #000 0%, #000 42%, transparent 58%, transparent 100%);
+      mask-image: linear-gradient(to left, #000 0%, #000 42%, transparent 58%, transparent 100%);
+      -webkit-mask-size: 260% 100%;
+      mask-size: 260% 100%;
+      -webkit-mask-position: 0% 0%;
+      mask-position: 0% 0%;
+      -webkit-mask-repeat: no-repeat;
+      mask-repeat: no-repeat;
+      animation: rtlGradualMaskSwipe 1.85s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
     }
-    @keyframes splashCursorBlink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
+    @keyframes rtlGradualMaskSwipe {
+      0% {
+        -webkit-mask-position: 0% 0%;
+        mask-position: 0% 0%;
+        opacity: 0.2;
+        transform: translateX(8px);
+      }
+      15% {
+        opacity: 1;
+      }
+      100% {
+        -webkit-mask-position: 100% 0%;
+        mask-position: 100% 0%;
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* 2. ظهور حروف الجملة الإنجليزية حرفاً بحرف تدريجياً بنعومة من اليسار لليمين */
+    .smooth-ltr-char {
+      display: inline-block;
+      opacity: 0;
+      transform: translateX(-8px) translateY(3px) scale(0.95);
+      filter: blur(5px);
+      animation: ltrCharSmoothFadeIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    @keyframes ltrCharSmoothFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateX(-8px) translateY(3px) scale(0.95);
+        filter: blur(5px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0) translateY(0) scale(1);
+        filter: blur(0);
+      }
     }
 
     /* نفس الوميض الأصلي في الملف */
@@ -1303,76 +1343,75 @@
       }, 250);
     }
 
-    // دالة كتابة النص حرفاً بحرف بسلاسة (مع دمج الحركات والتشكيل العربي مع الحرف الأساسي)
-    function typeSplashTextCharByChar(elementId, fullText, speedMs, cursorClass, onComplete) {
+    // كشف الجملة العربية تدريجياً حرفاً بحرف من اليمين لليسار بنعومة فائقة مع بقاء الحروف متصلة
+    function revealArabicGraduallyRTL(elementId, fullText, durationMs, onComplete) {
       const el = document.getElementById(elementId);
       if (!el) {
         if (onComplete) onComplete();
         return;
       }
-
-      // تقسيم ذكي يبقي التشكيل العربي ملتصقاً بالحرف حتى لا يظهر التشكيل منفصلاً أثناء الكتابة
-      const units = [];
-      for (const ch of fullText) {
-        if (/[\u064B-\u065F\u0670]/.test(ch) && units.length > 0) {
-          units[units.length - 1] += ch;
-        } else {
-          units.push(ch);
-        }
-      }
-
-      el.textContent = '';
-      el.classList.add(cursorClass);
-      let idx = 0;
-
-      const step = () => {
-        if (splashDismissed) {
-          el.classList.remove(cursorClass);
-          el.textContent = fullText;
-          return;
-        }
-        if (idx < units.length) {
-          idx++;
-          el.textContent = units.slice(0, idx).join('');
-          setTimeout(step, speedMs);
-        } else {
-          el.classList.remove(cursorClass);
-          if (onComplete) onComplete();
-        }
-      };
-
-      step();
+      el.innerHTML = `<span class="smooth-rtl-gradual-reveal">${fullText}</span>`;
+      setTimeout(() => {
+        if (onComplete) onComplete();
+      }, durationMs);
     }
 
-    // التسلسل الزمني لشاشة البداية:
-    // 1. بعد ظهور شارة (منصة يُسر درايف) فوق، تبدأ كتابة الجملة العربية من اليمين لليسار حرفاً بحرف
+    // كشف حروف الجملة الإنجليزية تدريجياً حرفاً بحرف من اليسار لليمين بتأثير تلاشي ناعم لكل حرف
+    function revealEnglishCharsGraduallyLTR(elementId, fullText, staggerMs, onComplete) {
+      const el = document.getElementById(elementId);
+      if (!el) {
+        if (onComplete) onComplete();
+        return;
+      }
+      el.innerHTML = '';
+      const chars = Array.from(fullText);
+      chars.forEach((ch, i) => {
+        const span = document.createElement('span');
+        if (ch === ' ') {
+          span.innerHTML = ' ';
+          span.style.display = 'inline-block';
+        } else {
+          span.textContent = ch;
+          span.className = 'smooth-ltr-char';
+          span.style.animationDelay = `${i * staggerMs}ms`;
+        }
+        el.appendChild(span);
+      });
+
+      const totalTime = (chars.length * staggerMs) + 550;
+      setTimeout(() => {
+        if (onComplete) onComplete();
+      }, totalTime);
+    }
+
+    // التسلسل الزمني السلس لشاشة البداية:
+    // 1. بعد ظهور شارة (منصة يُسر درايف) فوق، تنكشف الجملة العربية من اليمين لليسار حرفاً بحرف تدريجياً بنعومة
     setTimeout(() => {
       if (splashDismissed) return;
-      typeSplashTextCharByChar('splashArHeading', 'أهلاً بك في يُسْر درايف', 55, 'typing-cursor-ar', () => {
-        // 2. فور اكتمال الجملة العربية، تبدأ كتابة الجملة الإنجليزية من اليسار لليمين حرفاً بحرف
-        setTimeout(() => {
+      revealArabicGraduallyRTL('splashArHeading', 'أهلاً بك في يُسْر درايف', 1750, () => {
+        if (splashDismissed) return;
+        // 2. بعدها مباشرة تظهر الجملة الإنجليزية من اليسار لليمين حرفاً بحرف بشكل تدريجي ناعم
+        revealEnglishCharsGraduallyLTR('splashEnHeading', 'Welcome to Yusr Drive', 55, () => {
           if (splashDismissed) return;
-          typeSplashTextCharByChar('splashEnHeading', 'Welcome to Yusr Drive', 45, 'typing-cursor-en', () => {
-            // 3. إظهار السطرين السفليين بسلاسة
-            const subAr = document.getElementById('splashSubAr');
-            const subLangs = document.getElementById('splashSubLangs');
-            if (subAr) subAr.classList.add('splash-item-visible');
+          // 3. ظهور السطرين السفليين بنعومة
+          const subAr = document.getElementById('splashSubAr');
+          const subLangs = document.getElementById('splashSubLangs');
+          if (subAr) subAr.classList.add('splash-item-visible');
+          setTimeout(() => {
+            if (subLangs) subLangs.classList.add('splash-item-visible');
+            // 4. تشغيل الوميض الأصلي بعد اكتمال جميع الكلمات
             setTimeout(() => {
-              if (subLangs) subLangs.classList.add('splash-item-visible');
-              // 4. تشغيل الوميض الأصلي بعد اكتمال جميع الكلمات
-              setTimeout(() => {
-                const contentBox = document.getElementById('introSplashContent');
-                if (contentBox && !splashDismissed) {
-                  contentBox.classList.add('splash-all-flash');
-                }
-                // 5. اختفاء الشاشة الترحيبية بسلاسة بعد الوميض
-                setTimeout(dismissSplashAndShowLanguages, 1900);
-              }, 550);
-            }, 350);
-          });
-        }, 200);
+              const contentBox = document.getElementById('introSplashContent');
+              if (contentBox && !splashDismissed) {
+                contentBox.classList.add('splash-all-flash');
+              }
+              // 5. اختفاء الشاشة الترحيبية بسلاسة
+              setTimeout(dismissSplashAndShowLanguages, 1900);
+            }, 500);
+          }, 350);
+        });
       });
-    }, 950);
+    }, 900);
 
     function loadPersistedData() {
       try {
