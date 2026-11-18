@@ -2402,6 +2402,72 @@
       switchMainView('customer');
     }
 
+    // حقن تأثيرات الحركة السلسة لرسائل المحادثة تلقائياً
+    (function injectSmoothChatStyles() {
+      if (document.getElementById('yusrSmoothChatStyles')) return;
+      const st = document.createElement('style');
+      st.id = 'yusrSmoothChatStyles';
+      st.textContent = `
+        @keyframes chatMsgSmoothEnter {
+          0% {
+            opacity: 0;
+            transform: translateY(-12px) scale(0.97);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+        }
+        .chat-msg-smooth-new {
+          animation: chatMsgSmoothEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+        .chat-main-display-text {
+          transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+        }
+        .chat-text-switching {
+          opacity: 0;
+          transform: translateY(3px);
+        }
+      `;
+      document.head.appendChild(st);
+    })();
+
+    // دالة التبديل السلس بين الترجمة والنص الأصلي بجميع اللغات الـ 5
+    function toggleOriginalChatMsg(btnEl) {
+      const box = btnEl.closest('.chat-msg-card');
+      if (!box) return;
+      const mainTxtEl = box.querySelector('.chat-main-display-text');
+      if (!mainTxtEl) return;
+
+      const origText = decodeURIComponent(box.getAttribute('data-orig-text') || '');
+      const transText = decodeURIComponent(box.getAttribute('data-trans-text') || '');
+      if (!transText) return;
+
+      const showingOrig = box.getAttribute('data-showing-orig') === '1';
+      const btnLabels = {
+        ar: { showOrig: 'النص الأصلي', showTrans: 'عرض الترجمة' },
+        en: { showOrig: 'Show Original', showTrans: 'Show Translation' },
+        tr: { showOrig: 'Orijinali Gör', showTrans: 'Çeviriyi Gör' },
+        ur: { showOrig: 'اصل متن دیکھیں', showTrans: 'ترجمہ دیکھیں' },
+        zh: { showOrig: '查看原文', showTrans: '查看译文' }
+      };
+      const L = btnLabels[currentLang] || btnLabels.ar;
+
+      mainTxtEl.classList.add('chat-text-switching');
+      setTimeout(() => {
+        if (showingOrig) {
+          mainTxtEl.textContent = transText;
+          box.setAttribute('data-showing-orig', '0');
+          btnEl.textContent = L.showOrig;
+        } else {
+          mainTxtEl.textContent = origText;
+          box.setAttribute('data-showing-orig', '1');
+          btnEl.textContent = L.showTrans;
+        }
+        mainTxtEl.classList.remove('chat-text-switching');
+      }, 150);
+    }
+
     function renderCustomerTrackedChat(messages) {
       const custLog = document.getElementById('customerSignalsLog');
       if (!custLog) return;
@@ -2415,50 +2481,74 @@
         return;
       }
 
+      // فلتر ذكي لمنع تكرار أي رسالة في نفس الوقت
+      const uniqueMessages = messages.filter((m, idx, arr) => {
+        if (idx === 0) return true;
+        const prev = arr[idx - 1];
+        return !(prev.text === m.text && prev.time === m.time && prev.senderType === m.senderType);
+      });
+
       const senderLabels = {
-        ar: { staff: 'رد موظف المسار:', cust: 'إشارتك المرسلة:', transTag: 'الترجمة:' },
-        en: { staff: 'Staff Reply:', cust: 'Your Sent Signal:', transTag: 'Translation:' },
-        tr: { staff: 'Personel Yanıtı:', cust: 'Gönderdiğiniz Sinyal:', transTag: 'Çeviri:' },
-        ur: { staff: 'عملے کا جواب:', cust: 'آپ کا بھیجا گیا اشارہ:', transTag: 'ترجمہ:' },
-        zh: { staff: '工作人员回复：', cust: '您发送的信号：', transTag: '翻译：' }
+        ar: { staff: 'رد موظف المسار:', cust: 'إشارتك المرسلة:', showOrig: 'النص الأصلي' },
+        en: { staff: 'Staff Reply:', cust: 'Your Sent Signal:', showOrig: 'Show Original' },
+        tr: { staff: 'Personel Yanıtı:', cust: 'Gönderdiğiniz Sinyal:', showOrig: 'Orijinali Gör' },
+        ur: { staff: 'عملے کا جواب:', cust: 'آپ کا بھیجا گیا اشارہ:', showOrig: 'اصل متن دیکھیں' },
+        zh: { staff: '工作人员回复：', cust: '您发送的信号：', showOrig: '查看原文' }
       };
       const lbl = senderLabels[currentLang] || senderLabels.ar;
 
-      custLog.innerHTML = messages.map(m => {
-        const needCustomerTrans = currentLang !== 'ar';
+      custLog.innerHTML = uniqueMessages.map((m, idx) => {
+        const isStaff = m.senderType === 'staff';
+        const needCustomerTrans = (currentLang !== 'ar') || (!isPureArabicText(m.text) && currentLang === 'ar');
         const cacheKey = `${currentLang}::${(m.text || '').trim().toLowerCase()}`;
         const cachedTrans = liveChatTranslationsCache[cacheKey] || '';
+        const hasValidCached = cachedTrans && cachedTrans.toLowerCase() !== (m.text || '').trim().toLowerCase();
 
-        if (m.senderType === 'staff') {
-          return `
-            <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold space-y-1">
-              <span class="text-amber-400 block">[${m.time}] ${lbl.staff}</span>
-              <div>${m.text}</div>
-              ${needCustomerTrans ? `
-                <div data-translate-raw="${encodeURIComponent(m.text)}" class="${cachedTrans ? '' : 'hidden'} pt-1 border-t border-amber-500/40 text-[11px] text-emerald-300 font-extrabold">
-                  <span>${lbl.transTag} </span><span class="trans-output-text text-white">${cachedTrans}</span>
-                </div>
-              ` : ''}
+        // عرض الترجمة فقط كنص أساسي للعميل إذا كانت جاهزة
+        const displayStr = (needCustomerTrans && hasValidCached) ? cachedTrans : m.text;
+        // حركة انزلاق سلسة للرسالة الجديدة في أعلى القائمة
+        const animClass = idx === 0 ? 'chat-msg-smooth-new' : '';
+
+        return `
+          <div class="chat-msg-card ${animClass} ${isStaff ? 'bg-amber-950/80 border-amber-400 text-amber-200' : 'bg-emerald-950/90 border-emerald-500 text-emerald-200'} border p-3 rounded-xl text-xs font-bold space-y-1.5"
+               data-orig-text="${encodeURIComponent(m.text)}"
+               data-trans-text="${hasValidCached ? encodeURIComponent(cachedTrans) : ''}"
+               data-need-cust-trans="${needCustomerTrans && !hasValidCached ? '1' : '0'}"
+               data-showing-orig="0">
+            <div class="flex items-center justify-between gap-2">
+              <span class="${isStaff ? 'text-amber-400' : 'text-emerald-400'}">[${m.time}] ${isStaff ? lbl.staff : lbl.cust}</span>
+              <button type="button" onclick="toggleOriginalChatMsg(this)" class="toggle-orig-btn ${needCustomerTrans && hasValidCached ? '' : 'hidden'} bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-600 px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold transition cursor-pointer shrink-0">
+                ${lbl.showOrig}
+              </button>
             </div>
-          `;
-        } else {
-          return `
-            <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold space-y-1">
-              <span class="text-emerald-400 block">[${m.time}] ${lbl.cust}</span>
-              <div>${m.text}</div>
-              ${needCustomerTrans && isPureArabicText(m.text) ? `
-                <div data-translate-raw="${encodeURIComponent(m.text)}" class="${cachedTrans ? '' : 'hidden'} pt-1 border-t border-emerald-600/40 text-[11px] text-amber-300 font-extrabold">
-                  <span>${lbl.transTag} </span><span class="trans-output-text text-white">${cachedTrans}</span>
-                </div>
-              ` : ''}
-            </div>
-          `;
-        }
+            <div class="chat-main-display-text text-white text-sm leading-relaxed">${displayStr}</div>
+          </div>
+        `;
       }).join('');
 
-      if (currentLang !== 'ar') {
-        triggerAsyncTranslationsInContainer(custLog, currentLang);
-      }
+      custLog.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // ترجمة فورية سحابية وتبديل النص الأساسي بالترجمة بنعومة مع إظهار زر (النص الأصلي)
+      custLog.querySelectorAll('.chat-msg-card[data-need-cust-trans="1"]').forEach(async (card) => {
+        card.setAttribute('data-need-cust-trans', '0');
+        const rawText = decodeURIComponent(card.getAttribute('data-orig-text') || '');
+        const translated = await fetchAccurateChatTranslation(rawText, currentLang);
+        if (translated && translated.toLowerCase() !== rawText.trim().toLowerCase()) {
+          card.setAttribute('data-trans-text', encodeURIComponent(translated));
+          if (card.getAttribute('data-showing-orig') === '0') {
+            const mainTxt = card.querySelector('.chat-main-display-text');
+            if (mainTxt) {
+              mainTxt.classList.add('chat-text-switching');
+              setTimeout(() => {
+                mainTxt.textContent = translated;
+                mainTxt.classList.remove('chat-text-switching');
+              }, 120);
+            }
+          }
+          const btn = card.querySelector('.toggle-orig-btn');
+          if (btn) btn.classList.remove('hidden');
+        }
+      });
     }
 
     function toggleSimpleMode() {
@@ -2635,10 +2725,19 @@
         `;
         return;
       }
-      staffLog.innerHTML = messages.map(m => {
+
+      // فلتر ذكي لمنع تكرار أي رسالة في شاشة الموظف
+      const uniqueMessages = messages.filter((m, idx, arr) => {
+        if (idx === 0) return true;
+        const prev = arr[idx - 1];
+        return !(prev.text === m.text && prev.time === m.time && prev.senderType === m.senderType);
+      });
+
+      staffLog.innerHTML = uniqueMessages.map((m, idx) => {
+        const animClass = idx === 0 ? 'chat-msg-smooth-new' : '';
         if (m.senderType === 'staff') {
           return `
-            <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
+            <div class="${animClass} bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
               <span class="text-amber-400 block mb-1">[${m.time}] رد موظف المسار:</span>
               <div>${m.text}</div>
             </div>
@@ -2647,7 +2746,7 @@
           const needsArTranslation = !isPureArabicText(m.text);
           const cachedAr = liveChatTranslationsCache[`ar::${(m.text || '').trim().toLowerCase()}`] || instantDriveThruDict[(m.text || '').trim().toLowerCase()] || '';
           return `
-            <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold space-y-1.5">
+            <div class="${animClass} bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold space-y-1.5">
               <span class="text-emerald-400 block">[${m.time}] إشارة من السيارة:</span>
               <div class="text-white text-sm">${m.text}</div>
               ${needsArTranslation ? `
@@ -2661,6 +2760,7 @@
         }
       }).join('');
 
+      staffLog.scrollTo({ top: 0, behavior: 'smooth' });
       triggerAsyncTranslationsInContainer(staffLog, 'ar');
     }
 
@@ -3903,23 +4003,34 @@
     }
 
     function sendQuickSignal(signalText) {
+      const noOrderAlerts = {
+        ar: 'يرجى إرسال طلب أولاً قبل بدء المحادثة',
+        en: 'Please submit an order first before starting chat',
+        tr: 'Sohbete başlamadan önce lütfen bir sipariş gönderin',
+        ur: 'بات چیت شروع کرنے سے پہلے براہ کرم آرڈر بھیجیں',
+        zh: '开始聊天前请先提交订单'
+      };
       if (!myCustomerOrderCode) {
-        triggerVisualBanner('يرجى إرسال طلب أولاً قبل بدء المحادثة');
+        triggerVisualBanner(noOrderAlerts[currentLang] || noOrderAlerts.ar);
         return;
       }
+
       const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+      const msgObj = { id: Date.now() + Math.random(), text: signalText, time: time, senderType: 'customer' };
 
       const myOrd = myCustomerOrders.find(o => o.code === myCustomerOrderCode);
       if (myOrd) {
         myOrd.messages = myOrd.messages || [];
-        myOrd.messages.unshift({ text: signalText, time: time, senderType: 'customer' });
+        myOrd.messages.unshift(msgObj);
         renderCustomerTrackedChat(myOrd.messages);
       }
 
       const localOrd = activeOrders.find(o => o.code === myCustomerOrderCode);
       if (localOrd) {
         localOrd.messages = localOrd.messages || [];
-        localOrd.messages.unshift({ text: signalText, time: time, senderType: 'customer' });
+        if (localOrd.messages !== (myOrd && myOrd.messages) && !localOrd.messages.some(m => m.id === msgObj.id)) {
+          localOrd.messages.unshift(msgObj);
+        }
         if (staffSelectedOrderCode === myCustomerOrderCode) {
           renderStaffChatMessages(localOrd.messages);
         }
@@ -3927,6 +4038,43 @@
 
       saveAllOrderStates();
       publishSyncEvent({ type: 'SIGNAL', orderCode: myCustomerOrderCode, signalText: signalText, time: time });
+    }
+
+    function sendCustomCustomerMessage() {
+      const input = document.getElementById('customerChatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      sendQuickSignal(text);
+    }
+
+    function sendStaffQuickReply(replyText) {
+      const currentOrd = getSelectedStaffOrder();
+      if (!currentOrd) {
+        triggerVisualBanner('يرجى تحديد طلب نشط أولاً للرد عليه!');
+        return;
+      }
+      const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+      const msgObj = { id: Date.now() + Math.random(), text: replyText, time: time, senderType: 'staff' };
+
+      currentOrd.messages = currentOrd.messages || [];
+      currentOrd.messages.unshift(msgObj);
+      renderStaffChatMessages(currentOrd.messages);
+
+      const myOrd = myCustomerOrders.find(o => o.code === currentOrd.code);
+      if (myOrd) {
+        myOrd.messages = myOrd.messages || [];
+        if (myOrd.messages !== currentOrd.messages && !myOrd.messages.some(m => m.id === msgObj.id)) {
+          myOrd.messages.unshift(msgObj);
+        }
+        if (myCustomerOrderCode === currentOrd.code) {
+          renderCustomerTrackedChat(myOrd.messages);
+        }
+      }
+
+      saveAllOrderStates();
+      publishSyncEvent({ type: 'STAFF_REPLY', orderCode: currentOrd.code, replyText: replyText, time: time });
+      triggerVisualBanner(`تم إرسال الرد لصاحب الطلب ${currentOrd.code}`);
     }
 
     function sendCustomCustomerMessage() {
