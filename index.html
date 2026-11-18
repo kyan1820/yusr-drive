@@ -39,20 +39,16 @@
     .splash-item-4 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 2.2s forwards; }
     .splash-item-5 { animation: splashItemReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) 2.8s forwards; }
 
-    @keyframes splashOfficialPulseGlow {
+    @keyframes splashOriginalPulse {
       0%, 100% {
         opacity: 1;
-        transform: scale(1);
-        filter: drop-shadow(0 0 0px rgba(52, 211, 153, 0));
       }
       50% {
-        opacity: 0.35;
-        transform: scale(1.02);
-        filter: drop-shadow(0 0 18px rgba(52, 211, 153, 0.55));
+        opacity: 0.5;
       }
     }
     .splash-all-flash {
-      animation: splashOfficialPulseGlow 0.85s ease-in-out 2;
+      animation: splashOriginalPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
 
     .splash-fade-out {
