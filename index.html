@@ -10,6 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=18">
+  
   <style>
     body.simple-mode-active .secondary-ui {
       display: none !important;
@@ -168,6 +169,66 @@
     @keyframes viewFadeIn {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
+    }
+  /* تحويل شاشة الموظف وصندوق المحادثة للوضع الفاتح (النهاري) تلقائياً عندما لا يكون الوضع الداكن مفعلاً */
+    body:not(.dark-theme) #viewStaff > div {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+    body:not(.dark-theme) #viewStaff .bg-slate-900,
+    body:not(.dark-theme) #viewStaff .bg-slate-900\/90,
+    body:not(.dark-theme) #viewStaff .bg-slate-800,
+    body:not(.dark-theme) #viewStaff .bg-slate-800\/90 {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+      border-color: #cbd5e1 !important;
+    }
+    body:not(.dark-theme) #viewStaff .text-white,
+    body:not(.dark-theme) #viewStaff .text-slate-200,
+    body:not(.dark-theme) #viewStaff .text-slate-300 {
+      color: #0f172a !important;
+    }
+    body:not(.dark-theme) #viewStaff .text-slate-400 {
+      color: #475569 !important;
+    }
+    body:not(.dark-theme) #viewStaff .text-emerald-400,
+    body:not(.dark-theme) #viewStaff .text-emerald-300 {
+      color: #047857 !important;
+    }
+    body:not(.dark-theme) #viewStaff .text-amber-400,
+    body:not(.dark-theme) #viewStaff .text-amber-300,
+    body:not(.dark-theme) #viewStaff .text-amber-200 {
+      color: #b45309 !important;
+    }
+    body:not(.dark-theme) #viewStaff .bg-amber-500\/10 {
+      background-color: #fffbeb !important;
+      border-color: #fcd34d !important;
+    }
+    body:not(.dark-theme) #viewStaff .bg-emerald-500\/20 {
+      background-color: #d1fae5 !important;
+      border-color: #10b981 !important;
+    }
+    body:not(.dark-theme) #viewStaff .border-slate-700,
+    body:not(.dark-theme) #viewStaff .border-slate-600,
+    body:not(.dark-theme) #viewStaff .border-slate-800 {
+      border-color: #cbd5e1 !important;
+    }
+    /* تنسيق رسائل الشات داخل شاشة الموظف في الوضع الفاتح */
+    body:not(.dark-theme) #viewStaff .bg-emerald-950\/90 {
+      background-color: #ecfdf5 !important;
+      border-color: #10b981 !important;
+      color: #065f46 !important;
+    }
+    body:not(.dark-theme) #viewStaff .bg-amber-950\/80 {
+      background-color: #fffbeb !important;
+      border-color: #f59e0b !important;
+      color: #92400e !important;
+    }
+    body:not(.dark-theme) #viewStaff input[type="text"] {
+      background-color: #ffffff !important;
+      color: #0f172a !important;
+      border-color: #94a3b8 !important;
     }
   </style>
 </head>
