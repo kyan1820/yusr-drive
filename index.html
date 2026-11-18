@@ -5378,18 +5378,46 @@
     const _origRenderStaffQueue = renderStaffActiveQueueAndDetails;
     renderStaffActiveQueueAndDetails = function() {
       _origRenderStaffQueue();
+
+      // التأكد من وجود شريط قبول الطلب وتحديد الوقت في واجهة الموظف (وإنشاؤه تلقائياً إن لم يكن موجوداً)
+      let acceptBar = document.getElementById('staffAcceptOrderBar');
+      let completeBtn = document.getElementById('staffCompleteOrderBtn') || document.querySelector('button[onclick*="promptStaffOrderAction(\'complete\')"]');
+
+      if (completeBtn && !completeBtn.id) {
+        completeBtn.id = 'staffCompleteOrderBtn';
+      }
+
+      if (!acceptBar && completeBtn && completeBtn.parentElement) {
+        acceptBar = document.createElement('div');
+        acceptBar.id = 'staffAcceptOrderBar';
+        acceptBar.className = 'flex flex-wrap items-center gap-2 bg-amber-500/20 border-2 border-amber-400 px-3 py-2 rounded-2xl';
+        acceptBar.innerHTML = `
+          <span class="text-xs font-black text-amber-300">⏱ وقت التجهيز:</span>
+          <select id="staffPrepTimeSelect" class="bg-slate-900 text-white border border-amber-400 rounded-xl px-2.5 py-1.5 text-xs font-black focus:outline-none cursor-pointer">
+            <option value="1">1 دقيقة (تجربة سريعة)</option>
+            <option value="5">5 دقائق</option>
+            <option value="10" selected>10 دقائق</option>
+            <option value="15">15 دقيقة</option>
+            <option value="20">20 دقيقة</option>
+            <option value="25">25 دقيقة</option>
+          </select>
+          <button type="button" onclick="acceptOrderByStaff()" class="focus-ring bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs transition shadow-lg flex items-center gap-1.5 cursor-pointer">
+            <span>✓ قبول الطلب وإصدار الفاتورة</span>
+          </button>
+        `;
+        completeBtn.parentElement.insertBefore(acceptBar, completeBtn);
+      }
+
       const currentOrd = getSelectedStaffOrder();
-      const acceptBar = document.getElementById('staffAcceptOrderBar');
-      const completeBtn = document.getElementById('staffCompleteOrderBtn');
       const queueBar = document.getElementById('activeOrdersQueueBar');
 
       if (queueBar && activeOrders.length > 0) {
         queueBar.querySelectorAll('button').forEach((btn, idx) => {
           const ord = activeOrders[idx];
-          if (ord && ord.staffAccepted === false && !btn.querySelector('.pending-dot')) {
+          if (ord && ord.staffAccepted !== true && !btn.querySelector('.pending-dot')) {
             const dot = document.createElement('span');
             dot.className = 'pending-dot bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse';
-            dot.textContent = 'طلب جديد - بانتظار القبول';
+            dot.textContent = 'بانتظار القبول';
             btn.appendChild(dot);
           }
         });
@@ -5400,9 +5428,28 @@
         return;
       }
 
-      const isPendingApproval = currentOrd.staffAccepted === false;
-      if (acceptBar) acceptBar.classList.toggle('hidden', !isPendingApproval);
-      if (completeBtn) completeBtn.classList.toggle('hidden', isPendingApproval);
+      // أي طلب ليس مقبولاً صراحةً (staffAccepted !== true) يظهر له زر قبول الطلب وتحديد الوقت فوراً
+      const isPendingApproval = currentOrd.staffAccepted !== true;
+
+      if (acceptBar) {
+        if (isPendingApproval) {
+          acceptBar.classList.remove('hidden');
+          acceptBar.style.display = 'flex';
+        } else {
+          acceptBar.classList.add('hidden');
+          acceptBar.style.display = 'none';
+        }
+      }
+
+      if (completeBtn) {
+        if (isPendingApproval) {
+          completeBtn.classList.add('hidden');
+          completeBtn.style.display = 'none';
+        } else {
+          completeBtn.classList.remove('hidden');
+          completeBtn.style.display = 'flex';
+        }
+      }
 
       [1, 2, 3, 4].forEach(stepIdx => {
         const sBtn = document.getElementById('staff-step-btn-' + stepIdx);
