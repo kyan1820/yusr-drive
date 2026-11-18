@@ -1043,7 +1043,23 @@
               </div>
 
               <div class="flex flex-wrap items-center gap-2">
-                <button type="button" onclick="promptStaffOrderAction('complete')" class="focus-ring bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                <!-- صندوق قبول الطلب وتحديد وقت التجهيز (يظهر للطلبات الجديدة بانتظار القبول) -->
+                <div id="staffAcceptOrderBar" class="hidden flex flex-wrap items-center gap-2 bg-amber-500/20 border-2 border-amber-400 px-3 py-2 rounded-2xl">
+                  <span class="text-xs font-black text-amber-300">⏱ وقت التجهيز:</span>
+                  <select id="staffPrepTimeSelect" class="bg-slate-900 text-white border border-amber-400 rounded-xl px-2.5 py-1.5 text-xs font-black focus:outline-none">
+                    <option value="5">5 دقائق</option>
+                    <option value="10" selected>10 دقائق</option>
+                    <option value="15">15 دقيقة</option>
+                    <option value="20">20 دقيقة</option>
+                    <option value="25">25 دقيقة</option>
+                  </select>
+                  <button type="button" onclick="acceptOrderByStaff()" class="focus-ring bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2 rounded-xl text-xs transition shadow-lg flex items-center gap-1.5 cursor-pointer">
+                    <span>✓ قبول الطلب وإصدار الفاتورة</span>
+                  </button>
+                </div>
+
+                <!-- أزرار التحكم بعد قبول الطلب -->
+                <button type="button" id="staffCompleteOrderBtn" onclick="promptStaffOrderAction('complete')" class="focus-ring bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
                   <span>✓ طلب مكتمل</span>
                 </button>
                 <button type="button" onclick="promptStaffOrderAction('delete')" class="focus-ring bg-rose-600 hover:bg-rose-500 text-white font-black px-4 py-2.5 rounded-xl text-xs transition shadow flex items-center gap-1.5">
@@ -5022,6 +5038,387 @@
 
     window.addEventListener('DOMContentLoaded', runAllCustomLocalizations);
     setTimeout(runAllCustomLocalizations, 50);
+  // ================= نظام قبول الطلب وتحديد وقت التجهيز والاستلام بجميع اللغات الـ 5 =================
+    const orderApprovalI18n = {
+      ar: {
+        pendingBadge: '⏳ بانتظار قبول الفرع وتحديد وقت التجهيز...',
+        pendingStatusLine: 'تم إرسال طلبك للفرع؛ بانتظار قبول الموظف للطلب وتحديد وقت التجهيز والاستلام لإصدار الفاتورة النهائية.',
+        pendingInvoiceHiddenMsg: '🔒 ستظهر الفاتورة الضريبية الكاملة وموعد الاستلام فور قبول الموظف للطلب وتحديد وقت التجهيز.',
+        acceptedBadge: (mins) => `✓ تم قبول الطلب — التجهيز خلال ${mins} دقائق`,
+        prepTimeLabel: 'مدة التجهيز المعتمدة:',
+        pickupTimeLabel: 'الوقت المتوقع للاستلام من المسار:',
+        minutesUnit: 'دقيقة',
+        trackerWaitingBanner: '⏳ طلبك لدى الفرع الآن — بانتظار قبول الموظف وتحديد وقت التجهيز...',
+        trackerAcceptedBanner: (mins, pickup) => `✓ تم قبول طلبك! مدة التجهيز: ${mins} دقيقة — وقت الاستلام المتوقع: ${pickup}`,
+        customerSubmittedSpeech: (code) => `تم إرسال طلبك رقم ${code} إلى الفرع، يرجى الانتظار قليلاً حتى يقوم الموظف بقبول الطلب وتحديد وقت التجهيز`,
+        customerSubmittedBanner: (code) => `⏳ تم إرسال الطلب ${code} — بانتظار قبول الموظف وتحديد وقت التجهيز`,
+        customerAcceptedSpeech: (code, mins, pickup) => `تم قبول طلبك رقم ${code} من الفرع وإصدار فاتورتك النهائية. وقت التجهيز ${mins} دقائق، ووقت الاستلام المتوقع الساعة ${pickup}`,
+        customerAcceptedAlert: (code, mins, pickup) => `✓ تم قبول الطلب (${code}) وإصدار الفاتورة! التجهيز خلال ${mins} دقائق (الاستلام: ${pickup})`
+      },
+      en: {
+        pendingBadge: '⏳ Awaiting Branch Acceptance & Prep Time...',
+        pendingStatusLine: 'Your order has been sent to the branch; awaiting staff acceptance and preparation time assignment to issue the final invoice.',
+        pendingInvoiceHiddenMsg: '🔒 Full tax invoice and estimated pickup time will appear automatically once staff accepts your order.',
+        acceptedBadge: (mins) => `✓ Order Accepted — Ready in ${mins} mins`,
+        prepTimeLabel: 'Approved Preparation Time:',
+        pickupTimeLabel: 'Estimated Lane Pickup Time:',
+        minutesUnit: 'mins',
+        trackerWaitingBanner: '⏳ Order received by branch — Awaiting staff acceptance & prep time...',
+        trackerAcceptedBanner: (mins, pickup) => `✓ Order Accepted! Prep Time: ${mins} mins — Estimated Pickup: ${pickup}`,
+        customerSubmittedSpeech: (code) => `Your order ${code} has been sent to the branch. Please wait for the staff to accept it and set the preparation time.`,
+        customerSubmittedBanner: (code) => `⏳ Order ${code} Sent — Awaiting Staff Acceptance & Prep Time`,
+        customerAcceptedSpeech: (code, mins, pickup) => `Your order ${code} has been accepted and your final invoice is ready. Preparation time is ${mins} minutes, estimated pickup at ${pickup}.`,
+        customerAcceptedAlert: (code, mins, pickup) => `✓ Order (${code}) Accepted & Invoice Issued! Ready in ${mins} mins (Pickup: ${pickup})`
+      },
+      tr: {
+        pendingBadge: '⏳ Şube Onayı ve Hazırlık Süresi Bekleniyor...',
+        pendingStatusLine: 'Siparişiniz şubeye iletildi; nihai faturanın oluşturulması için personelin siparişi onaylaması ve hazırlık süresini belirlemesi bekleniyor.',
+        pendingInvoiceHiddenMsg: '🔒 Tam vergi faturası ve tahmini teslim alma saati, personel siparişinizi onayladığında otomatik olarak görünecektir.',
+        acceptedBadge: (mins) => `✓ Sipariş Onaylandı — Hazırlık: ${mins} dk`,
+        prepTimeLabel: 'Onaylanan Hazırlık Süresi:',
+        pickupTimeLabel: 'Tahmini Teslim Alma Saati:',
+        minutesUnit: 'dakika',
+        trackerWaitingBanner: '⏳ Siparişiniz şubede — Personel onayı ve hazırlık süresi bekleniyor...',
+        trackerAcceptedBanner: (mins, pickup) => `✓ Siparişiniz Onaylandı! Hazırlık: ${mins} dk — Tahmini Teslim: ${pickup}`,
+        customerSubmittedSpeech: (code) => `${code} numaralı siparişiniz şubeye gönderildi. Lütfen personelin onaylamasını ve hazırlık süresini belirlemesini bekleyin.`,
+        customerSubmittedBanner: (code) => `⏳ Sipariş ${code} Gönderildi — Personel Onayı Bekleniyor`,
+        customerAcceptedSpeech: (code, mins, pickup) => `${code} numaralı siparişiniz onaylandı ve faturanız hazır. Hazırlık süresi ${mins} dakika, tahmini teslim saati ${pickup}.`,
+        customerAcceptedAlert: (code, mins, pickup) => `✓ Sipariş (${code}) Onaylandı! ${mins} dakikada hazır (Teslim: ${pickup})`
+      },
+      ur: {
+        pendingBadge: '⏳ برانچ کی منظوری اور تیاری کے وقت کا انتظار...',
+        pendingStatusLine: 'آپ کا آرڈر برانچ کو بھیج دیا گیا ہے؛ حتمی بل کے اجراء کے لیے عملے کی منظوری اور تیاری کے وقت کے تعین کا انتظار ہے۔',
+        pendingInvoiceHiddenMsg: '🔒 عملے کی جانب سے آرڈر قبول کرنے اور تیاری کا وقت مقرر کرنے کے فوراً بعد مکمل ٹیکس بل اور وصولی کا وقت یہاں ظاہر ہو جائے گا۔',
+        acceptedBadge: (mins) => `✓ آرڈر منظور کر لیا گیا — تیاری کا وقت ${mins} منٹ`,
+        prepTimeLabel: 'منظور شدہ تیاری کا وقت:',
+        pickupTimeLabel: 'سمارٹ لین سے وصولی کا متوقع وقت:',
+        minutesUnit: 'منٹ',
+        trackerWaitingBanner: '⏳ آپ کا آرڈر برانچ میں ہے — عملے کی منظوری اور تیاری کے وقت کا انتظار...',
+        trackerAcceptedBanner: (mins, pickup) => `✓ آپ کا آرڈر منظور ہو گیا! تیاری کا وقت: ${mins} منٹ — متوقع وصولی: ${pickup}`,
+        customerSubmittedSpeech: (code) => `آپ کا آرڈر نمبر ${code} برانچ کو بھیج دیا گیا ہے، براہ کرم عملے کی منظوری اور تیاری کے وقت کے تعین کا انتظار کریں۔`,
+        customerSubmittedBanner: (code) => `⏳ آرڈر ${code} بھیج دیا گیا — عملے کی منظوری کا انتظار ہے`,
+        customerAcceptedSpeech: (code, mins, pickup) => `آپ کا آرڈر نمبر ${code} منظور کر لیا گیا ہے اور مکمل بل جاری ہو گیا ہے۔ تیاری کا وقت ${mins} منٹ ہے اور وصولی کا وقت ${pickup} ہے۔`,
+        customerAcceptedAlert: (code, mins, pickup) => `✓ آرڈر (${code}) منظور ہو گیا! ${mins} منٹ میں تیار (وصولی: ${pickup})`
+      },
+      zh: {
+        pendingBadge: '⏳ 等待门店接单并确认制作时间...',
+        pendingStatusLine: '您的订单已发送至门店；正在等待工作人员接单并设定制作与取餐时间以生成最终正式发票。',
+        pendingInvoiceHiddenMsg: '🔒 工作人员接单并确认制作时间后，完整税务发票与预计取餐时间将立即显示。',
+        acceptedBadge: (mins) => `✓ 门店已接单 — 预计 ${mins} 分钟备妥`,
+        prepTimeLabel: '核准制作时长：',
+        pickupTimeLabel: '预计智能车道取餐时间：',
+        minutesUnit: '分钟',
+        trackerWaitingBanner: '⏳ 订单已送达门店 — 正在等待员工接单并确认制作时间...',
+        trackerAcceptedBanner: (mins, pickup) => `✓ 门店已接单！制作时长：${mins} 分钟 — 预计取餐时间：${pickup}`,
+        customerSubmittedSpeech: (code) => `您的订单 ${code} 已发送至门店，请稍候等待工作人员接单并确认制作时间。`,
+        customerSubmittedBanner: (code) => `⏳ 订单 ${code} 已发送 — 等待员工接单确认`,
+        customerAcceptedSpeech: (code, mins, pickup) => `您的订单 ${code} 已被门店接受，正式发票已生成。制作时间为 ${mins} 分钟，预计取餐时间为 ${pickup}。`,
+        customerAcceptedAlert: (code, mins, pickup) => `✓ 订单 (${code}) 已接单并生成发票！${mins} 分钟备妥（预计取餐：${pickup}）`
+      }
+    };
+
+    // دالة تحديث شريط حالة القبول ووقت الاستلام داخل شاشة المسار الذكي للعميل
+    function updateTrackerApprovalBanner() {
+      const step1Box = document.getElementById('step-1');
+      if (!step1Box || !step1Box.parentElement) return;
+
+      let bannerEl = document.getElementById('trackerApprovalStatusBanner');
+      if (!bannerEl) {
+        bannerEl = document.createElement('div');
+        bannerEl.id = 'trackerApprovalStatusBanner';
+        step1Box.parentElement.parentElement.insertBefore(bannerEl, step1Box.parentElement);
+      }
+
+      const AP = orderApprovalI18n[currentLang] || orderApprovalI18n.ar;
+      const myOrd = myCustomerOrders.find(o => o.code === myCustomerOrderCode) || activeOrders.find(o => o.code === myCustomerOrderCode);
+
+      if (!myOrd) {
+        bannerEl.className = 'hidden';
+        return;
+      }
+
+      if (myOrd.staffAccepted === false) {
+        bannerEl.className = 'w-full p-4 rounded-2xl border-2 border-amber-400 bg-amber-50 text-amber-950 font-black text-xs sm:text-sm flex items-center justify-between gap-3 shadow-sm';
+        bannerEl.innerHTML = `
+          <span>${AP.trackerWaitingBanner}</span>
+          <span class="w-3 h-3 rounded-full bg-amber-500 animate-ping shrink-0"></span>
+        `;
+      } else if (myOrd.prepTimeMinutes) {
+        bannerEl.className = 'w-full p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-black text-xs sm:text-sm flex flex-wrap items-center justify-between gap-3 shadow-sm';
+        bannerEl.innerHTML = `
+          <span>${AP.trackerAcceptedBanner(myOrd.prepTimeMinutes, myOrd.estimatedPickupTime || '—')}</span>
+          <button type="button" onclick="switchMainView('myorders')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-black transition shadow cursor-pointer">
+            ${(smartLaneScreenI18n[currentLang] || smartLaneScreenI18n.ar).viewOrdersBtn}
+          </button>
+        `;
+      } else {
+        bannerEl.className = 'hidden';
+      }
+    }
+
+    // تعديل finalizeOrderWithInvoice ليصبح الطلب الجديد بحالة "بانتظار قبول الموظف" (staffAccepted: false)
+    const _origFinalizeOrder = finalizeOrderWithInvoice;
+    finalizeOrderWithInvoice = function() {
+      _origFinalizeOrder();
+      const latestOrd = myCustomerOrders[0];
+      if (latestOrd) {
+        latestOrd.staffAccepted = false;
+        latestOrd.prepTimeMinutes = null;
+        latestOrd.estimatedPickupTime = null;
+        latestOrd.step = 0;
+
+        const staffCopy = activeOrders.find(o => o.code === latestOrd.code);
+        if (staffCopy) {
+          staffCopy.staffAccepted = false;
+          staffCopy.prepTimeMinutes = null;
+          staffCopy.estimatedPickupTime = null;
+          staffCopy.step = 0;
+        }
+
+        saveAllOrderStates();
+        renderCustomerMyOrders();
+        renderStaffActiveQueueAndDetails();
+        updateTrackerApprovalBanner();
+
+        publishSyncEvent({ type: 'NEW_ORDER', order: latestOrd });
+
+        const AP = orderApprovalI18n[currentLang] || orderApprovalI18n.ar;
+        speakText(AP.customerSubmittedSpeech(latestOrd.code));
+        triggerVisualBanner(AP.customerSubmittedBanner(latestOrd.code));
+      }
+    };
+
+    // دالة قبول الطلب من قِبل الموظف وتحديد وقت التجهيز وحساب وقت الاستلام الرسمي
+    function acceptOrderByStaff() {
+      const currentOrd = getSelectedStaffOrder();
+      if (!currentOrd) {
+        triggerVisualBanner('لا يوجد طلب محدد حالياً!');
+        return;
+      }
+
+      const selectEl = document.getElementById('staffPrepTimeSelect');
+      const prepMins = selectEl ? parseInt(selectEl.value, 10) || 10 : 10;
+
+      const now = new Date();
+      const pickupDate = new Date(now.getTime() + prepMins * 60000);
+      const pickupTimeAr = pickupDate.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+      const acceptedAtAr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+
+      currentOrd.staffAccepted = true;
+      currentOrd.prepTimeMinutes = prepMins;
+      currentOrd.estimatedPickupTime = pickupTimeAr;
+      currentOrd.acceptedAtTime = acceptedAtAr;
+      currentOrd.step = 1;
+
+      const myOrd = myCustomerOrders.find(o => o.code === currentOrd.code);
+      if (myOrd) {
+        myOrd.staffAccepted = true;
+        myOrd.prepTimeMinutes = prepMins;
+        myOrd.estimatedPickupTime = pickupTimeAr;
+        myOrd.acceptedAtTime = acceptedAtAr;
+        myOrd.step = 1;
+      }
+
+      saveAllOrderStates();
+      renderStaffActiveQueueAndDetails();
+      renderCustomerMyOrders();
+      updateTrackerApprovalBanner();
+
+      publishSyncEvent({
+        type: 'ACCEPT_ORDER',
+        orderCode: currentOrd.code,
+        prepTimeMinutes: prepMins,
+        estimatedPickupTime: pickupTimeAr,
+        acceptedAtTime: acceptedAtAr
+      });
+
+      triggerVisualBanner(`✓ تم قبول الطلب ${currentOrd.code} وتحديد وقت التجهيز (${prepMins} دقائق — الاستلام: ${pickupTimeAr}) وإصدار الفاتورة للعميل`);
+    }
+
+    // تحديث واجهة الموظف لإظهار شريط القبول للطلبات الجديدة وقفل المراحل حتى يتم القبول
+    const _origRenderStaffQueue = renderStaffActiveQueueAndDetails;
+    renderStaffActiveQueueAndDetails = function() {
+      _origRenderStaffQueue();
+      const currentOrd = getSelectedStaffOrder();
+      const acceptBar = document.getElementById('staffAcceptOrderBar');
+      const completeBtn = document.getElementById('staffCompleteOrderBtn');
+      const queueBar = document.getElementById('activeOrdersQueueBar');
+
+      if (queueBar && activeOrders.length > 0) {
+        queueBar.querySelectorAll('button').forEach((btn, idx) => {
+          const ord = activeOrders[idx];
+          if (ord && ord.staffAccepted === false && !btn.querySelector('.pending-dot')) {
+            const dot = document.createElement('span');
+            dot.className = 'pending-dot bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse';
+            dot.textContent = 'طلب جديد - بانتظار القبول';
+            btn.appendChild(dot);
+          }
+        });
+      }
+
+      if (!currentOrd) {
+        if (acceptBar) acceptBar.classList.add('hidden');
+        return;
+      }
+
+      const isPendingApproval = currentOrd.staffAccepted === false;
+      if (acceptBar) {
+        acceptBar.classList.toggle('hidden', !isPendingApproval);
+      }
+      if (completeBtn) {
+        completeBtn.classList.toggle('hidden', isPendingApproval);
+      }
+
+      [1, 2, 3, 4].forEach(stepIdx => {
+        const sBtn = document.getElementById('staff-step-btn-' + stepIdx);
+        if (sBtn) {
+          sBtn.disabled = isPendingApproval;
+          sBtn.style.opacity = isPendingApproval ? '0.45' : '1';
+          sBtn.style.cursor = isPendingApproval ? 'not-allowed' : 'pointer';
+        }
+      });
+
+      if (isPendingApproval) {
+        const badgeEl = document.getElementById('staffModeBadge');
+        if (badgeEl) {
+          badgeEl.textContent = '⏳ بانتظار قبولك وتحديد وقت التجهيز';
+          badgeEl.className = 'bg-amber-400 text-slate-950 font-black px-4 py-1 rounded-full text-sm animate-pulse';
+        }
+      } else if (currentOrd.prepTimeMinutes) {
+        const spotEl = document.getElementById('staffSpotInfo');
+        if (spotEl && !spotEl.textContent.includes('الاستلام:')) {
+          spotEl.textContent += ` | ⏱ التجهيز: ${currentOrd.prepTimeMinutes} د (الاستلام: ${currentOrd.estimatedPickupTime})`;
+        }
+      }
+    };
+
+    // تحديث عرض الفواتير في صفحة (قائمة طلباتي) لإخفاء الفاتورة الكاملة قبل القبول وإظهارها كاملة مع وقت الاستلام بعد القبول
+    const _origRenderMyOrders = renderCustomerMyOrders;
+    renderCustomerMyOrders = function() {
+      _origRenderMyOrders();
+      const container = document.getElementById('customerMyOrdersList');
+      if (!container) return;
+
+      const AP = orderApprovalI18n[currentLang] || orderApprovalI18n.ar;
+      const searchEl = document.getElementById('customerOrderSearchInput');
+      const query = searchEl ? searchEl.value.trim().toLowerCase() : '';
+      const filteredMyOrders = myCustomerOrders.filter(ord => {
+        if (!query) return true;
+        const codeMatch = (ord.code || '').toLowerCase().includes(query);
+        const timeMatch = (ord.orderTime || '').toLowerCase().includes(query) || (ord.completedTime || '').toLowerCase().includes(query) || (ord.orderDate || '').toLowerCase().includes(query);
+        return codeMatch || timeMatch;
+      });
+
+      const cards = Array.from(container.children);
+      cards.forEach((card, idx) => {
+        const ord = filteredMyOrders[idx];
+        if (!ord) return;
+
+        // 1. إذا كان الطلب لم يُقبل بعد من الموظف: نخفي تفاصيل الفاتورة ونعرض رسالة انتظار القبول الرسمية
+        if (ord.status === 'in_progress' && ord.staffAccepted === false) {
+          const topBadge = card.querySelector('.bg-amber-100');
+          if (topBadge) {
+            topBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span><span>${AP.pendingBadge}</span>`;
+          }
+          const statusBox = card.querySelector('.bg-amber-50');
+          if (statusBox) {
+            statusBox.innerHTML = `
+              <div class="flex items-center justify-between">
+                <span>${AP.pendingStatusLine}</span>
+                <span class="font-black">⏳</span>
+              </div>
+            `;
+          }
+          const detailsParent = card.querySelector('.space-y-3');
+          if (detailsParent && detailsParent.children.length >= 4) {
+            detailsParent.children[3].innerHTML = `
+              <div class="bg-slate-100 border-2 border-dashed border-slate-300 rounded-2xl p-4 text-center text-xs font-extrabold text-slate-600">
+                ${AP.pendingInvoiceHiddenMsg}
+              </div>
+            `;
+          }
+          const bottomSection = card.children[1];
+          if (bottomSection && bottomSection.children.length >= 2) {
+            bottomSection.children[0].classList.add('hidden');
+            bottomSection.children[1].classList.add('hidden');
+          }
+        }
+        // 2. إذا قَبِل الموظف الطلب: نعرض الفاتورة الضريبية الكاملة + صندوق رسمي بوقت التجهيز ووقت الاستلام المتوقع
+        else if (ord.staffAccepted === true && ord.prepTimeMinutes) {
+          const gridInfo = card.querySelector('.grid.grid-cols-2');
+          if (gridInfo && !card.querySelector('.approved-pickup-box')) {
+            const pickupBox = document.createElement('div');
+            pickupBox.className = 'approved-pickup-box bg-emerald-50 border-2 border-emerald-500 rounded-2xl p-3.5 text-xs font-black text-emerald-950 space-y-1.5 shadow-sm';
+            pickupBox.innerHTML = `
+              <div class="flex items-center justify-between text-emerald-800 border-b border-emerald-200 pb-1">
+                <span>${AP.acceptedBadge(ord.prepTimeMinutes)}</span>
+                <span>✓</span>
+              </div>
+              <div class="flex items-center justify-between pt-0.5">
+                <span>${AP.prepTimeLabel}</span>
+                <span class="text-emerald-700">${ord.prepTimeMinutes} ${AP.minutesUnit}</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span>${AP.pickupTimeLabel}</span>
+                <span class="bg-emerald-600 text-white px-2.5 py-0.5 rounded-lg">${ord.estimatedPickupTime || '—'}</span>
+              </div>
+            `;
+            gridInfo.parentElement.insertBefore(pickupBox, gridInfo);
+          }
+        }
+      });
+    };
+
+    // استقبال حدث قبول الطلب (ACCEPT_ORDER) لحظياً عند العميل بجميع اللغات الـ 5
+    const _origHandleSync = handleIncomingSyncData;
+    handleIncomingSyncData = function(data) {
+      if (data && data.type === 'ACCEPT_ORDER') {
+        if (data.stamp && data.stamp === lastEventStamp) return;
+        lastEventStamp = data.stamp || Date.now();
+
+        const targetOrd = activeOrders.find(o => o.code === data.orderCode);
+        if (targetOrd) {
+          targetOrd.staffAccepted = true;
+          targetOrd.prepTimeMinutes = data.prepTimeMinutes;
+          targetOrd.estimatedPickupTime = data.estimatedPickupTime;
+          targetOrd.acceptedAtTime = data.acceptedAtTime;
+          targetOrd.step = 1;
+        }
+
+        const myOrd = myCustomerOrders.find(o => o.code === data.orderCode);
+        if (myOrd) {
+          myOrd.staffAccepted = true;
+          myOrd.prepTimeMinutes = data.prepTimeMinutes;
+          myOrd.estimatedPickupTime = data.estimatedPickupTime;
+          myOrd.acceptedAtTime = data.acceptedAtTime;
+          myOrd.step = 1;
+          saveAllOrderStates();
+          renderCustomerMyOrders();
+          renderStaffActiveQueueAndDetails();
+          updateTrackerApprovalBanner();
+
+          if (currentView !== 'staff') {
+            if (myCustomerOrderCode === data.orderCode) {
+              updateStepUIOnly(1);
+            }
+            const AP = orderApprovalI18n[currentLang] || orderApprovalI18n.ar;
+            triggerVisualBanner(AP.customerAcceptedAlert(data.orderCode, data.prepTimeMinutes, data.estimatedPickupTime));
+            speakText(AP.customerAcceptedSpeech(data.orderCode, data.prepTimeMinutes, data.estimatedPickupTime));
+          }
+        }
+        return;
+      }
+      _origHandleSync(data);
+      updateTrackerApprovalBanner();
+    };
+
+    const _origApplyLangApproval = applyLanguage;
+    applyLanguage = function(lang) {
+      _origApplyLangApproval(lang);
+      updateTrackerApprovalBanner();
+    };
+
+    setTimeout(updateTrackerApprovalBanner, 100);
   </script>
 </body>
 </html>
