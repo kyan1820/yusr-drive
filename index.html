@@ -1201,6 +1201,29 @@
         }
       } catch (e) {}
 
+      // مزامنة تلقائية: أي طلب مفتوح (in_progress) عند العميل ولم يُسجل في السجل كمكتمل/محذوف يظهر فوراً للموظف
+      try {
+        const historyCodes = new Set(ordersHistory.map(h => h.code));
+        let synced = false;
+        myCustomerOrders.forEach(ord => {
+          if (ord.status === 'in_progress') {
+            const histMatch = ordersHistory.find(h => h.code === ord.code);
+            if (histMatch) {
+              ord.status = histMatch.status;
+              synced = true;
+            } else if (!activeOrders.some(a => a.code === ord.code)) {
+              activeOrders.push(ord);
+              synced = true;
+            }
+          }
+        });
+        activeOrders = activeOrders.filter(a => !historyCodes.has(a.code) && a.status !== 'completed' && a.status !== 'deleted');
+        if (activeOrders.length > 0 && !activeOrders.some(o => o.code === staffSelectedOrderCode)) {
+          staffSelectedOrderCode = activeOrders[0].code;
+        }
+        if (synced) saveAllOrderStates();
+      } catch (e) {}
+
       try {
         const savedTheme = localStorage.getItem('yusr_dark_mode_active');
         if (savedTheme === 'true') {
@@ -2283,7 +2306,8 @@
       if (!target) return;
       myCustomerOrderCode = target.code;
       document.getElementById('orderNumberDisplay').textContent = target.code;
-      document.getElementById('trackerLaneName').textContent = target.lane;
+      const trkLaneEl = document.getElementById('trackerLaneName');
+if (trkLaneEl) trkLaneEl.textContent = target.lane;
       updateStepUIOnly(target.step || 1);
       renderCustomerTrackedChat(target.messages || []);
 
@@ -3215,7 +3239,8 @@
 
       const btnClicked = document.getElementById('lane-' + laneIdx);
       if (btnClicked) {
-        document.getElementById('trackerLaneName').textContent = btnClicked.textContent;
+        const trkLaneEl = document.getElementById('trackerLaneName');
+if (trkLaneEl) trkLaneEl.textContent = btnClicked.textContent;
       }
 
       [1, 2, 3].forEach(idx => {
@@ -3516,7 +3541,9 @@
       };
 
       myCustomerOrders.unshift(orderData);
-      activeOrders.push(orderData);
+      if (!activeOrders.some(o => o.code === orderCode)) {
+        activeOrders.push(orderData);
+      }
       if (!staffSelectedOrderCode) {
         staffSelectedOrderCode = orderCode;
       }
@@ -3526,8 +3553,11 @@
       renderStaffActiveQueueAndDetails();
 
       myCustomerOrderCode = orderCode;
-      document.getElementById('orderNumberDisplay').textContent = orderCode;
-      document.getElementById('trackerLaneName').textContent = selectedLane;
+      const ordNumEl = document.getElementById('orderNumberDisplay');
+      if (ordNumEl) ordNumEl.textContent = orderCode;
+      const trkLaneEl = document.getElementById('trackerLaneName');
+      if (trkLaneEl) trkLaneEl.textContent = selectedLane;
+
       updateStepUIOnly(1);
       renderCustomerTrackedChat([]);
 
@@ -3539,9 +3569,53 @@
       document.getElementById('tabCustomer').classList.add('hidden');
       document.getElementById('tabTracker').classList.remove('hidden');
 
+      switchMainView('tracker');
+      if (typeof runAllCustomLocalizations === 'function') {
+        runAllCustomLocalizations();
+        setTimeout(runAllCustomLocalizations, 30);
+      }
+
+      // رسائل التأكيد الصوتية والبصرية بجميع اللغات الـ 5
+      const confirmI18n = {
+        ar: {
+          payMap: { 'مدى (Mada)': 'مدى', 'Apple Pay': 'Apple Pay', 'فيزا (Visa)': 'فيزا', 'نقدي (كاش)': 'نقدي' },
+          speech: (code, pay) => `تم اعتماد الفاتورة رقم ${code} بنجاح عبر ${pay}`,
+          banner: (code, pay) => `✓ ${code} — الدفع: ${pay}`
+        },
+        en: {
+          payMap: { 'مدى (Mada)': 'Mada', 'Apple Pay': 'Apple Pay', 'فيزا (Visa)': 'Visa', 'نقدي (كاش)': 'Cash' },
+          speech: (code, pay) => `Invoice ${code} confirmed successfully via ${pay}`,
+          banner: (code, pay) => `✓ ${code} — Paid via: ${pay}`
+        },
+        tr: {
+          payMap: { 'مدى (Mada)': 'Mada', 'Apple Pay': 'Apple Pay', 'فيزا (Visa)': 'Visa', 'نقدي (كاش)': 'Nakit' },
+          speech: (code, pay) => `${code} numaralı fatura ${pay} ile başarıyla onaylandı`,
+          banner: (code, pay) => `✓ ${code} — Ödeme: ${pay}`
+        },
+        ur: {
+          payMap: { 'مدى (Mada)': 'مدی (Mada)', 'Apple Pay': 'Apple Pay', 'فيزا (Visa)': 'ویزا (Visa)', 'نقدي (كاش)': 'نقد (کیش)' },
+          speech: (code, pay) => `بل نمبر ${code} کی ${pay} کے ذریعے کامیابی سے تصدیق ہو گئی`,
+          banner: (code, pay) => `✓ ${code} — ادائیگی: ${pay}`
+        },
+        zh: {
+          payMap: { 'مدى (Mada)': 'Mada', 'Apple Pay': 'Apple Pay', 'فيزا (Visa)': 'Visa', 'نقدي (كاش)': '现金' },
+          speech: (code, pay) => `发票 ${code} 已通过 ${pay} 成功确认`,
+          banner: (code, pay) => `✓ ${code} — 支付方式：${pay}`
+        }
+      };
+
+      const cf = confirmI18n[currentLang] || confirmI18n.ar;
+      const localizedPay = cf.payMap[selectedPaymentMethod] || selectedPaymentMethod;
+      speakText(cf.speech(orderCode, localizedPay));
+      triggerVisualBanner(cf.banner(orderCode, localizedPay));
+    }
+
+      switchMainView('tracker');
+      if (typeof runAllCustomLocalizations === 'function') {
+        setTimeout(runAllCustomLocalizations, 30);
+      }
       speakText(`تم اعتماد الفاتورة رقم ${orderCode} بنجاح عبر ${selectedPaymentMethod}`);
       triggerVisualBanner(`✓ ${orderCode} — الدفع: ${selectedPaymentMethod}`);
-      switchMainView('tracker');
     }
 
     function switchMainView(view) {
@@ -3764,11 +3838,40 @@
     let skipTimerConfirmation = false; // لحفظ رغبة العميل بعدم إظهار الرسالة مجدداً
     let pendingTimerUserAction = null;
 
-   function openStandaloneTimerScreen() {
+   const timerAlertsI18n = {
+      ar: {
+        enterSpeech: 'تم الانتقال لشاشة المراجعة النهائية، لديك دقيقتان قبل الاعتماد التلقائي، أو يمكنك الاعتماد فوراً أو تعديل السلة',
+        timeoutBanner: 'انتهى الوقت المحدد؛ تم اعتماد طلبك وإرساله تلقائياً للمسار الذكي.',
+        editSpeech: 'تم إيقاف المؤقت والعودة للسلة، يمكنك تعديل الأصناف بحرية'
+      },
+      en: {
+        enterSpeech: 'Moved to final review screen. You have two minutes before auto-approval, or you can confirm now or edit your cart.',
+        timeoutBanner: 'Time is up; your order has been automatically confirmed and sent to the smart lane.',
+        editSpeech: 'Timer stopped and returned to cart. You can freely edit your items.'
+      },
+      tr: {
+        enterSpeech: 'Son inceleme ekranına geçildi. Otomatik onaydan önce iki dakikanız var veya hemen onaylayıp sepeti düzenleyebilirsiniz.',
+        timeoutBanner: 'Süre doldu; siparişiniz otomatik olarak onaylandı ve akıllı hatta gönderildi.',
+        editSpeech: 'Zamanlayıcı durduruldu ve sepete dönüldü, ürünleri özgürce düzenleyebilirsiniz.'
+      },
+      ur: {
+        enterSpeech: 'حتمی جائزہ اسکرین پر منتقل ہو گئے ہیں، خودکار منظوری سے پہلے آپ کے پاس دو منٹ ہیں، یا آپ فوری منظوری دے سکتے ہیں۔',
+        timeoutBanner: 'مقررہ وقت ختم ہو گیا؛ آپ کا آرڈر خودکار طور پر منظور کر کے سمارٹ لین میں بھیج دیا گیا ہے۔',
+        editSpeech: 'ٹائمر روک دیا گیا ہے اور آپ کارٹ میں واپس آ گئے ہیں، آپ اشیاء میں ترمیم کر سکتے ہیں۔'
+      },
+      zh: {
+        enterSpeech: '已进入最终审核界面，自动确认前您有两分钟时间，也可以立即确认或修改购物车。',
+        timeoutBanner: '时间到；您的订单已自动确认并发送至智能车道。',
+        editSpeech: '计时器已停止并返回购物车，您可以自由修改餐点。'
+      }
+    };
+
+    function openStandaloneTimerScreen() {
+      const TA = timerAlertsI18n[currentLang] || timerAlertsI18n.ar;
       hideModalSmoothly('invoiceCheckoutModal', () => {
         showModalSmoothly('standaloneTimerModal');
         startCheckoutCountdown();
-        speakText('تم الانتقال لشاشة المراجعة النهائية، لديك دقيقتان قبل الاعتماد التلقائي، أو يمكنك الاعتماد فوراً أو تعديل السلة');
+        speakText(TA.enterSpeech);
       });
     }
 
@@ -3783,15 +3886,16 @@
 
         if (checkoutSecondsRemaining <= 0) {
           clearInterval(checkoutTimerInterval);
+          const TA = timerAlertsI18n[currentLang] || timerAlertsI18n.ar;
           document.getElementById('standaloneTimerModal').classList.add('hidden');
           document.getElementById('timerActionConfirmModal').classList.add('hidden');
           finalizeOrderWithInvoice();
-          triggerVisualBanner('انتهى الوقت المحدد؛ تم اعتماد طلبك وإرساله تلقائياً للمسار الذكي.');
+          triggerVisualBanner(TA.timeoutBanner);
         }
       }, 1000);
     }
 
-   function updateCheckoutTimerDisplay() {
+    function updateCheckoutTimerDisplay() {
       const displayEl = document.getElementById('checkoutCountdownDisplay');
       const barEl = document.getElementById('checkoutTimerProgressBar');
       if (displayEl) {
@@ -3808,42 +3912,52 @@
     function handleTimerButtonClick(actionType) {
       pendingTimerUserAction = actionType;
 
-      // إذا اختار العميل سابقاً عدم إظهار رسالة التأكيد، ننفذ الأمر مباشرة
       if (skipTimerConfirmation) {
         executeTimerActionDirectly(actionType);
         return;
       }
 
-      // تجهيز نافذة التأكيد مع إبقاء المربع غير محدد افتراضياً
       const checkbox = document.getElementById('dontShowTimerConfirmCheckbox');
       if (checkbox) checkbox.checked = false;
+
+      const TC = (typeof timerAndConfirmI18n !== 'undefined' && timerAndConfirmI18n[currentLang])
+        ? timerAndConfirmI18n[currentLang]
+        : {
+            approveBadge: 'تأكيد الاعتماد الفوري',
+            approveTitle: 'اعتماد الطلب الآن؟',
+            approveDesc: 'هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟',
+            editBadge: 'تأكيد تعديل السلة',
+            editTitle: 'العودة لتعديل السلة؟',
+            editDesc: 'هل أنت متأكد من إيقاف المؤقت والعودة إلى القائمة لتعديل أصناف سلتك؟'
+          };
 
       const titleEl = document.getElementById('timerConfirmTitle');
       const descEl = document.getElementById('timerConfirmDesc');
       const badgeEl = document.getElementById('timerConfirmBadge');
 
       if (actionType === 'confirm') {
-        badgeEl.textContent = 'تأكيد الاعتماد الفوري';
+        badgeEl.textContent = TC.approveBadge;
         badgeEl.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-emerald-100 text-emerald-800';
-        titleEl.textContent = 'اعتماد الطلب الآن؟';
-        descEl.textContent = 'هل أنت متأكد من رغبتك في اعتماد الطلب وإرساله فوراً للمسار الذكي قبل انتهاء المؤقت؟';
+        titleEl.textContent = TC.approveTitle;
+        descEl.textContent = TC.approveDesc;
       } else {
-        badgeEl.textContent = 'تأكيد تعديل السلة';
+        badgeEl.textContent = TC.editBadge;
         badgeEl.className = 'inline-block text-xs font-black px-3 py-1 rounded-full bg-amber-100 text-amber-900';
-        titleEl.textContent = 'العودة لتعديل السلة؟';
-        descEl.textContent = 'هل أنت متأكد من إيقاف المؤقت والعودة إلى القائمة لتعديل أصناف سلتك؟';
+        titleEl.textContent = TC.editTitle;
+        descEl.textContent = TC.editDesc;
       }
 
-     showModalSmoothly('timerActionConfirmModal');
+      showModalSmoothly('timerActionConfirmModal');
     }
 
-   function proceedWithTimerAction() {
+    function proceedWithTimerAction() {
       const checkbox = document.getElementById('dontShowTimerConfirmCheckbox');
       if (checkbox && checkbox.checked) {
         skipTimerConfirmation = true;
       }
+      const actionToRun = pendingTimerUserAction;
       hideModalSmoothly('timerActionConfirmModal', () => {
-        executeTimerActionDirectly(pendingTimerUserAction);
+        executeTimerActionDirectly(actionToRun);
       });
     }
 
@@ -3854,12 +3968,13 @@
 
     function executeTimerActionDirectly(actionType) {
       clearInterval(checkoutTimerInterval);
+      const TA = timerAlertsI18n[currentLang] || timerAlertsI18n.ar;
       hideModalSmoothly('standaloneTimerModal', () => {
         if (actionType === 'confirm') {
           finalizeOrderWithInvoice();
         } else if (actionType === 'edit') {
           closeInvoiceModal();
-          speakText('تم إيقاف المؤقت والعودة للسلة، يمكنك تعديل الأصناف بحرية');
+          speakText(TA.editSpeech);
         }
       });
     }
