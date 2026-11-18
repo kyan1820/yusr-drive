@@ -2328,28 +2328,60 @@
     function renderCustomerTrackedChat(messages) {
       const custLog = document.getElementById('customerSignalsLog');
       if (!custLog) return;
+      const SL = (typeof smartLaneScreenI18n !== 'undefined' && smartLaneScreenI18n[currentLang]) ? smartLaneScreenI18n[currentLang] : null;
       if (!messages || messages.length === 0) {
         custLog.innerHTML = `
           <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 text-xs text-slate-300">
-            بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...
+            ${SL ? SL.chatWaitMsg : 'بانتظار بدء المحادثة أو إرسال إشارة سريعة للموظف...'}
           </div>
         `;
         return;
       }
-      custLog.innerHTML = messages.map(m => m.senderType === 'staff'
-        ? `
-          <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
-            <span class="text-amber-400 block mb-1">[${m.time}] رد موظف المسار:</span>
-            ${m.text}
-          </div>
-        `
-        : `
-          <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold">
-            <span class="text-emerald-400 block mb-1">[${m.time}] إشارتك المرسلة:</span>
-            ${m.text}
-          </div>
-        `
-      ).join('');
+
+      const senderLabels = {
+        ar: { staff: 'رد موظف المسار:', cust: 'إشارتك المرسلة:', transTag: 'الترجمة:' },
+        en: { staff: 'Staff Reply:', cust: 'Your Sent Signal:', transTag: 'Translation:' },
+        tr: { staff: 'Personel Yanıtı:', cust: 'Gönderdiğiniz Sinyal:', transTag: 'Çeviri:' },
+        ur: { staff: 'عملے کا جواب:', cust: 'آپ کا بھیجا گیا اشارہ:', transTag: 'ترجمہ:' },
+        zh: { staff: '工作人员回复：', cust: '您发送的信号：', transTag: '翻译：' }
+      };
+      const lbl = senderLabels[currentLang] || senderLabels.ar;
+
+      custLog.innerHTML = messages.map(m => {
+        const needCustomerTrans = currentLang !== 'ar';
+        const cacheKey = `${currentLang}::${(m.text || '').trim().toLowerCase()}`;
+        const cachedTrans = liveChatTranslationsCache[cacheKey] || '';
+
+        if (m.senderType === 'staff') {
+          return `
+            <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold space-y-1">
+              <span class="text-amber-400 block">[${m.time}] ${lbl.staff}</span>
+              <div>${m.text}</div>
+              ${needCustomerTrans ? `
+                <div data-translate-raw="${encodeURIComponent(m.text)}" class="${cachedTrans ? '' : 'hidden'} pt-1 border-t border-amber-500/40 text-[11px] text-emerald-300 font-extrabold">
+                  <span>${lbl.transTag} </span><span class="trans-output-text text-white">${cachedTrans}</span>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        } else {
+          return `
+            <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold space-y-1">
+              <span class="text-emerald-400 block">[${m.time}] ${lbl.cust}</span>
+              <div>${m.text}</div>
+              ${needCustomerTrans && isPureArabicText(m.text) ? `
+                <div data-translate-raw="${encodeURIComponent(m.text)}" class="${cachedTrans ? '' : 'hidden'} pt-1 border-t border-emerald-600/40 text-[11px] text-amber-300 font-extrabold">
+                  <span>${lbl.transTag} </span><span class="trans-output-text text-white">${cachedTrans}</span>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+      }).join('');
+
+      if (currentLang !== 'ar') {
+        triggerAsyncTranslationsInContainer(custLog, currentLang);
+      }
     }
 
     function toggleSimpleMode() {
@@ -2435,6 +2467,86 @@
       renderStaffActiveQueueAndDetails();
     }
 
+    // ذاكرة تخزين مؤقتة للترجمات لمنع تكرار الطلبات وتسريع العرض الفوري
+    const liveChatTranslationsCache = {};
+
+    // قاموس فوري لأشهر عبارات وطلبات الدرايف ثرو والأسماء لضمان دقة 100%
+    const instantDriveThruDict = {
+      'hello': 'مرحباً / السلام عليكم',
+      'hi': 'أهلاً',
+      'kayan': 'كيان',
+      'thank you': 'شكراً لك',
+      'thanks': 'شكراً',
+      'please': 'من فضلك',
+      'ok': 'حسناً',
+      'okay': 'حسناً',
+      'yes': 'نعم',
+      'no': 'لا',
+      'where is my order': 'أين طلبي؟',
+      'i am here': 'أنا وصلت في المسار',
+      'i am waiting': 'أنا بالانتظار في السيارة',
+      'extra ketchup': 'كاتشب إضافي من فضلك',
+      'no ice': 'بدون ثلج',
+      'water please': 'ماء من فضلك',
+      'napkins': 'مناديل إضافية',
+      'hurry please': 'أرجو الاستعجال من فضلك',
+      'take your time': 'خذ وقتك بدون استعجال',
+      'card machine': 'جهاز الشبكة (الدفع)',
+      'cash': 'دفع نقدي (كاش)'
+    };
+
+    function isPureArabicText(text) {
+      if (!text) return true;
+      const clean = text.replace(/[0-9\s.,!?؟،:#\-()[\]]/g, '');
+      if (!clean) return true;
+      // إذا كان النص يحتوي على حروف غير عربية (إنجليزي، تركي، صيني...) نترجمه للعربية للموظف
+      return /^[\u0600-\u06FF]+$/.test(clean) && !/[a-zA-Z\u4e00-\u9fa5]/.test(clean);
+    }
+
+    async function fetchAccurateChatTranslation(text, targetLang = 'ar') {
+      const raw = (text || '').trim();
+      if (!raw) return '';
+      const cacheKey = `${targetLang}::${raw.toLowerCase()}`;
+      if (liveChatTranslationsCache[cacheKey]) {
+        return liveChatTranslationsCache[cacheKey];
+      }
+
+      if (targetLang === 'ar' && instantDriveThruDict[raw.toLowerCase()]) {
+        const instant = instantDriveThruDict[raw.toLowerCase()];
+        liveChatTranslationsCache[cacheKey] = instant;
+        return instant;
+      }
+
+      try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(raw)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data && Array.isArray(data[0])) {
+          const translated = data[0].map(part => part[0]).join('').trim();
+          if (translated && translated.toLowerCase() !== raw.toLowerCase()) {
+            liveChatTranslationsCache[cacheKey] = translated;
+            return translated;
+          }
+        }
+      } catch (e) {}
+      return '';
+    }
+
+    function triggerAsyncTranslationsInContainer(containerEl, targetLang) {
+      if (!containerEl) return;
+      containerEl.querySelectorAll('[data-translate-raw]').forEach(async (el) => {
+        if (el.getAttribute('data-translated-done') === '1') return;
+        el.setAttribute('data-translated-done', '1');
+        const rawText = decodeURIComponent(el.getAttribute('data-translate-raw') || '');
+        const translated = await fetchAccurateChatTranslation(rawText, targetLang);
+        if (translated) {
+          el.classList.remove('hidden');
+          const spanText = el.querySelector('.trans-output-text');
+          if (spanText) spanText.textContent = translated;
+        }
+      });
+    }
+
     function renderStaffChatMessages(messages) {
       const staffLog = document.getElementById('staffSignalsLog');
       if (!staffLog) return;
@@ -2446,20 +2558,33 @@
         `;
         return;
       }
-      staffLog.innerHTML = messages.map(m => m.senderType === 'staff'
-        ? `
-          <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
-            <span class="text-amber-400 block mb-1">[${m.time}] رد موظف المسار:</span>
-            ${m.text}
-          </div>
-        `
-        : `
-          <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold">
-            <span class="text-emerald-400 block mb-1">[${m.time}] إشارة من السيارة:</span>
-            ${m.text}
-          </div>
-        `
-      ).join('');
+      staffLog.innerHTML = messages.map(m => {
+        if (m.senderType === 'staff') {
+          return `
+            <div class="bg-amber-950/80 border border-amber-400 p-3 rounded-xl text-xs text-amber-200 font-bold">
+              <span class="text-amber-400 block mb-1">[${m.time}] رد موظف المسار:</span>
+              <div>${m.text}</div>
+            </div>
+          `;
+        } else {
+          const needsArTranslation = !isPureArabicText(m.text);
+          const cachedAr = liveChatTranslationsCache[`ar::${(m.text || '').trim().toLowerCase()}`] || instantDriveThruDict[(m.text || '').trim().toLowerCase()] || '';
+          return `
+            <div class="bg-emerald-950/90 border border-emerald-500 p-3 rounded-xl text-xs text-emerald-200 font-bold space-y-1.5">
+              <span class="text-emerald-400 block">[${m.time}] إشارة من السيارة:</span>
+              <div class="text-white text-sm">${m.text}</div>
+              ${needsArTranslation ? `
+                <div data-translate-raw="${encodeURIComponent(m.text)}" class="${cachedAr ? '' : 'hidden'} mt-1.5 pt-1.5 border-t border-emerald-700/60 text-[11px] text-amber-300 font-extrabold flex items-center gap-1.5">
+                  <span class="bg-amber-400/20 text-amber-300 border border-amber-400/40 px-1.5 py-0.5 rounded text-[10px]">الترجمة للعربية:</span>
+                  <span class="trans-output-text text-white">${cachedAr}</span>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+      }).join('');
+
+      triggerAsyncTranslationsInContainer(staffLog, 'ar');
     }
 
     function renderStaffActiveQueueAndDetails() {
